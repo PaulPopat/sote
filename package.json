@@ -1,6 +1,6 @@
 {
   "name": "@paulpopat/sote",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks",
   "main": "./bin/index.js",
   "scripts": {
@@ -33,5 +33,11 @@
   },
   "bin": {
     "sote": "./bin/index.js"
-  }
+  },
+  "files": [
+    "./lib/**/*",
+    "./package.json",
+    "./package-lock.json",
+    "./bin/index.js"
+  ]
 }
