@@ -10,6 +10,7 @@ import {
   DoNotCare,
   IsArray,
 } from "@paulpopat/safe-type";
+import escape from "escape-html";
 
 const IsValidHtmlProps = IsDictionary(IsUnion(IsString, IsNumber));
 
@@ -55,7 +56,13 @@ export default function (components: { [key: string]: string }) {
     let result = template;
     for (const match of result.match(/{[a-zA-Z0-9\.]+}/) ?? []) {
       const key = match.replace("{", "").replace("}", "");
-      result = result.replace(match, Access(key, props));
+      const accessed = Access(key, props);
+      Assert(
+        IsUnion(IsString, IsNumber),
+        accessed,
+        "Text references must be strings or numbers"
+      );
+      result = result.replace(match, escape(accessed.toString()));
     }
 
     return result;
@@ -100,7 +107,7 @@ export default function (components: { [key: string]: string }) {
         }
 
         for (const key in inputprops) {
-          element.setAttribute(key, inputprops[key].toString());
+          element.setAttribute(key, escape(inputprops[key].toString()));
         }
 
         ProcessCollection(element.children, props);

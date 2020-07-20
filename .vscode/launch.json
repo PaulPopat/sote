@@ -19,7 +19,7 @@
       "args": [
         "--components=\"./test-data/components\"",
         "--pages=\"./test-data/pages\"",
-        "--layout=\"./test-data/layout.tpe\"",
+        "--layout=\"./test-data/layout.html\"",
         "--sass=./test-data/styles/index.scss"
       ]
     }

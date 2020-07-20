@@ -45,104 +45,124 @@ const components = path.normalize(options.components ?? "./src/components");
 const error_page = path.normalize(
   options.error_page ?? path.join(pages, "_error.tpe")
 );
-const layout = path.normalize(options.layout ?? "./src/layout.tpe");
+const layout = path.normalize(options.layout ?? "./src/layout.html");
 const sass = options.sass && path.normalize(options.sass);
 const staticroute = options.static && path.normalize(options.static);
 const GetLayout = CacheInProduction(() => fs.readFile(layout, "utf-8"));
 
-const handler = (route: string) => {
-  const url =
-    "/" +
-    route
-      .replace(pages, "")
-      .replace(/\\/g, "/")
-      .replace(".js", "")
-      .replace("/index", "");
-  const imported = require("../" + route.replace(/\\/g, "/"));
+const handler = async (route: string) => {
+  let url = route
+    .replace(pages, "")
+    .replace(/\\/g, "/")
+    .replace(".tpe", "")
+    .replace("/index", "");
+  if (!url) {
+    url = "/";
+  }
+  const filepath = "../" + route.replace(/\\/g, "/").replace(".tpe", ".js");
+  if (route.endsWith("_error.tpe")) {
+    return;
+  }
 
-  const querytype = async (req: Request, res: Response) => {
-    console.log(`Handling ${req.method} for ${url}`);
-    try {
-      const query = { ...req.params, ...req.query };
-      const result = await imported.get(query);
-      Assert(IsResponse, result, "Invalid JSON response");
+  try {
+    const imported = require(filepath);
+    const querytype = async (req: Request, res: Response) => {
+      console.log(`Handling ${req.method} for ${url}`);
+      try {
+        const query = { ...req.params, ...req.query };
+        const result = await imported.get(query, req.headers);
+        Assert(IsResponse, result, "Invalid JSON response");
+        const c = await GetAllComponent(components);
+        const response = TemplateParser(c)(
+          await GetLayout(),
+          result.status > 399
+            ? await fs.readFile(error_page, "utf-8")
+            : await fs.readFile(route, "utf-8"),
+          result.data
+        );
+
+        for (const key in result.headers) {
+          res.setHeader(key, result.headers[key]);
+        }
+        res.setHeader("Content-Type", "text/html; charset=UTF-8");
+        res.status(result.status).send(response);
+      } catch (e) {
+        console.error(e);
+        res.status(500).send("Internal server error");
+      }
+    };
+
+    const bodytype = async (req: Request, res: Response) => {
+      console.log(`Handling ${req.method} for ${url}`);
+      try {
+        const query = { ...req.params, ...req.query };
+        const body = { ...req.body };
+        const result = await imported.get(query, body, req.headers);
+        Assert(IsResponse, result, "Invalid JSON response");
+        const c = await GetAllComponent(components);
+        const response = TemplateParser(c)(
+          await GetLayout(),
+          result.status > 399
+            ? await fs.readFile(error_page, "utf-8")
+            : await fs.readFile(route, "utf-8"),
+          result.data
+        );
+
+        for (const key in result.headers) {
+          res.setHeader(key, result.headers[key]);
+        }
+        res.setHeader("Content-Type", "text/html; charset=UTF-8");
+        res.status(result.status).send(response);
+      } catch (e) {
+        console.error(e);
+        res.status(500).send("Internal server error");
+      }
+    };
+
+    if (imported.get) {
+      console.log("Setting up get at " + url);
+      app.get(url, querytype);
+    }
+
+    if (imported.delete) {
+      console.log("Setting up delete at " + url);
+      app.delete(url, querytype);
+    }
+
+    if (imported.patch) {
+      console.log("Setting up patch at " + url);
+      app.patch(url, bodytype);
+    }
+
+    if (imported.post) {
+      console.log("Setting up post at " + url);
+      app.post(url, bodytype);
+    }
+
+    if (imported.put) {
+      console.log("Setting up put at " + url);
+      app.put(url, bodytype);
+    }
+  } catch {
+    console.log(`Unable to set up handler for ${url} so creating a simple get`);
+    app.get(url, async (req, res) => {
+      console.log(`Handling ${req.method} for ${url}`);
       const c = await GetAllComponent(components);
       const response = TemplateParser(c)(
         await GetLayout(),
-        result.status > 399
-          ? await fs.readFile(error_page, "utf-8")
-          : await fs.readFile(route.replace(".js", ".tpe"), "utf-8"),
-        result.data
+        await fs.readFile(route, "utf-8"),
+        {}
       );
-
-      for (const key in result.headers) {
-        res.setHeader(key, result.headers[key]);
-      }
       res.setHeader("Content-Type", "text/html; charset=UTF-8");
-      res.status(result.status).send(response);
-    } catch (e) {
-      console.error(e);
-      res.status(500).send("Internal server error");
-    }
-  };
-
-  const bodytype = async (req: Request, res: Response) => {
-    console.log(`Handling ${req.method} for ${url}`);
-    try {
-      const query = { ...req.params, ...req.query };
-      const body = { ...req.body };
-      const result = await imported.get(query, body);
-      Assert(IsResponse, result, "Invalid JSON response");
-      const c = await GetAllComponent(components);
-      const response = TemplateParser(c)(
-        await GetLayout(),
-        result.status > 399
-          ? await fs.readFile(error_page, "utf-8")
-          : await fs.readFile(route.replace(".js", ".tpe"), "utf-8"),
-        result.data
-      );
-
-      for (const key in result.headers) {
-        res.setHeader(key, result.headers[key]);
-      }
-      res.setHeader("Content-Type", "text/html; charset=UTF-8");
-      res.status(result.status).send(response);
-    } catch (e) {
-      console.error(e);
-      res.status(500).send("Internal server error");
-    }
-  };
-
-  if (imported.get) {
-    console.log("Setting up get at " + url);
-    app.get(url, querytype);
-  }
-
-  if (imported.delete) {
-    console.log("Setting up delete at " + url);
-    app.delete(url, querytype);
-  }
-
-  if (imported.patch) {
-    console.log("Setting up patch at " + url);
-    app.patch(url, bodytype);
-  }
-
-  if (imported.post) {
-    console.log("Setting up post at " + url);
-    app.post(url, bodytype);
-  }
-
-  if (imported.put) {
-    console.log("Setting up put at " + url);
-    app.put(url, bodytype);
+      res.status(200).send(response);
+    });
   }
 };
 
 (async () => {
   const routes = await ReadDirectory(pages);
-  for (const route of routes.filter((r) => r.endsWith(".js"))) {
-    handler(route);
+  for (const route of routes.filter((r) => r.endsWith(".tpe"))) {
+    await handler(route);
   }
 
   if (staticroute) {
