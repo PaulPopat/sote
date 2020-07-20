@@ -1,3 +1,4 @@
 src/
 test-data/
 lib/**/*.js.map
+tsconfig.json
