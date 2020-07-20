@@ -43,7 +43,7 @@ Assert(IsOptions, options, "Invalid command line parameters");
 const pages = path.normalize(options.pages ?? "./src/pages");
 const components = path.normalize(options.components ?? "./src/components");
 const error_page = path.normalize(
-  options.error_page ?? "./src/pages/_error.tpe"
+  options.error_page ?? path.join(pages, "_error.tpe")
 );
 const layout = path.normalize(options.layout ?? "./src/layout.tpe");
 const sass = options.sass && path.normalize(options.sass);
