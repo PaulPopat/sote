@@ -6,6 +6,9 @@ import {
   IsString,
   IsNumber,
   Optional,
+  IsObject,
+  DoNotCare,
+  IsArray,
 } from "@paulpopat/safe-type";
 
 const IsValidHtmlProps = IsDictionary(IsUnion(IsString, IsNumber));
@@ -48,6 +51,16 @@ function CreateElementFromHTML(document: Document, htmlString: string) {
 }
 
 export default function (components: { [key: string]: string }) {
+  const ImplementTextReferences = (template: string, props: any) => {
+    let result = template;
+    for (const match of result.match(/{[a-zA-Z0-9\.]+}/) ?? []) {
+      const key = match.replace("{", "").replace("}", "");
+      result = result.replace(match, Access(key, props));
+    }
+
+    return result;
+  };
+
   const ProcessCollection = (elements: HTMLCollection, props: any) => {
     for (let i = 0; i < elements.length; i++) {
       const element = elements.item(i);
@@ -58,7 +71,26 @@ export default function (components: { [key: string]: string }) {
       const tag = element.tagName.toLowerCase();
       const inputprops = GetPropsData(element.attributes, props);
       const component = components[tag];
-      if (!component) {
+      if (tag === "for") {
+        const inputprops = GetPropsData(element.attributes, props);
+        Assert(
+          IsObject({ subject: IsArray(DoNotCare), key: IsString }),
+          inputprops,
+          "For tags must use arrays as the arguments"
+        );
+        element.replaceWith(
+          ...inputprops.subject.map((s) =>
+            CreateElementFromHTML(
+              element.ownerDocument,
+              BuildTemplate(
+                element.innerHTML,
+                { ...props, [inputprops.key]: s },
+                ""
+              )
+            )
+          )
+        );
+      } else if (!component) {
         if (Object.keys(inputprops).length > 0) {
           Assert(
             Optional(IsValidHtmlProps),
@@ -87,22 +119,9 @@ export default function (components: { [key: string]: string }) {
     }
   };
 
-  const ImplementTextReferences = (template: string, props: any) => {
-    let result = template;
-    for (const match of result.match(/{[a-zA-Z0-9\.]+}/) ?? []) {
-      const key = match.replace("{", "").replace("}", "");
-      result = result.replace(match, Access(key, props));
-    }
-
-    return result;
-  };
-
   const BuildTemplate = (template: string, props: any, children: string) => {
     const dom = new JSDOM(
-      `<!DOCTYPE html><html><head></head><body id="body-content">${ImplementTextReferences(
-        template,
-        props
-      )}</body></html>`
+      `<!DOCTYPE html><html><head></head><body id="body-content">${template}</body></html>`
     );
     const document = dom.window.document;
     document
@@ -113,7 +132,7 @@ export default function (components: { [key: string]: string }) {
     ProcessCollection(document.children, props);
 
     const result = document.getElementById("body-content")?.innerHTML ?? "";
-    return result;
+    return ImplementTextReferences(result, props);
   };
 
   return (layout: string, template: string, props: any) => {

@@ -1,1 +1,4 @@
-<div class="test-class">{name}<CHILDREN></CHILDREN></div>
+<div class="test-class">
+  <h4>{name}</h4>
+  <CHILDREN></CHILDREN>
+</div>
