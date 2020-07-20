@@ -1,4 +1,5 @@
 <div class="test-class">
   <h4>{name}</h4>
   <CHILDREN></CHILDREN>
+  <img src="/_/loader.svg" alt="" />
 </div>

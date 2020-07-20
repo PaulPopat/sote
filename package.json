@@ -5,7 +5,7 @@
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node . --components=./test-data/components --pages=./test-data/pages --layout=./test-data/layout.tpe --sass=./test-data/styles/index.scss"
+    "start": "node . --components=./test-data/components --pages=./test-data/pages --layout=./test-data/layout.tpe --sass=./test-data/styles/index.scss --static=./test-data/public"
   },
   "repository": {
     "type": "git",

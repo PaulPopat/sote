@@ -47,6 +47,7 @@ const error_page = path.normalize(
 );
 const layout = path.normalize(options.layout ?? "./src/layout.tpe");
 const sass = options.sass && path.normalize(options.sass);
+const staticroute = options.static && path.normalize(options.static);
 const GetLayout = CacheInProduction(() => fs.readFile(layout, "utf-8"));
 
 const handler = (route: string) => {
@@ -144,8 +145,8 @@ const handler = (route: string) => {
     handler(route);
   }
 
-  if (options.static) {
-    app.use("/_", express.static(options.static));
+  if (staticroute) {
+    app.use("/_", express.static(staticroute));
   }
 
   if (sass) {
