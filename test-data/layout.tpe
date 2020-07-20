@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>A simple HTML5 test</title>
+    <meta name="description" content="A simple HTML5 test" />
+    <meta name="author" content="Paul Popat" />
+  </head>
+
+  <body>
+    <BODY_CONTENT></BODY_CONTENT>
+  </body>
+</html>

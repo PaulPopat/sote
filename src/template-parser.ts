@@ -1,0 +1,131 @@
+import { JSDOM } from "jsdom";
+import { Assert } from "./utils/types";
+import {
+  IsDictionary,
+  IsUnion,
+  IsString,
+  IsNumber,
+  Optional,
+} from "@paulpopat/safe-type";
+
+const IsValidHtmlProps = IsDictionary(IsUnion(IsString, IsNumber));
+
+function Access(key: string, props: any) {
+  return key.split(/\./g).reduce((c, n) => c[n], props);
+}
+
+function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
+  if (!attributes) {
+    return {};
+  }
+
+  const result: any = {};
+  for (let a = 0; a < attributes.length; a++) {
+    const c = attributes.item(a);
+    if (!c) {
+      continue;
+    }
+
+    if (c.value.startsWith(":")) {
+      result[c.name] = Access(c.value.slice(1), props);
+    } else {
+      result[c.name] = c.value;
+    }
+  }
+
+  return result;
+}
+
+function CreateElementFromHTML(document: Document, htmlString: string) {
+  var div = document.createElement("div");
+  div.innerHTML = htmlString.trim();
+  const result = div.firstChild;
+  if (!result) {
+    throw new Error("Invalid html node");
+  }
+
+  return result;
+}
+
+export default function (components: { [key: string]: string }) {
+  const ProcessCollection = (elements: HTMLCollection, props: any) => {
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements.item(i);
+      if (!element) {
+        continue;
+      }
+
+      const tag = element.tagName.toLowerCase();
+      const inputprops = GetPropsData(element.attributes, props);
+      const component = components[tag];
+      if (!component) {
+        if (Object.keys(inputprops).length > 0) {
+          Assert(
+            Optional(IsValidHtmlProps),
+            inputprops,
+            "Props for a html element must be a string or a number"
+          );
+        }
+
+        for (const key in inputprops) {
+          element.setAttribute(key, inputprops[key].toString());
+        }
+
+        ProcessCollection(element.children, props);
+      } else {
+        element.replaceWith(
+          CreateElementFromHTML(
+            element.ownerDocument,
+            BuildTemplate(
+              component,
+              inputprops,
+              BuildTemplate(element.innerHTML, props, "")
+            )
+          )
+        );
+      }
+    }
+  };
+
+  const ImplementTextReferences = (template: string, props: any) => {
+    let result = template;
+    for (const match of result.match(/{[a-zA-Z0-9\.]+}/) ?? []) {
+      const key = match.replace("{", "").replace("}", "");
+      result = result.replace(match, Access(key, props));
+    }
+
+    return result;
+  };
+
+  const BuildTemplate = (template: string, props: any, children: string) => {
+    const dom = new JSDOM(
+      `<!DOCTYPE html><html><head></head><body id="body-content">${ImplementTextReferences(
+        template,
+        props
+      )}</body></html>`
+    );
+    const document = dom.window.document;
+    document
+      .querySelector("CHILDREN")
+      ?.replaceWith(
+        CreateElementFromHTML(document, BuildTemplate(children, props, ""))
+      );
+    ProcessCollection(document.children, props);
+
+    const result = document.getElementById("body-content")?.innerHTML ?? "";
+    return result;
+  };
+
+  return (layout: string, template: string, props: any) => {
+    const dom = new JSDOM(layout);
+    dom.window.document
+      .querySelector("BODY_CONTENT")
+      ?.replaceWith(
+        CreateElementFromHTML(
+          dom.window.document,
+          BuildTemplate(template, props, "")
+        )
+      );
+    return dom.window.document.documentElement.innerHTML;
+  };
+}
