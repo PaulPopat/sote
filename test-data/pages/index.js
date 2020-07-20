@@ -5,6 +5,7 @@ module.exports = {
       data: {
         name: "Paul Popat",
         people: { names: ["Some guy", "Some other guy"] },
+        show: true
       },
     };
   },

@@ -90,6 +90,23 @@ Looping can be achieved with `for` tag. This tag should be supplied with a `subj
 </ul>
 ```
 
+Conditional elements are represented by the `if` tag. This tag should be supplied with a `check` attribute. The check must be a boolean and will result in a page error, if it is not.
+
+```HTML
+<!-- check_one=true check_two=false -->
+<if check=":check_one">
+ <p>Hello</p>
+</if>
+
+<if check=":check_two">
+ <p>world</p>
+</if>
+
+<!--Results in-->
+<p>Hello</p>
+```
+
 # Maybe to come
 * TypeScript page server code support
 * Component level Sass
+* JavaScript expressions in the templates

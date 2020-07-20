@@ -1,9 +1,10 @@
-<div>
-  <h1>Welcome to the world</h1>
-  <test-tryout name=":name"><p>Welcome</p></test-tryout>
-  <ul>
-    <for subject=":people.names" key="s">
-      <li>{s}</li>
-    </for>
-  </ul>
-</div>
+<h1>Welcome to the world</h1>
+<test-tryout name=":name"><p>Welcome</p></test-tryout>
+<ul>
+  <for subject=":people.names" key="s">
+    <li>{s}</li>
+  </for>
+</ul>
+<if check=":show">
+  <p>Show this</p>
+</if>

@@ -9,6 +9,7 @@ import {
   IsObject,
   DoNotCare,
   IsArray,
+  IsBoolean,
 } from "@paulpopat/safe-type";
 import escape from "escape-html";
 
@@ -40,15 +41,25 @@ function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
   return result;
 }
 
-function CreateElementFromHTML(document: Document, htmlString: string) {
+function CreateElementsFromHTML(document: Document, htmlString: string) {
   var div = document.createElement("div");
   div.innerHTML = htmlString.trim();
-  const result = div.firstChild;
+  const result = div.children;
   if (!result) {
     throw new Error("Invalid html node");
   }
 
-  return result;
+  const final: Element[] = [];
+  for (let i = 0; i < result.length; i++) {
+    const input = result.item(i);
+    if (!input) {
+      continue;
+    }
+
+    final.push(input);
+  }
+
+  return final;
 }
 
 export default function (components: { [key: string]: string }) {
@@ -78,7 +89,24 @@ export default function (components: { [key: string]: string }) {
       const tag = element.tagName.toLowerCase();
       const inputprops = GetPropsData(element.attributes, props);
       const component = components[tag];
-      if (tag === "for") {
+      if (tag === "if") {
+        const inputprops = GetPropsData(element.attributes, props);
+        Assert(
+          IsObject({ check: IsBoolean }),
+          inputprops,
+          "If tags must use booleans as the arguments"
+        );
+        if (!inputprops.check) {
+          continue;
+        }
+
+        element.replaceWith(
+          ...CreateElementsFromHTML(
+            element.ownerDocument,
+            BuildTemplate(element.innerHTML, { ...props }, "")
+          )
+        );
+      } else if (tag === "for") {
         const inputprops = GetPropsData(element.attributes, props);
         Assert(
           IsObject({ subject: IsArray(DoNotCare), key: IsString }),
@@ -86,16 +114,18 @@ export default function (components: { [key: string]: string }) {
           "For tags must use arrays as the arguments"
         );
         element.replaceWith(
-          ...inputprops.subject.map((s) =>
-            CreateElementFromHTML(
-              element.ownerDocument,
-              BuildTemplate(
-                element.innerHTML,
-                { ...props, [inputprops.key]: s },
-                ""
+          ...inputprops.subject
+            .map((s) =>
+              CreateElementsFromHTML(
+                element.ownerDocument,
+                BuildTemplate(
+                  element.innerHTML,
+                  { ...props, [inputprops.key]: s },
+                  ""
+                )
               )
             )
-          )
+            .reduce((c, n) => [...c, ...n], [] as Element[])
         );
       } else if (!component) {
         if (Object.keys(inputprops).length > 0) {
@@ -113,7 +143,7 @@ export default function (components: { [key: string]: string }) {
         ProcessCollection(element.children, props);
       } else {
         element.replaceWith(
-          CreateElementFromHTML(
+          ...CreateElementsFromHTML(
             element.ownerDocument,
             BuildTemplate(
               component,
@@ -134,11 +164,15 @@ export default function (components: { [key: string]: string }) {
     document
       .querySelector("CHILDREN")
       ?.replaceWith(
-        CreateElementFromHTML(document, BuildTemplate(children, props, ""))
+        ...CreateElementsFromHTML(document, BuildTemplate(children, props, ""))
       );
-    ProcessCollection(document.children, props);
+    const body = document.getElementById("body-content");
+    if (!body) {
+      throw new Error();
+    }
 
-    const result = document.getElementById("body-content")?.innerHTML ?? "";
+    ProcessCollection(body.children, props);
+    const result = body.innerHTML ?? "";
     return ImplementTextReferences(result, props);
   };
 
@@ -147,7 +181,7 @@ export default function (components: { [key: string]: string }) {
     dom.window.document
       .querySelector("BODY_CONTENT")
       ?.replaceWith(
-        CreateElementFromHTML(
+        ...CreateElementsFromHTML(
           dom.window.document,
           BuildTemplate(template, props, "")
         )
