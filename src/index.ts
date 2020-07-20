@@ -15,6 +15,8 @@ import TemplateParser from "./template-parser";
 import { CacheInProduction } from "./utils/cache";
 import fs from "fs-extra";
 import bodyParser from "body-parser";
+import path from "path";
+import { render } from "node-sass";
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,6 +28,7 @@ const IsOptions = IsObject({
   port: Optional(IsString),
   static: Optional(IsString),
   error_page: Optional(IsString),
+  sass: Optional(IsString),
 });
 
 const IsResponse = IsObject({
@@ -36,18 +39,23 @@ const IsResponse = IsObject({
 
 const options = ParseQueryString();
 Assert(IsOptions, options, "Invalid command line parameters");
-const pages = options.pages ?? "./src/pages";
-const components = options.components ?? "./src/components";
-const error_page = options.error_page ?? "./src/pages/_error.tpe";
-const layout = options.layout ?? "./src/layout.tpe";
+const pages = path.normalize(options.pages ?? "./src/pages");
+const components = path.normalize(options.components ?? "./src/components");
+const error_page = path.normalize(
+  options.error_page ?? "./src/pages/_error.tpe"
+);
+const layout = path.normalize(options.layout ?? "./src/layout.tpe");
+const sass = options.sass && path.normalize(options.sass);
 const GetLayout = CacheInProduction(() => fs.readFile(layout, "utf-8"));
 
 const handler = (route: string) => {
-  const url = route
-    .replace(pages, "")
-    .replace(/\\/g, "/")
-    .replace(".js", "")
-    .replace("/index", "");
+  const url =
+    "/" +
+    route
+      .replace(pages, "")
+      .replace(/\\/g, "/")
+      .replace(".js", "")
+      .replace("/index", "");
   const imported = require("../" + route.replace(/\\/g, "/"));
 
   const querytype = async (req: Request, res: Response) => {
@@ -137,6 +145,22 @@ const handler = (route: string) => {
 
   if (options.static) {
     app.use("/_", express.static(options.static));
+  }
+
+  if (sass) {
+    const sasstext = await new Promise<string>((res, rej) => {
+      render({ file: sass }, (err, d) => {
+        if (err) {
+          rej(err);
+        }
+
+        res(d.css.toString("utf-8"));
+      });
+    });
+    app.get("/rendered-sass.css", (req, res) => {
+      res.setHeader("Content-Type", "text/css; charset=UTF-8");
+      res.status(200).send(sasstext);
+    });
   }
 
   const port = parseInt(options.port ?? "3000");

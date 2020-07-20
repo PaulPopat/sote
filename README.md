@@ -1,1 +1,1 @@
-templating-engine
+SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks

@@ -5,6 +5,8 @@ export function ParseQueryString(): { [key: string]: string } {
       const [s, o] = arg.split("=");
       if (o.startsWith('"') || o.startsWith("'")) {
         result[s.replace("--", "")] = o.slice(1, o.length - 1);
+      } else {
+        result[s.replace("--", "")] = o;
       }
     }
   }
