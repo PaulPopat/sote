@@ -1,8 +1,8 @@
 {
   "name": "@paulpopat/sote",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks",
-  "main": "./lib/index.js",
+  "main": "./bin/index.js",
   "scripts": {
     "build": "tsc",
     "start": "node . --components=./test-data/components --pages=./test-data/pages --layout=./test-data/layout.html --sass=./test-data/styles/index.scss --static=./test-data/public"
@@ -32,6 +32,6 @@
     "node-sass": "^4.14.1"
   },
   "bin": {
-    "sote": "./lib/index.js"
+    "sote": "./bin/index.js"
   }
 }
