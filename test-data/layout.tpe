@@ -6,6 +6,7 @@
     <title>A simple HTML5 test</title>
     <meta name="description" content="A simple HTML5 test" />
     <meta name="author" content="Paul Popat" />
+    <link rel="stylesheet" type="text/css" href="/rendered-sass.css" />
   </head>
 
   <body>

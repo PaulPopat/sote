@@ -17,6 +17,7 @@ import fs from "fs-extra";
 import bodyParser from "body-parser";
 import path from "path";
 import { render } from "node-sass";
+import { IsProduction } from "./utils/environment";
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -157,9 +158,21 @@ const handler = (route: string) => {
         res(d.css.toString("utf-8"));
       });
     });
-    app.get("/rendered-sass.css", (req, res) => {
+    app.get("/rendered-sass.css", async (req, res) => {
       res.setHeader("Content-Type", "text/css; charset=UTF-8");
-      res.status(200).send(sasstext);
+      res.status(200).send(
+        IsProduction
+          ? sasstext
+          : await new Promise<string>((res, rej) => {
+              render({ file: sass }, (err, d) => {
+                if (err) {
+                  rej(err);
+                }
+
+                res(d.css.toString("utf-8"));
+              });
+            })
+      );
     });
   }
 
