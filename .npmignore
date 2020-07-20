@@ -1,2 +1,3 @@
 src/
 test-data/
+lib/**/*.js.map
