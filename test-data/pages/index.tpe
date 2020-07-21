@@ -1,10 +1,10 @@
 <h1>Welcome to the world</h1>
-<test-tryout name=":name">Welcome</test-tryout>
+<test-tryout name=":props.name">Welcome</test-tryout>
 <ul>
-  <for subject=":people.names" key="s">
-    <li>{s}</li>
+  <for subject=":props.people.names" key="s">
+    <li>{"Hello " + props.s}</li>
   </for>
 </ul>
-<if check=":show">
+<if check=":props.show">
   <p>Show this</p>
 </if>

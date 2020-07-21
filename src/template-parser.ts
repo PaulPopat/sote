@@ -12,12 +12,9 @@ import {
   IsBoolean,
 } from "@paulpopat/safe-type";
 import escape from "escape-html";
+import { Evalulate } from "./utils/evaluate";
 
 const IsValidHtmlProps = IsDictionary(IsUnion(IsString, IsNumber));
-
-function Access(key: string, props: any) {
-  return key.split(/\./g).reduce((c, n) => c[n], props);
-}
 
 function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
   if (!attributes) {
@@ -32,7 +29,7 @@ function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
     }
 
     if (c.value.startsWith(":")) {
-      result[c.name] = Access(c.value.slice(1), props);
+      result[c.name] = Evalulate(c.value.slice(1), props);
     } else {
       result[c.name] = c.value;
     }
@@ -65,9 +62,9 @@ function CreateElementsFromHTML(document: Document, htmlString: string) {
 export default function (components: { [key: string]: string }) {
   const ImplementTextReferences = (template: string, props: any) => {
     let result = template;
-    for (const match of result.match(/{[a-zA-Z0-9\.]+}/) ?? []) {
+    for (const match of result.match(/{.+}/) ?? []) {
       const key = match.replace("{", "").replace("}", "");
-      const accessed = Access(key, props);
+      const accessed = Evalulate(key, props);
       Assert(
         IsUnion(IsString, IsNumber),
         accessed,

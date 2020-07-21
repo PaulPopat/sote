@@ -58,7 +58,7 @@ module.exports = {
 
 # TPE files
 
-TPE files should look like an inhanced HTML. See the `test-data` in this repository for examples. Data that is passed into the pages, from the JavaScript files, can be accessed in the HTML text by using `{variable_name}`. It can also be passed into HTML attributes with a colon at the start of attibute text `<p class=":data_classname"></p>`. Only strings and numbers can be used in this way, but using the `.` accessor is allowed.
+TPE files should look like an inhanced HTML. See the `test-data` in this repository for examples. Data that is passed into the pages, from the JavaScript files, can be accessed in the HTML text by using `{props.variable_name}`. It can also be passed into HTML attributes with a colon at the start of attibute text `<p class=":props.data_classname"></p>`. Only strings and numbers can be used in this way, but using the `.` accessor is allowed.
 
 TPE files also support components. They can be accessed in the way described above and complex JavaScript objects can be passed as attributes. Components can also have a `<CHILDREN></CHILDREN>` element in them. Any HTML that is put inside the call of that component will be placed where this element is.
 
@@ -73,7 +73,7 @@ TPE files also support components. They can be accessed in the way described abo
 <p><b>Some cool</b> text</p>
 ```
 
-Looping can be achieved with `for` tag. This tag should be supplied with a `subject` attribute and a `key` attribute. The subject should be an array and the key should be a string. The key is how the individual item in the array will be accessed.
+Looping can be achieved with `for` tag. This tag should be supplied with a `subject` attribute and a `key` attribute. The subject should be an array and the key should be a string. The key will be added to the props, to access the item in the array.
 
 ```HTML
 <!-- test_data=[{name: "Paul Popat"}, {name: "John Doe"}]-->
