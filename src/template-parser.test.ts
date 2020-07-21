@@ -28,9 +28,10 @@ it("Applies the layout", () => {
   const props = {};
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const html = Builder(layout, page, props);
 
   // Assert
+  const result = new JSDOM(html);
   expect(result.window.document.head).toContainHTML(`<meta charset="utf-8">`);
   expect(result.window.document.head).toContainHTML(
     `<title>A simple HTML5 test</title>`
@@ -44,6 +45,9 @@ it("Applies the layout", () => {
   expect(result.window.document.head).toContainHTML(
     `<link rel="stylesheet" type="text/css" href="/rendered-sass.css">`
   );
+  expect(html).toContain('<html lang="en">');
+  expect(html).toContain("</html>");
+  expect(html).toContain("<!DOCTYPE html>");
 });
 
 it("Renders a basic page", () => {
@@ -177,7 +181,5 @@ it("Does not render if false", () => {
   const result = new JSDOM(Builder(layout, page, props));
 
   // Assert
-  expect(result.window.document.body).toContainHTML(
-    `<div></div>`
-  );
+  expect(result.window.document.body).toContainHTML(`<div></div>`);
 });

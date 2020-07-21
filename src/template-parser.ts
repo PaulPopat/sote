@@ -184,6 +184,6 @@ export default function (components: { [key: string]: string }) {
           BuildTemplate(template, props, "")
         )
       );
-    return dom.window.document.documentElement.innerHTML;
+    return dom.serialize();
   };
 }
