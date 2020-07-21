@@ -8,3 +8,4 @@
 <if check=":props.show">
   <p>Show this</p>
 </if>
+<p>{props.get_name()}</p>

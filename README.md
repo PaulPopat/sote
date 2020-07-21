@@ -78,7 +78,7 @@ Looping can be achieved with `for` tag. This tag should be supplied with a `subj
 ```HTML
 <!-- test_data=[{name: "Paul Popat"}, {name: "John Doe"}]-->
 <ul>
-  <for subject=":test_data" key="item">
+  <for subject=":props.test_data" key="item">
     <li>{item.name}</li>
   </for>
 </ul>
@@ -94,11 +94,11 @@ Conditional elements are represented by the `if` tag. This tag should be supplie
 
 ```HTML
 <!-- check_one=true check_two=false -->
-<if check=":check_one">
+<if check=":props.check_one">
  <p>Hello</p>
 </if>
 
-<if check=":check_two">
+<if check=":props.check_two">
  <p>world</p>
 </if>
 
@@ -106,7 +106,10 @@ Conditional elements are represented by the `if` tag. This tag should be supplie
 <p>Hello</p>
 ```
 
+# Expressions
+
+Any variable accessors can be JavaScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.
+
 # Maybe to come
 * TypeScript page server code support
 * Component level Sass
-* JavaScript expressions in the templates
