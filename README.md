@@ -12,7 +12,7 @@ It should be as simple as running `npm install @paulpopat/sote`
 
 The command `sote` will run the program with default settings. By default, the app will look for pages in the `./src/pages` directory. It will look for a `.tpe` file and a `.js` file for each page. The `.js` file should have an exported function for each support HTTP method (all lower case). These functions should be async and return an object with the schema `{ status: number, headers?: { [key: string]: string } }, data: any}`. The `.tpe` file should follow the format described below. If the `.js` file is not present, a simple get method will be generated and no data will be provided to the `.tpe` file.
 
-Components will be taken from `./src/component`. The components are then given a name by taking the path from the components route, in lower case, and with slashes swapped for spaces. E.G. `./src/component/my/test.tpe` would be called as `<my-test></my-test>`.
+Components will be taken from `./src/components`. The components are then given a name by taking the path from the components route, in lower case, and with slashes swapped for spaces. E.G. `./src/components/my/test.tpe` would be called as `<my-test></my-test>`.
 
 The layout will accessed as `./src/layout.html`. This file should contain a tag called `BODY_CONTENT`, which will be replaced with the body content for the page being loaded.
 
