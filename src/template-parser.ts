@@ -94,6 +94,7 @@ export default function (components: { [key: string]: string }) {
           "If tags must use booleans as the arguments"
         );
         if (!inputprops.check) {
+          element.remove();
           continue;
         }
 
