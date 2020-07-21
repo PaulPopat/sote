@@ -3,6 +3,8 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "./lib",
-    "sourceMap": true
-  }
+    "sourceMap": true,
+    "rootDir": "./src"
+  },
+  "exclude": ["./test-data/**/*"]
 }

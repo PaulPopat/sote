@@ -1,6 +1,7 @@
 SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks.
 
 # Why
+
 I love modern JavaScript frameworks. I use them all the time and will continue to use them all the time. What I wanted was to get some of the benefit of the component syntax and the way that data as passed down the page but will a much simpler boilerplate and setup for simple applications. I imagine this being used for simple static sites and basic interaction.
 
 This tool is not a replacement for the more advanced frameworks (React, VueJS, Angular, etc). It will never provide the flexibility and power that they offer.
@@ -46,7 +47,7 @@ module.exports = {
       data: [1, 2, 3, 4, 5]
     }
   },
-  post: async (query, body, headers) => {
+  post: (query, body, headers) => {
     return {
       status: 200,
       headers: { "x-count": "50" },
@@ -55,6 +56,10 @@ module.exports = {
   }
 }
 ```
+
+## Food for thought
+
+For complex files, why not compile some TypeScript or other down. Just remember that the files need to line up with the TPE files.
 
 # TPE files
 
@@ -111,5 +116,5 @@ Conditional elements are represented by the `if` tag. This tag should be supplie
 Any variable accessors can be JavaScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.
 
 # Maybe to come
-* TypeScript page server code support
-* Component level Sass
+
+- Component level Sass

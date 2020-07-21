@@ -4,7 +4,7 @@
   "description": "SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks",
   "main": "./bin/index.js",
   "scripts": {
-    "build": "npm run test && tsc",
+    "build": "tsc",
     "start": "node . --components=./test-data/components --pages=./test-data/pages --layout=./test-data/layout.html --sass=./test-data/styles/index.scss --static=./test-data/public",
     "test": "jest"
   },
