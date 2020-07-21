@@ -8,20 +8,10 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\lib\\index.js",
       "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": [
-        "${workspaceFolder}/lib/**/*.js"
-      ],
-      "args": [
-        "--components=\"./test-data/components\"",
-        "--pages=\"./test-data/pages\"",
-        "--layout=\"./test-data/layout.html\"",
-        "--sass=./test-data/styles/index.scss"
-      ]
+      "outFiles": ["${workspaceFolder}/lib/**/*.js"]
     }
   ]
 }

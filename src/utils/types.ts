@@ -9,3 +9,11 @@ export function Assert<T>(
     throw new Error(error_message);
   }
 }
+
+export function ArrayIfNotArray<T>(arg: T | T[]) {
+  if (Array.isArray(arg)) {
+    return arg;
+  }
+
+  return [arg];
+}

@@ -1,0 +1,7 @@
+{
+  "components": ["./test-data/components", "./test-data/other-components"],
+  "pages": "./test-data/pages",
+  "layout": "./test-data/layout.html",
+  "sass": "./test-data/styles/index.scss",
+  "static": "./test-data/public"
+}

@@ -1,11 +1,17 @@
 import fs from "fs-extra";
-import { IsObject, Optional, IsString } from "@paulpopat/safe-type";
-import { Assert } from "./types";
+import {
+  IsObject,
+  Optional,
+  IsString,
+  IsUnion,
+  IsArray,
+} from "@paulpopat/safe-type";
+import { Assert, ArrayIfNotArray } from "./types";
 import path from "path";
 import { CacheInProduction } from "./cache";
 
 const IsOptions = IsObject({
-  components: Optional(IsString),
+  components: Optional(IsUnion(IsString, IsArray(IsString))),
   pages: Optional(IsString),
   layout: Optional(IsString),
   port: Optional(IsString),
@@ -35,6 +41,7 @@ async function ReadOptionsFile(): Promise<{ [key: string]: string }> {
     return {};
   }
 
+  console.log("Found a config file so pulling settings from there.");
   return await fs.readJson("./tpe-config.json");
 }
 
@@ -42,7 +49,9 @@ export async function GetOptions() {
   const options = { ...(await ReadOptionsFile()), ...ParseQueryString() };
   Assert(IsOptions, options, "Invalid command line parameters");
   const pages = path.normalize(options.pages ?? "./src/pages");
-  const components = path.normalize(options.components ?? "./src/components");
+  const components = ArrayIfNotArray(
+    options.components ?? "./src/components"
+  ).map(path.normalize);
   const error_page = path.normalize(
     options.error_page ?? path.join(pages, "_error.tpe")
   );

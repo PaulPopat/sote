@@ -23,3 +23,5 @@
     <input type="submit" value="Subscribe!">
   </div>
 </form>
+
+<paragraph>A paragraph component</paragraph>

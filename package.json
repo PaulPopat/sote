@@ -5,7 +5,7 @@
   "main": "./bin/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node . --components=./test-data/components --pages=./test-data/pages --layout=./test-data/layout.html --sass=./test-data/styles/index.scss --static=./test-data/public",
+    "start": "node .",
     "test": "jest"
   },
   "repository": {

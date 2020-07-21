@@ -30,6 +30,22 @@ The app can be customised with various command line parameters.
 --sass="The path to the index sass file, if available. If this option is set then the rendered css will be available at /renderd-sass.css"
 ```
 
+## Config file
+
+Options can also be loaded from a config JSON file. The app will look for `./tpe-config.json` at the root of the project. This file contains the same parameters as the command line but with no `--` at the begining. An array of component directories is supported, for if you want to import component libraries.
+
+```JSON
+{
+  "components": ["./test-data/components", "./test-data/other-components"],
+  "pages": "./test-data/pages",
+  "layout": "./test-data/layout.html",
+  "sass": "./test-data/styles/index.scss",
+  "static": "./test-data/public",
+  "port": "3000",
+  "error_page": "./test-data/error.tpe"
+}
+```
+
 # Url structure
 
 The Url structure will be generated as described as above. This is used in ExpressJs so using a colon at the start of a section in the path will turn it into a parameter. This parameter can accessed in the query parameter, supplied to the JavaScript files.
