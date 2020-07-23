@@ -40,8 +40,10 @@ async function CompileTypescript() {
   }
 
   return await new Promise<void>((res, rej) => {
-    const path = isWin ? "tsc.cmd" : "tsc";
-    const p = spawn(path);
+    const command = isWin
+      ? path.resolve("node_modules/.bin/tsc.cmd")
+      : path.resolve("node_modules/.bin/tsc");
+    const p = spawn(command);
     let output: string[] = [];
 
     p.stderr.on("data", (data) => {
@@ -54,7 +56,7 @@ async function CompileTypescript() {
 
     p.on("exit", (c) => {
       if (c !== 0) {
-        console.log("TS compile failed. See output below");
+        console.log("TS compile failed. See output below. Make sure that you have TypeScript installed locally if this SOTE is installed globally.");
         console.log(output.join("\n"));
         rej(c);
       } else {
