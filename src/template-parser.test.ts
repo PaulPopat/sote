@@ -234,3 +234,30 @@ it("Can access a deep object multiple times", () => {
     `<div>Part1</div><div>Part2</div>`
   );
 });
+
+it("Parses SVG data", () => {
+  // Arrange
+  const Builder = CreateBuilder({
+    "svg-start": `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox=":props.box"
+>
+  <CHILDREN></CHILDREN>
+</svg>`,
+    "svg-item": `<path d="M1 1"></path>`,
+  });
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<svg-start box="0 0 1000 1000"><svg-item></svg-item></svg-start>`
+  );
+  const props = {};
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body.querySelector("path")).not.toBeNull();
+  expect(result.window.document.body.querySelector("path")).not.toBeFalsy();
+});

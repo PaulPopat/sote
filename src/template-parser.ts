@@ -145,11 +145,10 @@ export default function (components: { [key: string]: string }) {
       `<!DOCTYPE html><html><head></head><body id="body-content">${template}</body></html>`
     );
     const document = dom.window.document;
-    document
-      .querySelector("CHILDREN")
-      ?.replaceWith(
-        ...CreateElementsFromHTML(document, BuildTemplate(children, props, ""))
-      );
+    const children_tag = document.querySelector("children");
+    children_tag?.replaceWith(
+      ...CreateElementsFromHTML(document, BuildTemplate(children, props, ""))
+    );
     const body = document.getElementById("body-content");
     if (!body) {
       throw new Error();
