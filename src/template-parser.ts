@@ -68,7 +68,7 @@ export default function (components: { [key: string]: string }) {
       Assert(
         IsUnion(IsString, IsNumber),
         accessed,
-        "Text references must be strings or numbers"
+        "Text references must be strings or numbers for (" + key + ")"
       );
       result = result.replace(match, escape(accessed.toString()));
     }
@@ -91,7 +91,7 @@ export default function (components: { [key: string]: string }) {
         Assert(
           IsObject({ check: IsBoolean }),
           inputprops,
-          "If tags must use booleans as the arguments"
+          "If tags must use booleans as the arguments for (" + element.outerHTML + ")"
         );
         if (!inputprops.check) {
           element.remove();
@@ -109,7 +109,7 @@ export default function (components: { [key: string]: string }) {
         Assert(
           IsObject({ subject: IsArray(DoNotCare), key: IsString }),
           inputprops,
-          "For tags must use arrays as the arguments"
+          "For tags must use arrays as the arguments for (" + element.outerHTML + ")"
         );
         element.replaceWith(
           ...inputprops.subject
@@ -130,7 +130,7 @@ export default function (components: { [key: string]: string }) {
           Assert(
             Optional(IsValidHtmlProps),
             inputprops,
-            "Props for a html element must be a string or a number"
+            "Props for a html element must be a string or a number for (" + element.outerHTML + ")"
           );
         }
 

@@ -16,6 +16,7 @@ import bodyParser from "body-parser";
 import { render } from "node-sass";
 import { IsProduction } from "./utils/environment";
 import { GetOptions } from "./utils/options-parser";
+import path from "path";
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -38,13 +39,13 @@ const IsResponse = IsObject({
     if (!url) {
       url = "/";
     }
-    const filepath = "../" + route.replace(/\\/g, "/").replace(".tpe", ".js");
+    const filepath = "./" + route.replace(/\\/g, "/").replace(".tpe", ".js");
     if (route.endsWith("_error.tpe")) {
       return;
     }
 
     try {
-      const imported = require(filepath);
+      const imported = require(path.resolve(filepath));
       const querytype = async (req: Request, res: Response) => {
         console.log(`Handling ${req.method} for ${url}`);
         try {
@@ -133,10 +134,14 @@ const IsResponse = IsObject({
         console.log("Setting up put at " + url);
         app.put(url, bodytype);
       }
-    } catch {
+    } catch (e) {
       console.log(
         `Unable to set up handler for ${url} so creating a simple get`
       );
+      if (!IsProduction) {
+        console.error(e);
+      }
+
       const c = await GetAllComponent(options.components);
       const response = TemplateParser(c)(
         await options.GetLayout(),

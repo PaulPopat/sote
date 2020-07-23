@@ -1,5 +1,0 @@
-<div class="test-class">
-  <h4>{props.name}</h4>
-  <CHILDREN></CHILDREN>
-  <img src="/_/loader.svg" alt="" />
-</div>

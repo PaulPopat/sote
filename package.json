@@ -1,6 +1,6 @@
 {
   "name": "@paulpopat/sote",
-  "version": "0.2.2",
+  "version": "0.2.8",
   "description": "SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks",
   "main": "./bin/index.js",
   "scripts": {
@@ -10,12 +10,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PaulPopat/templating-engine.git"
+    "url": "git+https://github.com/PaulPopat/sote.git"
   },
   "bugs": {
-    "url": "https://github.com/PaulPopat/templating-engine/issues"
+    "url": "https://github.com/PaulPopat/sote/issues"
   },
-  "homepage": "https://github.com/PaulPopat/templating-engine#readme",
+  "homepage": "https://github.com/PaulPopat/sote#readme",
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.1",
     "@types/escape-html": "^1.0.0",
