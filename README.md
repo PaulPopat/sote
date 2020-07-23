@@ -25,10 +25,14 @@ The app can be customised with various command line parameters.
 --pages="The path to the pages directory"
 --layout="The path to the layout .html file"
 --port="The port that the app will listen on (default is 3000)"
---static="The path to any static files. These files will then be accessable under the _ subdirectory. E.G. /_/image.png"
+--static="The path to any static files. These files will then be accessible under the _ subdirectory. E.G. /_/image.png"
 --error_page="The path to the error page .tpe file"
---sass="The path to the index sass file, if available. If this option is set then the rendered css will be available at /renderd-sass.css"
+--sass="The path to the index sass file, if available. If this option is set then the rendered css will added into the pages automatically"
 ```
+
+## Production build
+
+For production you need to run the build with `sote build [args]` and then run `sote start [args]` to the app. Please make sure that the app is built on the same operating system that it is running on. There should not need to be any configuration changes between development and production but, if there are, it is advised that you use your `tpe-config.json` file for production and override any development settings on a local script for development.
 
 ## Config file
 
@@ -48,40 +52,39 @@ Options can also be loaded from a config JSON file. The app will look for `./tpe
 
 # Url structure
 
-The Url structure will be generated as described as above. This is used in ExpressJs so using a colon at the start of a section in the path will turn it into a parameter. This parameter can accessed in the query parameter, supplied to the JavaScript files.
+The Url structure will be generated as described as above. This is used in ExpressJs so using a colon at the start of a section in the path will turn it into a parameter. This parameter can accessed in the query parameter, supplied to the TypeScript files.
 
-# Page JavaScript files
+# TypeScript files
 
 Page files should export a function for the desired method. That function can contain an argument for the query string and parameters (for all methods) and an argument for the body (for put, post, and patch only). The final argument will be provided with the headers for the request. An example of the file would be
 
-```JavaScript
-module.exports = {
-  get: async (query, headers) => {
-    return {
-      status: 200,
-      headers: { "x-count": "50" },
-      data: [1, 2, 3, 4, 5]
-    }
-  },
-  post: (query, body, headers) => {
-    return {
-      status: 200,
-      headers: { "x-count": "50" },
-      data: [1, 2, 3, 4, 5]
-    }
+```TypeScript
+export async function get(query: unknown, headers: NodeJS.Dict<string>) {
+  return {
+    status: 200,
+    headers: { "x-count": "50" },
+    data: [1, 2, 3, 4, 5]
+  }
+}
+
+export async function post(query: unknown, body: unknown, headers: NodeJS.Dict<string>) {
+  return {
+    status: 200,
+    headers: { "x-count": "50" },
+    data: [1, 2, 3, 4, 5]
   }
 }
 ```
 
-## Food for thought
+# Page TypeScript files
 
-For complex files, why not compile some TypeScript or other down. Just remember that the files need to line up with the TPE files.
+If you want to add any JavaScript to a page you can include a file alongside the `.tpe` file. This file should be alongside the `.tpe` file with the same name and the extension `.page.ts`. This will then be compiled alongside any other page files and have the common JavaScript placed into a bundle file. The page file and the bundle file will both be included in the page automatically.
 
 # TPE files
 
-TPE files should look like an inhanced HTML. See the `test-data` in this repository for examples. Data that is passed into the pages, from the JavaScript files, can be accessed in the HTML text by using `{props.variable_name}`. It can also be passed into HTML attributes with a colon at the start of attibute text `<p class=":props.data_classname"></p>`. Only strings and numbers can be used in this way, but using the `.` accessor is allowed.
+TPE files should look like an inhanced HTML. See the `test-data` in this repository for examples. Data that is passed into the pages, from the TypeScript files, can be accessed in the HTML text by using `{props.variable_name}`. It can also be passed into HTML attributes with a colon at the start of attibute text `<p class=":props.data_classname"></p>`. Only strings and numbers can be used in this way, but using the `.` accessor is allowed.
 
-TPE files also support components. They can be accessed in the way described above and complex JavaScript objects can be passed as attributes. Components can also have a `<CHILDREN></CHILDREN>` element in them. Any HTML that is put inside the call of that component will be placed where this element is.
+TPE files also support components. They can be accessed in the way described above and complex TypeScript objects can be passed as attributes. Components can also have a `<CHILDREN></CHILDREN>` element in them. Any HTML that is put inside the call of that component will be placed where this element is.
 
 ```HTML
 <!--paragraph.tpe-->
@@ -129,7 +132,7 @@ Conditional elements are represented by the `if` tag. This tag should be supplie
 
 # Expressions
 
-Any variable accessors can be JavaScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.
+Any variable accessors can be TypeScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.
 
 # Maybe to come
 
