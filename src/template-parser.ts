@@ -13,6 +13,7 @@ import {
 } from "@paulpopat/safe-type";
 import escape from "escape-html";
 import { Evalulate } from "./utils/evaluate";
+import { CreateElementsFromHTML } from "./utils/html";
 
 const IsValidHtmlProps = IsDictionary(IsUnion(IsString, IsNumber));
 
@@ -36,27 +37,6 @@ function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
   }
 
   return result;
-}
-
-function CreateElementsFromHTML(document: Document, htmlString: string) {
-  var div = document.createElement("div");
-  div.innerHTML = htmlString.trim();
-  const result = div.childNodes;
-  if (!result) {
-    throw new Error("Invalid html node");
-  }
-
-  const final: ChildNode[] = [];
-  for (let i = 0; i < result.length; i++) {
-    const input = result.item(i);
-    if (!input) {
-      continue;
-    }
-
-    final.push(input);
-  }
-
-  return final;
 }
 
 export default function (components: { [key: string]: string }) {
@@ -91,7 +71,9 @@ export default function (components: { [key: string]: string }) {
         Assert(
           IsObject({ check: IsBoolean }),
           inputprops,
-          "If tags must use booleans as the arguments for (" + element.outerHTML + ")"
+          "If tags must use booleans as the arguments for (" +
+            element.outerHTML +
+            ")"
         );
         if (!inputprops.check) {
           element.remove();
@@ -109,7 +91,9 @@ export default function (components: { [key: string]: string }) {
         Assert(
           IsObject({ subject: IsArray(DoNotCare), key: IsString }),
           inputprops,
-          "For tags must use arrays as the arguments for (" + element.outerHTML + ")"
+          "For tags must use arrays as the arguments for (" +
+            element.outerHTML +
+            ")"
         );
         element.replaceWith(
           ...inputprops.subject
@@ -130,7 +114,9 @@ export default function (components: { [key: string]: string }) {
           Assert(
             Optional(IsValidHtmlProps),
             inputprops,
-            "Props for a html element must be a string or a number for (" + element.outerHTML + ")"
+            "Props for a html element must be a string or a number for (" +
+              element.outerHTML +
+              ")"
           );
         }
 
@@ -174,16 +160,15 @@ export default function (components: { [key: string]: string }) {
     return ImplementTextReferences(result, props);
   };
 
-  return (layout: string, template: string, props: any) => {
-    const dom = new JSDOM(layout);
-    dom.window.document
-      .querySelector("BODY_CONTENT")
-      ?.replaceWith(
-        ...CreateElementsFromHTML(
-          dom.window.document,
-          BuildTemplate(template, props, "")
-        )
-      );
-    return dom.serialize();
+  return (template: string, props: any) => {
+    const dom = new JSDOM(template);
+    const document = dom.window.document;
+    const body = document.body;
+    if (!body) {
+      throw new Error();
+    }
+
+    ProcessCollection(body.children, props);
+    return ImplementTextReferences(dom.serialize(), props);
   };
 }

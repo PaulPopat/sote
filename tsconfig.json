@@ -2,9 +2,8 @@
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
-    "outDir": "./lib",
-    "sourceMap": true,
-    "rootDir": "./src"
-  },
-  "exclude": ["./test-data/**/*"]
+    "moduleResolution": "node",
+    "rootDir": ".",
+    "outDir": "./.sote/js"
+  }
 }

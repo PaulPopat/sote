@@ -5,8 +5,9 @@ import {
   IsString,
   IsUnion,
   IsArray,
+  IsType,
 } from "@paulpopat/safe-type";
-import { Assert, ArrayIfNotArray } from "./types";
+import { Assert, ArrayIfNotArray, PromiseType } from "./types";
 import path from "path";
 import { CacheInProduction } from "./cache";
 
@@ -69,3 +70,5 @@ export async function GetOptions() {
     port: options.port,
   };
 }
+
+export type Options = PromiseType<ReturnType<typeof GetOptions>>;

@@ -24,11 +24,14 @@ const layout = `
 it("Applies the layout", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div>Hello world</div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>Hello world</div>`
+  );
   const props = {};
 
   // Act
-  const html = Builder(layout, page, props);
+  const html = Builder(page, props);
 
   // Assert
   const result = new JSDOM(html);
@@ -53,11 +56,14 @@ it("Applies the layout", () => {
 it("Renders a basic page", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div>Hello world</div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>Hello world</div>`
+  );
   const props = {};
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
@@ -66,11 +72,14 @@ it("Renders a basic page", () => {
 it("Resolves props", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div>{props.text}</div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>{props.text}</div>`
+  );
   const props = { text: "Hello world" };
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
@@ -79,11 +88,14 @@ it("Resolves props", () => {
 it("Resolves props function", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div>{props.text()}</div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>{props.text()}</div>`
+  );
   const props = { text: () => "Hello world" };
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
@@ -92,11 +104,14 @@ it("Resolves props function", () => {
 it("Resolves JavaScript expression", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div>{props.hello + props.world}</div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>{props.hello + props.world}</div>`
+  );
   const props = { hello: "Hello ", world: "world" };
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
@@ -105,11 +120,14 @@ it("Resolves JavaScript expression", () => {
 it("Renders components", () => {
   // Arrange
   const Builder = CreateBuilder({ test: `<div><CHILDREN></CHILDREN></div>` });
-  const page = `<test>Hello world</test>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<test>Hello world</test>`
+  );
   const props = {};
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
@@ -118,11 +136,14 @@ it("Renders components", () => {
 it("Passes props to a component", () => {
   // Arrange
   const Builder = CreateBuilder({ test: `<div>{props.name}</div>` });
-  const page = `<test name="Hello world"></test>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<test name="Hello world"></test>`
+  );
   const props = {};
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
@@ -131,11 +152,14 @@ it("Passes props to a component", () => {
 it("Passes deep props to a component", () => {
   // Arrange
   const Builder = CreateBuilder({ test: `<div>{props.name.text}</div>` });
-  const page = `<test name=":{ text: 'Hello world' }"></test>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<test name=":{ text: 'Hello world' }"></test>`
+  );
   const props = {};
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
@@ -144,11 +168,14 @@ it("Passes deep props to a component", () => {
 it("Rendered for loops", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div><for subject=":props.data" key="item"><div>{props.item}</div></for></div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div><for subject=":props.data" key="item"><div>{props.item}</div></for></div>`
+  );
   const props = { data: [1, 2, 3, 4, 5] };
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(
@@ -159,11 +186,14 @@ it("Rendered for loops", () => {
 it("Renders if true", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div><if check=":props.data"><div>Hello world</div></if></div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div><if check=":props.data"><div>Hello world</div></if></div>`
+  );
   const props = { data: true };
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(
@@ -174,11 +204,14 @@ it("Renders if true", () => {
 it("Does not render if false", () => {
   // Arrange
   const Builder = CreateBuilder({});
-  const page = `<div><if check=":props.data"><div>Hello world</div></if></div>`;
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div><if check=":props.data"><div>Hello world</div></if></div>`
+  );
   const props = { data: false };
 
   // Act
-  const result = new JSDOM(Builder(layout, page, props));
+  const result = new JSDOM(Builder(page, props));
 
   // Assert
   expect(result.window.document.body).toContainHTML(`<div></div>`);

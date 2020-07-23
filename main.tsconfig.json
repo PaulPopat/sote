@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "./lib",
+    "sourceMap": true,
+    "rootDir": "./src"
+  },
+  "exclude": ["./test-data/**/*"]
+}

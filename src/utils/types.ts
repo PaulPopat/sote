@@ -17,3 +17,5 @@ export function ArrayIfNotArray<T>(arg: T | T[]) {
 
   return [arg];
 }
+
+export type PromiseType<T> = T extends Promise<infer U> ? U : unknown;
