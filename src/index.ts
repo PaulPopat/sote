@@ -25,8 +25,10 @@ import { Debounce } from "./utils/debounce";
       )
       .on("all", run);
   } else if (options.mode === "build") {
+    console.log("Performing a production build.");
     await Compile(options, false);
   } else {
+    console.log("Starting in production mode.");
     await StartApp(options);
   }
 })().catch((e) => {

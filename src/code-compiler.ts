@@ -11,6 +11,8 @@ import factor from "factor-bundle";
 import sass from "node-sass";
 import { Routes } from "./app/routes";
 import { IsObject, IsString, IsType } from "@paulpopat/safe-type";
+import Uglify from "uglify-js";
+import UglifyCss from "uglifycss";
 
 const isWin = process.platform === "win32";
 
@@ -62,7 +64,7 @@ async function CompileTypescript() {
   });
 }
 
-async function CompilePages() {
+async function CompilePages(isQuick: boolean) {
   const pages = (await ReadDirectory(Routes.compiled_js)).filter((p) =>
     p.endsWith(".page.js")
   );
@@ -74,6 +76,18 @@ async function CompilePages() {
     })
     .bundle()
     .pipe(fs.createWriteStream(Routes.common_js));
+  if (!isQuick) {
+    const bundles = (await ReadDirectory(Routes.compiled_js)).filter((p) =>
+      p.endsWith(".bundle.js")
+    );
+    for (const bundle of bundles) {
+      await fs.writeFile(
+        bundle,
+        Uglify.minify(await fs.readFile(bundle, "utf-8")),
+        "utf-8"
+      );
+    }
+  }
 }
 
 async function CompileTpe(route: string, options: Options) {
@@ -114,7 +128,7 @@ async function GetTypeData(
   return dom.serialize();
 }
 
-async function CompileSass(index_path: string) {
+async function CompileSass(index_path: string, quick: boolean) {
   const css = await new Promise<string>((res, rej) => {
     sass.render({ file: index_path }, (err, r) => {
       if (err) {
@@ -125,7 +139,14 @@ async function CompileSass(index_path: string) {
     });
   });
 
-  await fs.writeFile(Routes.sass, css);
+  if (quick) {
+    await fs.writeFile(Routes.sass, css);
+  } else {
+    await fs.writeFile(
+      Routes.sass,
+      UglifyCss.processString(css, { uglyComments: true })
+    );
+  }
 }
 
 async function EnsureJsPath(jspath: string) {
@@ -160,9 +181,9 @@ export async function Compile(options: Options, quick: boolean) {
   await fs.outputJson(Routes.components, components);
   const pages_dir = await ReadDirectory(options.pages);
   await CompileTypescript();
-  await CompilePages();
+  await CompilePages(quick);
   if (options.sass) {
-    await CompileSass(options.sass);
+    await CompileSass(options.sass, quick);
   }
 
   let pages_json: PageJson[] = [];
