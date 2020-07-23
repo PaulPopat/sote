@@ -5,7 +5,6 @@ import {
   IsString,
   IsUnion,
   IsArray,
-  IsType,
 } from "@paulpopat/safe-type";
 import { Assert, ArrayIfNotArray, PromiseType } from "./types";
 import path from "path";
@@ -60,6 +59,12 @@ export async function GetOptions() {
   const sass = options.sass && path.normalize(options.sass);
   const staticroute = options.static && path.normalize(options.static);
   const GetLayout = CacheInProduction(() => fs.readFile(layout, "utf-8"));
+
+  const mode = process.argv.find((a) => a === "build")
+    ? ("build" as const)
+    : process.argv.find((a) => a === "start")
+    ? ("start" as const)
+    : ("dev" as const);
   return {
     GetLayout,
     sass,
@@ -68,6 +73,7 @@ export async function GetOptions() {
     components,
     pages,
     port: options.port,
+    mode: mode,
   };
 }
 

@@ -107,7 +107,7 @@ async function GetTypeData(
     bundle_e.src = "/js/common.bundle.js";
     dom.window.document.body.append(bundle_e);
     const page_e = dom.window.document.createElement("script");
-    page_e.src = `/js${url}`;
+    page_e.src = `/js${url === "/" ? "" : url}`;
     dom.window.document.body.append(page_e);
   }
 

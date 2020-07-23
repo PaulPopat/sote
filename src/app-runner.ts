@@ -3,7 +3,7 @@ import express, { Express, Request, Response } from "express";
 import bodyParser from "body-parser";
 import path from "path";
 import { Routes } from "./app/routes";
-import { Assert } from "./utils/types";
+import { Assert, PromiseType } from "./utils/types";
 import {
   IsArray,
   IsDictionary,
@@ -25,6 +25,7 @@ const IsResponse = IsObject({
 
 async function ServeIfExists(path: string, url: string, app: Express) {
   if (await fs.pathExists(path)) {
+    console.log("Serving " + url);
     app.use(url, express.static(path));
   }
 }
@@ -48,7 +49,11 @@ export async function StartApp(options: Options) {
   }
 
   for (const page of pages) {
-    ServeIfExists(page.page_js_path, `/js${page.url}`, app);
+    ServeIfExists(
+      page.page_js_path,
+      `/js${page.url === "/" ? "" : page.url}`,
+      app
+    );
     const imported = require(path.resolve(page.server_js_path));
 
     const HandleQueryType = (
@@ -146,7 +151,13 @@ export async function StartApp(options: Options) {
   }
 
   const port = parseInt(options.port ?? "3000");
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     console.log("Listening on port " + port);
   });
+
+  return {
+    stop: () => server.close(),
+  };
 }
+
+export type Server = PromiseType<ReturnType<typeof StartApp>>;

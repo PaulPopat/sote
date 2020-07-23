@@ -31,6 +31,7 @@
   "dependencies": {
     "@paulpopat/safe-type": "^2.0.4",
     "browserify": "^16.5.1",
+    "chokidar": "^3.4.1",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "factor-bundle": "^2.5.0",
