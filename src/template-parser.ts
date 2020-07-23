@@ -12,7 +12,7 @@ import {
   IsBoolean,
 } from "@paulpopat/safe-type";
 import escape from "escape-html";
-import { Evalulate } from "./utils/evaluate";
+import { Evaluate } from "./utils/evaluate";
 import { CreateElementsFromHTML } from "./utils/html";
 
 const IsValidHtmlProps = IsDictionary(IsUnion(IsString, IsNumber));
@@ -30,7 +30,7 @@ function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
     }
 
     if (c.value.startsWith(":")) {
-      result[c.name] = Evalulate(c.value.slice(1), props);
+      result[c.name] = Evaluate(c.value.slice(1), props);
     } else {
       result[c.name] = c.value;
     }
@@ -42,15 +42,16 @@ function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
 export default function (components: { [key: string]: string }) {
   const ImplementTextReferences = (template: string, props: any) => {
     let result = template;
-    for (const match of result.match(/{.+}/) ?? []) {
-      const key = match.replace("{", "").replace("}", "");
-      const accessed = Evalulate(key, props);
+    const matches = [...result.matchAll(/{[^}]+}/gm)]
+    for (const match of matches) {
+      const key = match[0].replace("{", "").replace("}", "");
+      const accessed = Evaluate(key, props);
       Assert(
         IsUnion(IsString, IsNumber),
         accessed,
         "Text references must be strings or numbers for (" + key + ")"
       );
-      result = result.replace(match, escape(accessed.toString()));
+      result = result.replace(match[0], escape(accessed.toString()));
     }
 
     return result;

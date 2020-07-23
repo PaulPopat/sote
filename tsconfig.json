@@ -4,6 +4,8 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "rootDir": ".",
-    "outDir": "./.sote/js"
+    "outDir": "./.sote/js",
+    "lib": ["es2020", "DOM", "ES5", "ScriptHost"],
+    "downlevelIteration": true
   }
 }

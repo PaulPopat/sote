@@ -216,3 +216,21 @@ it("Does not render if false", () => {
   // Assert
   expect(result.window.document.body).toContainHTML(`<div></div>`);
 });
+
+it("Can access a deep object multiple times", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>{props.deep.part1}</div><div>{props.deep.part2}</div>`
+  );
+  const props = { deep: { part1: "Part1", part2: "Part2" } };
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(
+    `<div>Part1</div><div>Part2</div>`
+  );
+});
