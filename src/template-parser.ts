@@ -42,16 +42,15 @@ function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
 export default function (components: { [key: string]: string }) {
   const ImplementTextReferences = (template: string, props: any) => {
     let result = template;
-    const matches = [...result.matchAll(/{[^}]+}/gm)]
-    for (const match of matches) {
-      const key = match[0].replace("{", "").replace("}", "");
+    for (const match of result.match(/{[^}]+}/gm) ?? []) {
+      const key = match.replace("{", "").replace("}", "");
       const accessed = Evaluate(key, props);
       Assert(
         IsUnion(IsString, IsNumber),
         accessed,
         "Text references must be strings or numbers for (" + key + ")"
       );
-      result = result.replace(match[0], escape(accessed.toString()));
+      result = result.replace(match, escape(accessed.toString()));
     }
 
     return result;
