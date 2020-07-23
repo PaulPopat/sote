@@ -18,7 +18,7 @@ import { Debounce } from "./utils/debounce";
     }, 200);
     chokidar
       .watch(
-        ["./**/*.ts", "./**/*.tpe", "./tpe-config.json", "./tsconfig.json"],
+        ["./**/*.ts", "./**/*.tpe", "./tpe-config.json", "./tsconfig.json", "./**/*.scss"],
         {
           ignored: ["node_modules/**/*", ".git/**/*", ".sote/**/*"],
         }
