@@ -1,5 +1,6 @@
 {
   "files.exclude": {
+    ".sote": true,
     ".vscode": true,
     "lib": true,
     "node_modules": true
