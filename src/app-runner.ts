@@ -42,14 +42,14 @@ export async function StartApp(options: Options) {
   Assert(IsDictionary(IsString), components);
   const parser = TemplateParser(components);
 
-  ServeIfExists(Routes.common_js, "/js/common.bundle.js", app);
-  ServeIfExists(Routes.sass, "/css/index.css", app);
+  await ServeIfExists(Routes.common_js, "/js/common.bundle.js", app);
+  await ServeIfExists(Routes.sass, "/css/index.css", app);
   if (options.staticroute) {
     app.use("/_", express.static(options.staticroute));
   }
 
   for (const page of pages) {
-    ServeIfExists(
+    await ServeIfExists(
       page.page_js_path,
       `/js${page.url === "/" ? "" : page.url}`,
       app
@@ -149,6 +149,15 @@ export async function StartApp(options: Options) {
       app.put(page.url, HandleBodyType(imported.put));
     }
   }
+
+  app.get("*", async (req, res) => {
+    const response = parser(await fs.readFile(Routes.error, "utf-8"), {
+      error: "404",
+    });
+
+    res.setHeader("Content-Type", "text/html; charset=UTF-8");
+    res.status(404).send(response);
+  });
 
   const port = parseInt(options.port ?? "3000");
   const server = app.listen(port, () => {

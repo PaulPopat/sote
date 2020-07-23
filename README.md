@@ -16,7 +16,7 @@ Components will be taken from `./src/components`. The components are then given 
 
 The layout will accessed as `./src/layout.html`. This file should contain a tag called `BODY_CONTENT`, which will be replaced with the body content for the page being loaded.
 
-The error page will be listed as `{pages_dir}/_error.tpe`. This will be loaded instead of the page file if the page function returns a status above 399. The error page will have access to the data returned from the function, so try to provide good error information for the user.
+The error page will be listed as `{pages_dir}/_error.tpe`. This will be loaded instead of the page file if the page function returns a status above 399. The error page will have access to the data returned from the function, so try to provide good error information for the user. In the event of a 404, this page will be rendered with the data `{ error: "404" }`.
 
 The app can be customised with various command line parameters.
 
