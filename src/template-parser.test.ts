@@ -69,6 +69,58 @@ it("Renders a basic page", () => {
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
 });
 
+it("Trims whitespace", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>
+      Hello world
+    </div>`
+  );
+  const props = {};
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
+});
+
+it("Strips out comments", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>Hello <!--this is a comment--> world</div>`
+  );
+  const props = {};
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
+});
+
+
+
+it("Does not error if there is a comment with an invalid expression", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>Hello <!--<div>{props.this.is.invalid}</div>--> world</div>`
+  );
+  const props = {};
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
+});
+
 it("Resolves props", () => {
   // Arrange
   const Builder = CreateBuilder({});

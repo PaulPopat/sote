@@ -130,6 +130,19 @@ Conditional elements are represented by the `if` tag. This tag should be supplie
 <p>Hello</p>
 ```
 
+## Whitespace
+
+Whitespace is trimmed. This means that any leading whitespace in a text node will no longer exist.
+
+```HTML
+<p>
+  Hello world
+</p>
+
+<!--Results in-->
+<p>Hello world</p>
+```
+
 # Expressions
 
 Any variable accessors can be TypeScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.

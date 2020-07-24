@@ -39,6 +39,18 @@ function GetPropsData(attributes: NamedNodeMap | undefined, props: any): any {
   return result;
 }
 
+function IsElement(node: ChildNode): node is Element {
+  return node.nodeType === node.ELEMENT_NODE;
+}
+
+function IsComment(node: ChildNode): node is Comment {
+  return node.nodeType === node.COMMENT_NODE;
+}
+
+function IsText(node: ChildNode): node is Text {
+  return node.nodeType === node.TEXT_NODE;
+}
+
 export default function (components: { [key: string]: string }) {
   const ImplementTextReferences = (template: string, props: any) => {
     let result = template;
@@ -56,52 +68,66 @@ export default function (components: { [key: string]: string }) {
     return result;
   };
 
-  const ProcessCollection = (elements: HTMLCollection, props: any) => {
+  const ProcessCollection = (elements: NodeListOf<ChildNode>, props: any) => {
     for (let i = 0; i < elements.length; i++) {
-      const element = elements.item(i);
-      if (!element) {
+      const node = elements.item(i);
+      if (!node) {
         continue;
       }
 
-      const tag = element.tagName.toLowerCase();
-      const inputprops = GetPropsData(element.attributes, props);
+      if (IsComment(node)) {
+        node.remove();
+        continue;
+      }
+
+      if (IsText(node)) {
+        node.textContent = node.textContent?.trim() ?? null;
+        continue;
+      }
+
+      if (!IsElement(node)) {
+        continue;
+      }
+
+      const tag = node.tagName.toLowerCase();
+      const inputprops = GetPropsData(node.attributes, props);
       const component = components[tag];
       if (tag === "if") {
-        const inputprops = GetPropsData(element.attributes, props);
+        const inputprops = GetPropsData(node.attributes, props);
         Assert(
           IsObject({ check: IsBoolean }),
           inputprops,
           "If tags must use booleans as the arguments for (" +
-            element.outerHTML +
+            node.outerHTML +
             ")"
         );
         if (!inputprops.check) {
-          element.remove();
+          node.remove();
           continue;
         }
 
-        element.replaceWith(
+        node.replaceWith(
           ...CreateElementsFromHTML(
-            element.ownerDocument,
-            BuildTemplate(element.innerHTML, { ...props }, "")
+            node.ownerDocument,
+            BuildTemplate(node.innerHTML, { ...props }, "")
           )
         );
       } else if (tag === "for") {
-        const inputprops = GetPropsData(element.attributes, props);
+        const inputprops = GetPropsData(node.attributes, props);
         Assert(
           IsObject({ subject: IsArray(DoNotCare), key: IsString }),
           inputprops,
           "For tags must use arrays as the arguments for (" +
-            element.outerHTML +
+            node.outerHTML +
             ")"
         );
-        element.replaceWith(
+        node.replaceWith(
           ...inputprops.subject
             .map((s) =>
               CreateElementsFromHTML(
-                element.ownerDocument,
+                node.ownerDocument,
                 BuildTemplate(
-                  element.innerHTML,
+                  node.innerHTML,
                   { ...props, [inputprops.key]: s },
                   ""
                 )
@@ -115,24 +141,24 @@ export default function (components: { [key: string]: string }) {
             Optional(IsValidHtmlProps),
             inputprops,
             "Props for a html element must be a string or a number for (" +
-              element.outerHTML +
+              node.outerHTML +
               ")"
           );
         }
 
         for (const key in inputprops) {
-          element.setAttribute(key, escape(inputprops[key].toString()));
+          node.setAttribute(key, escape(inputprops[key].toString()));
         }
 
-        ProcessCollection(element.children, props);
+        ProcessCollection(node.childNodes, props);
       } else {
-        element.replaceWith(
+        node.replaceWith(
           ...CreateElementsFromHTML(
-            element.ownerDocument,
+            node.ownerDocument,
             BuildTemplate(
               component,
               inputprops,
-              BuildTemplate(element.innerHTML, props, "")
+              BuildTemplate(node.innerHTML, props, "")
             )
           )
         );
@@ -154,7 +180,7 @@ export default function (components: { [key: string]: string }) {
       throw new Error();
     }
 
-    ProcessCollection(body.children, props);
+    ProcessCollection(body.childNodes, props);
     const result = body.innerHTML ?? "";
     return ImplementTextReferences(result, props);
   };
@@ -167,7 +193,7 @@ export default function (components: { [key: string]: string }) {
       throw new Error();
     }
 
-    ProcessCollection(body.children, props);
+    ProcessCollection(body.childNodes, props);
     return ImplementTextReferences(dom.serialize(), props);
   };
 }
