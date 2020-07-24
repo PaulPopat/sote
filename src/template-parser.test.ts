@@ -252,7 +252,7 @@ it("Passes deep props to a component", () => {
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
 });
 
-it("Rendered for loops", () => {
+it("Renders for loops", () => {
   // Arrange
   const Builder = CreateBuilder({});
   const page = layout.replace(
@@ -267,6 +267,24 @@ it("Rendered for loops", () => {
   // Assert
   expect(result.window.document.body).toContainHTML(
     `<div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div></div>`
+  );
+});
+
+it("Renders whitespace in for loops", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div><for subject=":props.data" key="item">{" "}<div>{props.item}</div></for></div>`
+  );
+  const props = { data: [1, 2, 3, 4, 5] };
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(
+    `<div> <div>1</div> <div>2</div> <div>3</div> <div>4</div> <div>5</div></div>`
   );
 });
 

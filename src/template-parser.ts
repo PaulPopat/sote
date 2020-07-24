@@ -77,6 +77,7 @@ export default function (components: { [key: string]: string }) {
     parent: Element,
     props: any
   ) => {
+    let onFinish: (() => void)[] = [];
     for (let i = 0; i < elements.length; i++) {
       const node = elements.item(i);
       if (!node || node.parentElement !== parent) {
@@ -128,6 +129,7 @@ export default function (components: { [key: string]: string }) {
             node.outerHTML +
             ")"
         );
+
         const inner = "<div>" + node.innerHTML + "</div>";
         const input = inputprops.subject
           .map((s) => {
@@ -140,7 +142,7 @@ export default function (components: { [key: string]: string }) {
             return ChildNodesToArray(result.childNodes);
           })
           .reduce((c, n) => [...c, ...n], [] as Element[]);
-        node.replaceWith(...input);
+        onFinish = [...onFinish, () => node.replaceWith(...input)];
       } else if (!component) {
         if (Object.keys(inputprops).length > 0) {
           Assert(
@@ -166,6 +168,10 @@ export default function (components: { [key: string]: string }) {
           )
         );
       }
+    }
+
+    for (const action of onFinish) {
+      action();
     }
   };
 
