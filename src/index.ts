@@ -10,15 +10,28 @@ import { Debounce } from "./utils/debounce";
     console.log("Starting in dev mode so watching for changes.");
     let server: Server | undefined;
     console.log("Watching for changes.");
+    let running = false;
     const run = Debounce(async () => {
+      if (running) {
+        return;
+      }
+
+      running = true;
       console.log("Detected a change. Compiling and running again.");
       server?.stop();
       await Compile(options, true);
       server = await StartApp(options);
+      running = false;
     }, 200);
     chokidar
       .watch(
-        ["./**/*.ts", "./**/*.tpe", "./tpe-config.json", "./tsconfig.json", "./**/*.scss"],
+        [
+          "./**/*.ts",
+          "./**/*.tpe",
+          "./tpe-config.json",
+          "./tsconfig.json",
+          "./**/*.scss",
+        ],
         {
           ignored: ["node_modules/**/*", ".git/**/*", ".sote/**/*"],
         }
