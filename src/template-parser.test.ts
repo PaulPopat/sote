@@ -87,6 +87,41 @@ it("Trims whitespace", () => {
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
 });
 
+it("Preserves whitespace from expressions", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>{" "}Hello world{" "}</div>`
+  );
+  const props = {};
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(`<div> Hello world </div>`);
+});
+
+it("Preserves whitespace from expressions between components", () => {
+  // Arrange
+  const Builder = CreateBuilder({
+    "test": "<span><children></children></span>"
+  });
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>Hello{" "}<test>{" "}test{" "}</test>{" "}world</div>`
+  );
+  const props = {};
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(`<div>Hello <span> test </span> world</div>`);
+});
+
+
 it("Strips out comments", () => {
   // Arrange
   const Builder = CreateBuilder({});

@@ -143,6 +143,15 @@ Whitespace is trimmed. This means that any leading whitespace in a text node wil
 <p>Hello world</p>
 ```
 
+You can force whitespace by using string expressions.
+
+```HTML
+<p>{" "}Hello world{" "}</p>
+
+<!--Results in-->
+<p> Hello world </p>
+```
+
 # Expressions
 
 Any variable accessors can be TypeScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.

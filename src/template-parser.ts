@@ -13,7 +13,7 @@ import {
 } from "@paulpopat/safe-type";
 import escape from "escape-html";
 import { Evaluate } from "./utils/evaluate";
-import { CreateElementsFromHTML } from "./utils/html";
+import { CreateElementsFromHTML, ChildNodesToArray } from "./utils/html";
 
 const IsValidHtmlProps = IsDictionary(IsUnion(IsString, IsNumber));
 
@@ -52,7 +52,11 @@ function IsText(node: ChildNode): node is Text {
 }
 
 export default function (components: { [key: string]: string }) {
-  const ImplementTextReferences = (template: string, props: any) => {
+  const ImplementTextReferences = (template: string | null, props: any) => {
+    if (!template) {
+      return template;
+    }
+
     let result = template;
     for (const match of result.match(/{[^}]+}/gm) ?? []) {
       const key = match.replace("{", "").replace("}", "");
@@ -68,10 +72,14 @@ export default function (components: { [key: string]: string }) {
     return result;
   };
 
-  const ProcessCollection = (elements: NodeListOf<ChildNode>, props: any) => {
+  const ProcessCollection = (
+    elements: NodeListOf<ChildNode>,
+    parent: Element,
+    props: any
+  ) => {
     for (let i = 0; i < elements.length; i++) {
       const node = elements.item(i);
-      if (!node) {
+      if (!node || node.parentElement !== parent) {
         continue;
       }
 
@@ -81,7 +89,10 @@ export default function (components: { [key: string]: string }) {
       }
 
       if (IsText(node)) {
-        node.textContent = node.textContent?.trim() ?? null;
+        node.textContent = ImplementTextReferences(
+          node.textContent?.trim() ?? null,
+          props
+        );
         continue;
       }
 
@@ -93,7 +104,6 @@ export default function (components: { [key: string]: string }) {
       const inputprops = GetPropsData(node.attributes, props);
       const component = components[tag];
       if (tag === "if") {
-        const inputprops = GetPropsData(node.attributes, props);
         Assert(
           IsObject({ check: IsBoolean }),
           inputprops,
@@ -106,14 +116,11 @@ export default function (components: { [key: string]: string }) {
           continue;
         }
 
+        ProcessCollection(node.childNodes, node, props);
         node.replaceWith(
-          ...CreateElementsFromHTML(
-            node.ownerDocument,
-            BuildTemplate(node.innerHTML, { ...props }, "")
-          )
+          ...CreateElementsFromHTML(node.ownerDocument, node.innerHTML)
         );
       } else if (tag === "for") {
-        const inputprops = GetPropsData(node.attributes, props);
         Assert(
           IsObject({ subject: IsArray(DoNotCare), key: IsString }),
           inputprops,
@@ -121,20 +128,19 @@ export default function (components: { [key: string]: string }) {
             node.outerHTML +
             ")"
         );
-        node.replaceWith(
-          ...inputprops.subject
-            .map((s) =>
-              CreateElementsFromHTML(
-                node.ownerDocument,
-                BuildTemplate(
-                  node.innerHTML,
-                  { ...props, [inputprops.key]: s },
-                  ""
-                )
-              )
-            )
-            .reduce((c, n) => [...c, ...n], [] as Element[])
-        );
+        const inner = "<div>" + node.innerHTML + "</div>";
+        const input = inputprops.subject
+          .map((s) => {
+            const result = CreateElementsFromHTML(node.ownerDocument, inner)[0];
+            Assert(IsElement, result);
+            ProcessCollection(result.childNodes, result, {
+              ...props,
+              [inputprops.key]: s,
+            });
+            return ChildNodesToArray(result.childNodes);
+          })
+          .reduce((c, n) => [...c, ...n], [] as Element[]);
+        node.replaceWith(...input);
       } else if (!component) {
         if (Object.keys(inputprops).length > 0) {
           Assert(
@@ -150,16 +156,13 @@ export default function (components: { [key: string]: string }) {
           node.setAttribute(key, escape(inputprops[key].toString()));
         }
 
-        ProcessCollection(node.childNodes, props);
+        ProcessCollection(node.childNodes, node, props);
       } else {
+        ProcessCollection(node.childNodes, node, props);
         node.replaceWith(
           ...CreateElementsFromHTML(
             node.ownerDocument,
-            BuildTemplate(
-              component,
-              inputprops,
-              BuildTemplate(node.innerHTML, props, "")
-            )
+            BuildTemplate(component, inputprops, node.innerHTML)
           )
         );
       }
@@ -171,18 +174,15 @@ export default function (components: { [key: string]: string }) {
       `<!DOCTYPE html><html><head></head><body id="body-content">${template}</body></html>`
     );
     const document = dom.window.document;
-    const children_tag = document.querySelector("children");
-    children_tag?.replaceWith(
-      ...CreateElementsFromHTML(document, BuildTemplate(children, props, ""))
-    );
     const body = document.getElementById("body-content");
     if (!body) {
       throw new Error();
     }
 
-    ProcessCollection(body.childNodes, props);
-    const result = body.innerHTML ?? "";
-    return ImplementTextReferences(result, props);
+    ProcessCollection(body.childNodes, body, props);
+    const children_tag = document.querySelector("children");
+    children_tag?.replaceWith(...CreateElementsFromHTML(document, children));
+    return body.innerHTML ?? "";
   };
 
   return (template: string, props: any) => {
@@ -193,7 +193,7 @@ export default function (components: { [key: string]: string }) {
       throw new Error();
     }
 
-    ProcessCollection(body.childNodes, props);
-    return ImplementTextReferences(dom.serialize(), props);
+    ProcessCollection(body.childNodes, body, props);
+    return dom.serialize();
   };
 }
