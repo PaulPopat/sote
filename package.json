@@ -7,7 +7,7 @@
     "build": "npm run test && tsc -p ./main.tsconfig.json",
     "start": "node .",
     "test": "jest",
-    "live": "npm run build && npm publish"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
