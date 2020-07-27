@@ -4,7 +4,8 @@
     "esModuleInterop": true,
     "outDir": "./lib",
     "sourceMap": true,
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "downlevelIteration": true
   },
   "exclude": ["./test-data/**/*"]
 }

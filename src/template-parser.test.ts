@@ -87,6 +87,25 @@ it("Trims whitespace", () => {
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
 });
 
+it("Trims multiline whitespace", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>
+      Hello
+      world
+    </div>`
+  );
+  const props = {};
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
+});
+
 it("Preserves whitespace from expressions", () => {
   // Arrange
   const Builder = CreateBuilder({});

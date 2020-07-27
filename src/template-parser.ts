@@ -57,7 +57,7 @@ export default function (components: { [key: string]: string }) {
       return template;
     }
 
-    let result = template;
+    let result = template.replace(/\s\s+/g, " ").trim();
     for (const match of result.match(/{[^}]+}/gm) ?? []) {
       const key = match.replace("{", "").replace("}", "");
       const accessed = Evaluate(key, props);
@@ -90,10 +90,7 @@ export default function (components: { [key: string]: string }) {
       }
 
       if (IsText(node)) {
-        node.textContent = ImplementTextReferences(
-          node.textContent?.trim() ?? null,
-          props
-        );
+        node.textContent = ImplementTextReferences(node.textContent, props);
         continue;
       }
 

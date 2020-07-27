@@ -10,7 +10,7 @@ This tool is not a replacement for the more advanced frameworks (React, VueJS, A
 
 It should be as simple as running `npm install @paulpopat/sote`
 
-The command `sote` will run the program with default settings. By default, the app will look for pages in the `./src/pages` directory. It will look for a `.tpe` file and a `.js` file for each page. The `.js` file should have an exported function for each support HTTP method (all lower case). These functions should be async and return an object with the schema `{ status: number, headers?: { [key: string]: string } }, data: any}`. The `.tpe` file should follow the format described below. If the `.js` file is not present, a simple get method will be generated and no data will be provided to the `.tpe` file.
+The command `sote` will run the program with default settings. By default, the app will look for pages in the `./src/pages` directory. It will look for a `.tpe` file and a `.js` file for each page. The `.js` file should have an exported function for each support HTTP method (all lower case). These functions should be async and return an object with the schema `{ status: number, headers?: { [key: string]: string } }, data: any}`. The `.tpe` file should follow the format described below. If the `.js` file is not present, a simple get method will be generated and the query data will be provided to the `.tpe` file (this may require you to delete the `.sote` directory if you are upgrading).
 
 Components will be taken from `./src/components`. The components are then given a name by taking the path from the components route, in lower case, and with slashes swapped for spaces. E.G. `./src/components/my/test.tpe` would be called as `<my-test></my-test>`.
 
@@ -152,10 +152,17 @@ You can force whitespace by using string expressions.
 <p> Hello world </p>
 ```
 
+## Components
+
+Components are simple TPE files. These files also have props passed to them but the props are generated from the attributes that the element is declared with rather than the response of the server.
+
+You can also include a `.scss` file with the same name in the same directory to have it included as component CSS. Component CSS will be hashed to only affect the component so all selectors MUST end on an element that is within the component.
+
 # Expressions
 
 Any variable accessors can be TypeScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.
 
 # Maybe to come
 
-- Component level Sass
+- More unit tests for production readiness. Requires some refactoring as external dependencies are too baked into the code.
+- Ahead compiling in components to allow for pre generation of page specific css files.

@@ -1,6 +1,5 @@
 import { Options } from "./utils/options-parser";
 import fs from "fs-extra";
-import { GetAllComponent } from "./component";
 import { ReadDirectory } from "./utils/file-system";
 import { spawn } from "child_process";
 import path from "path";
@@ -8,11 +7,11 @@ import { JSDOM } from "jsdom";
 import { CreateElementsFromHTML } from "./utils/html";
 import browserify from "browserify";
 import factor from "factor-bundle";
-import sass from "node-sass";
 import { Routes } from "./app/routes";
 import { IsObject, IsString, IsType } from "@paulpopat/safe-type";
 import Uglify from "uglify-js";
-import UglifyCss from "uglifycss";
+import { CompileComponents } from "./app/components-compiler";
+import { CompileSass } from "./app/sass-compiler";
 
 const isWin = process.platform === "win32";
 
@@ -56,7 +55,9 @@ async function CompileTypescript() {
 
     p.on("exit", (c) => {
       if (c !== 0) {
-        console.log("TS compile failed. See output below. Make sure that you have TypeScript installed locally if this SOTE is installed globally.");
+        console.log(
+          "TS compile failed. See output below. Make sure that you have TypeScript installed locally if this SOTE is installed globally."
+        );
         console.log(output.join("\n"));
         rej(c);
       } else {
@@ -130,35 +131,14 @@ async function GetTypeData(
   return dom.serialize();
 }
 
-async function CompileSass(index_path: string, quick: boolean) {
-  const css = await new Promise<string>((res, rej) => {
-    sass.render({ file: index_path }, (err, r) => {
-      if (err) {
-        rej(err);
-      } else {
-        res(r.css.toString("utf-8"));
-      }
-    });
-  });
-
-  if (quick) {
-    await fs.writeFile(Routes.sass, css);
-  } else {
-    await fs.writeFile(
-      Routes.sass,
-      UglifyCss.processString(css, { uglyComments: true })
-    );
-  }
-}
-
 async function EnsureJsPath(jspath: string) {
   if (!(await fs.pathExists(jspath))) {
     await fs.writeFile(
       jspath,
       `module.exports = {
-        get: async () => ({
+        get: async (query) => ({
           status: 200,
-          data: {},
+          data: query,
         })
       };`
     );
@@ -179,13 +159,25 @@ function GetPathUrl(page: string, options: Options) {
 }
 
 export async function Compile(options: Options, quick: boolean) {
-  const components = await GetAllComponent(options.components);
-  await fs.outputJson(Routes.components, components);
+  const components = await CompileComponents(options.components, quick);
+  await fs.outputJson(
+    Routes.components,
+    Object.keys(components).reduce(
+      (c, n) => ({ ...c, [n]: components[n].tpe }),
+      {}
+    )
+  );
   const pages_dir = await ReadDirectory(options.pages);
   await CompileTypescript();
   await CompilePages(quick);
   if (options.sass) {
-    await CompileSass(options.sass, quick);
+    await fs.writeFile(
+      Routes.sass,
+      Object.keys(components).reduce(
+        (c, n) => c + components[n].css,
+        await CompileSass(options.sass, quick)
+      )
+    );
   }
 
   let pages_json: PageJson[] = [];
