@@ -16,3 +16,25 @@ it("excludes components", () => {
     `<div data-specifier="test-specifier">Hello <test-c>Test</test-c> world</div>`
   );
 });
+
+it("excludes for loops", () => {
+  expect(
+    AddCssSpecifier(
+      `<div>Hello <for subject="test" key="other">Test</for> world</div>`,
+      "test-specifier"
+    )
+  ).toBe(
+    `<div data-specifier="test-specifier">Hello <for subject="test" key="other">Test</for> world</div>`
+  );
+});
+
+it("excludes if statements", () => {
+  expect(
+    AddCssSpecifier(
+      `<div>Hello <if check="test">Test</if> world</div>`,
+      "test-specifier"
+    )
+  ).toBe(
+    `<div data-specifier="test-specifier">Hello <if check="test">Test</if> world</div>`
+  );
+});
