@@ -51,6 +51,29 @@ function IsText(node: ChildNode): node is Text {
   return node.nodeType === node.TEXT_NODE;
 }
 
+function* GetExpressions(value: string) {
+  let current = "";
+  let depth = 0;
+  for (const char of value) {
+    if (char === "}") {
+      depth -= 1;
+
+      if (depth === 0) {
+        yield current;
+        current = "";
+      }
+    }
+
+    if (depth > 0) {
+      current += char;
+    }
+
+    if (char === "{") {
+      depth += 1;
+    }
+  }
+}
+
 export default function (components: { [key: string]: string }) {
   const ImplementTextReferences = (template: string | null, props: any) => {
     if (!template) {
@@ -58,15 +81,14 @@ export default function (components: { [key: string]: string }) {
     }
 
     let result = template.replace(/\s\s+/g, " ").trim();
-    for (const match of result.match(/{[^}]+}/gm) ?? []) {
-      const key = match.replace("{", "").replace("}", "");
-      const accessed = Evaluate(key, props);
+    for (const match of GetExpressions(result)) {
+      const accessed = Evaluate(match, props);
       Assert(
         IsUnion(IsString, IsNumber),
         accessed,
-        "Text references must be strings or numbers for (" + key + ")"
+        "Text references must be strings or numbers for (" + match + ")"
       );
-      result = result.replace(match, escape(accessed.toString()));
+      result = result.replace("{" + match + "}", escape(accessed.toString()));
     }
 
     return result;

@@ -122,10 +122,26 @@ it("Preserves whitespace from expressions", () => {
   expect(result.window.document.body).toContainHTML(`<div> Hello world </div>`);
 });
 
+it("Allows string interpolation in expressions", () => {
+  // Arrange
+  const Builder = CreateBuilder({});
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>{\` $\{props.text} \`}</div>`
+  );
+  const props = { text: "Hello world" };
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(`<div> Hello world </div>`);
+});
+
 it("Preserves whitespace from expressions between components", () => {
   // Arrange
   const Builder = CreateBuilder({
-    "test": "<span><children></children></span>"
+    test: "<span><children></children></span>",
   });
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
@@ -137,9 +153,10 @@ it("Preserves whitespace from expressions between components", () => {
   const result = new JSDOM(Builder(page, props));
 
   // Assert
-  expect(result.window.document.body).toContainHTML(`<div>Hello <span> test </span> world</div>`);
+  expect(result.window.document.body).toContainHTML(
+    `<div>Hello <span> test </span> world</div>`
+  );
 });
-
 
 it("Strips out comments", () => {
   // Arrange
@@ -156,8 +173,6 @@ it("Strips out comments", () => {
   // Assert
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
 });
-
-
 
 it("Does not error if there is a comment with an invalid expression", () => {
   // Arrange
