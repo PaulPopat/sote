@@ -6,9 +6,8 @@
   "scripts": {
     "build": "npm run test && tsc -p ./main.tsconfig.json",
     "start": "node .",
-    "test-build": "node . build",
-    "test-start": "node . start",
-    "test": "jest"
+    "test": "jest",
+    "publish": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
