@@ -176,11 +176,9 @@ export default function (components: { [key: string]: string }) {
   };
 
   const BuildTemplate = (template: string, props: any, children: string) => {
-    const dom = new JSDOM(
-      `<!DOCTYPE html><html><head></head><body id="body-content">${template}</body></html>`
-    );
+    const dom = new JSDOM(template);
     const document = dom.window.document;
-    const body = document.getElementById("body-content");
+    const body = document.body;
     if (!body) {
       throw new Error();
     }
