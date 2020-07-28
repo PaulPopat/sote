@@ -107,7 +107,6 @@ export default function (components: { [key: string]: string }) {
       }
 
       if (IsComment(node)) {
-        node.remove();
         continue;
       }
 

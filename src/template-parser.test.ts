@@ -158,7 +158,7 @@ it("Preserves whitespace from expressions between components", () => {
   );
 });
 
-it("Strips out comments", () => {
+it("Preservers comments comments", () => {
   // Arrange
   const Builder = CreateBuilder({});
   const page = layout.replace(
@@ -171,7 +171,7 @@ it("Strips out comments", () => {
   const result = new JSDOM(Builder(page, props));
 
   // Assert
-  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
+  expect(result.window.document.body).toContainHTML(`<div>Hello<!--this is a comment-->world</div>`);
 });
 
 it("Does not error if there is a comment with an invalid expression", () => {
@@ -187,7 +187,7 @@ it("Does not error if there is a comment with an invalid expression", () => {
   const result = new JSDOM(Builder(page, props));
 
   // Assert
-  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
+  expect(result.window.document.body.innerHTML).toBe(`<div>Hello<!--<div>{props.this.is.invalid}</div>-->world</div>`);
 });
 
 it("Resolves props", () => {
