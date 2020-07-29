@@ -1,6 +1,6 @@
 import "jest";
 import "@testing-library/jest-dom/extend-expect";
-import CreateBuilder from "./template-parser";
+import Builder from "./template-parser";
 import { JSDOM } from "jsdom";
 
 const layout = `
@@ -23,7 +23,6 @@ const layout = `
 
 it("Applies the layout", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>Hello world</div>`
@@ -55,7 +54,6 @@ it("Applies the layout", () => {
 
 it("Renders a basic page", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>Hello world</div>`
@@ -71,7 +69,6 @@ it("Renders a basic page", () => {
 
 it("Trims whitespace", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>
@@ -89,7 +86,6 @@ it("Trims whitespace", () => {
 
 it("Trims multiline whitespace", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>
@@ -108,7 +104,6 @@ it("Trims multiline whitespace", () => {
 
 it("Preserves whitespace from expressions", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>{" "}Hello world{" "}</div>`
@@ -124,7 +119,6 @@ it("Preserves whitespace from expressions", () => {
 
 it("Allows string interpolation in expressions", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>{\` $\{props.text} \`}</div>`
@@ -138,29 +132,8 @@ it("Allows string interpolation in expressions", () => {
   expect(result.window.document.body).toContainHTML(`<div> Hello world </div>`);
 });
 
-it("Preserves whitespace from expressions between components", () => {
-  // Arrange
-  const Builder = CreateBuilder({
-    test: "<span><children></children></span>",
-  });
-  const page = layout.replace(
-    "<BODY_CONTENT></BODY_CONTENT>",
-    `<div>Hello{" "}<test>{" "}test{" "}</test>{" "}world</div>`
-  );
-  const props = {};
-
-  // Act
-  const result = new JSDOM(Builder(page, props));
-
-  // Assert
-  expect(result.window.document.body).toContainHTML(
-    `<div>Hello <span> test </span> world</div>`
-  );
-});
-
 it("Preservers comments comments", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>Hello <!--this is a comment--> world</div>`
@@ -171,12 +144,13 @@ it("Preservers comments comments", () => {
   const result = new JSDOM(Builder(page, props));
 
   // Assert
-  expect(result.window.document.body).toContainHTML(`<div>Hello<!--this is a comment-->world</div>`);
+  expect(result.window.document.body).toContainHTML(
+    `<div>Hello<!--this is a comment-->world</div>`
+  );
 });
 
 it("Does not error if there is a comment with an invalid expression", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>Hello <!--<div>{props.this.is.invalid}</div>--> world</div>`
@@ -187,12 +161,13 @@ it("Does not error if there is a comment with an invalid expression", () => {
   const result = new JSDOM(Builder(page, props));
 
   // Assert
-  expect(result.window.document.body.innerHTML).toBe(`<div>Hello<!--<div>{props.this.is.invalid}</div>-->world</div>`);
+  expect(result.window.document.body.innerHTML).toBe(
+    `<div>Hello<!--<div>{props.this.is.invalid}</div>-->world</div>`
+  );
 });
 
 it("Resolves props", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>{props.text}</div>`
@@ -208,7 +183,6 @@ it("Resolves props", () => {
 
 it("Resolves props function", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>{props.text()}</div>`
@@ -224,7 +198,6 @@ it("Resolves props function", () => {
 
 it("Resolves JavaScript expression", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>{props.hello + props.world}</div>`
@@ -238,57 +211,8 @@ it("Resolves JavaScript expression", () => {
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
 });
 
-it("Renders components", () => {
-  // Arrange
-  const Builder = CreateBuilder({ test: `<div><CHILDREN></CHILDREN></div>` });
-  const page = layout.replace(
-    "<BODY_CONTENT></BODY_CONTENT>",
-    `<test>Hello world</test>`
-  );
-  const props = {};
-
-  // Act
-  const result = new JSDOM(Builder(page, props));
-
-  // Assert
-  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
-});
-
-it("Passes props to a component", () => {
-  // Arrange
-  const Builder = CreateBuilder({ test: `<div>{props.name}</div>` });
-  const page = layout.replace(
-    "<BODY_CONTENT></BODY_CONTENT>",
-    `<test name="Hello world"></test>`
-  );
-  const props = {};
-
-  // Act
-  const result = new JSDOM(Builder(page, props));
-
-  // Assert
-  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
-});
-
-it("Passes deep props to a component", () => {
-  // Arrange
-  const Builder = CreateBuilder({ test: `<div>{props.name.text}</div>` });
-  const page = layout.replace(
-    "<BODY_CONTENT></BODY_CONTENT>",
-    `<test name=":{ text: 'Hello world' }"></test>`
-  );
-  const props = {};
-
-  // Act
-  const result = new JSDOM(Builder(page, props));
-
-  // Assert
-  expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
-});
-
 it("Renders for loops", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div><for subject=":props.data" key="item"><div>{props.item}</div></for></div>`
@@ -306,7 +230,6 @@ it("Renders for loops", () => {
 
 it("Renders whitespace in for loops", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div><for subject=":props.data" key="item">{" "}<div>{props.item}</div></for></div>`
@@ -324,7 +247,6 @@ it("Renders whitespace in for loops", () => {
 
 it("Renders if true", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div><if check=":props.data"><div>Hello world</div></if></div>`
@@ -342,7 +264,6 @@ it("Renders if true", () => {
 
 it("Does not render if false", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div><if check=":props.data"><div>Hello world</div></if></div>`
@@ -358,7 +279,6 @@ it("Does not render if false", () => {
 
 it("Can access a deep object multiple times", () => {
   // Arrange
-  const Builder = CreateBuilder({});
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
     `<div>{props.deep.part1}</div><div>{props.deep.part2}</div>`
@@ -376,22 +296,18 @@ it("Can access a deep object multiple times", () => {
 
 it("Parses SVG data", () => {
   // Arrange
-  const Builder = CreateBuilder({
-    "svg-start": `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  viewBox=":props.box"
->
-  <CHILDREN></CHILDREN>
-</svg>`,
-    "svg-item": `<path d="M1 1"></path>`,
-  });
   const page = layout.replace(
     "<BODY_CONTENT></BODY_CONTENT>",
-    `<svg-start box="0 0 1000 1000"><svg-item></svg-item></svg-start>`
+    `
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      viewBox=":props.box"
+    >
+      <path d="M1 1"></path>
+    </svg>`
   );
-  const props = {};
+  const props = { box: "0 0 1000 1000" };
 
   // Act
   const result = new JSDOM(Builder(page, props));

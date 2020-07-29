@@ -10,8 +10,9 @@ import factor from "factor-bundle";
 import { Routes } from "./app/routes";
 import { IsObject, IsString, IsType } from "@paulpopat/safe-type";
 import Uglify from "uglify-js";
-import { CompileComponents } from "./app/components-compiler";
+import { CompileComponents, Components } from "./app/components-compiler";
 import { CompileSass } from "./app/sass-compiler";
+import { CompileTpe } from "./app/tpe-compiler";
 
 const isWin = process.platform === "win32";
 
@@ -93,10 +94,14 @@ async function CompilePages(isQuick: boolean) {
   }
 }
 
-async function CompileTpe(route: string, options: Options) {
+async function CompileTpeInt(
+  route: string,
+  components: NodeJS.Dict<string>,
+  options: Options
+) {
   const base = await fs.readFile(route, "utf-8");
   const layout = await options.GetLayout();
-  const dom = new JSDOM(layout);
+  const dom = new JSDOM(CompileTpe(layout, base, components).template);
   if (options.sass) {
     const sass_e = dom.window.document.createElement("link");
     sass_e.rel = "stylesheet";
@@ -113,11 +118,12 @@ async function CompileTpe(route: string, options: Options) {
 
 async function GetTypeData(
   page: string,
+  components: NodeJS.Dict<string>,
   options: Options,
   url: string,
   has_bundle: boolean
 ) {
-  const dom = await CompileTpe(page, options);
+  const dom = await CompileTpeInt(page, components, options);
 
   if (has_bundle) {
     const bundle_e = dom.window.document.createElement("script");
@@ -160,12 +166,9 @@ function GetPathUrl(page: string, options: Options) {
 
 export async function Compile(options: Options, quick: boolean) {
   const components = await CompileComponents(options.components, quick);
-  await fs.outputJson(
-    Routes.components,
-    Object.keys(components).reduce(
-      (c, n) => ({ ...c, [n]: components[n].tpe }),
-      {}
-    )
+  const componentsDictionary = Object.keys(components).reduce(
+    (c, n) => ({ ...c, [n]: components[n].tpe }),
+    {} as NodeJS.Dict<string>
   );
   const pages_dir = await ReadDirectory(options.pages);
   await CompileTypescript();
@@ -193,6 +196,7 @@ export async function Compile(options: Options, quick: boolean) {
       {
         tpe_data: await GetTypeData(
           page,
+          componentsDictionary,
           options,
           url,
           await fs.pathExists(jspath.replace(".js", ".bundle.js"))
@@ -204,7 +208,11 @@ export async function Compile(options: Options, quick: boolean) {
     ];
   }
 
-  const error = await CompileTpe(options.error_page, options);
+  const error = await CompileTpeInt(
+    options.error_page,
+    componentsDictionary,
+    options
+  );
   await fs.outputFile(Routes.error, error.serialize(), "utf-8");
   await fs.outputJson(Routes.pages, pages_json);
 }

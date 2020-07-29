@@ -38,10 +38,6 @@ export async function StartApp(options: Options) {
   const pages = await fs.readJson(Routes.pages);
   Assert(IsArray(IsPageJson), pages);
 
-  const components = await fs.readJson(Routes.components);
-  Assert(IsDictionary(IsString), components);
-  const parser = TemplateParser(components);
-
   await ServeIfExists(Routes.common_js, "/js/common.bundle.js", app);
   await ServeIfExists(Routes.sass, "/css/index.css", app);
   if (options.staticroute) {
@@ -68,7 +64,7 @@ export async function StartApp(options: Options) {
           const query = { ...req.params, ...req.query };
           const result = await handler(query, req.headers);
           Assert(IsResponse, result, "Invalid JSON response");
-          const response = parser(
+          const response = TemplateParser(
             result.status > 399
               ? await fs.readFile(Routes.error, "utf-8")
               : page.tpe_data,
@@ -103,7 +99,7 @@ export async function StartApp(options: Options) {
           const body = { ...req.body };
           const result = await handler(query, body, req.headers);
           Assert(IsResponse, result, "Invalid JSON response");
-          const response = parser(
+          const response = TemplateParser(
             result.status > 399
               ? await fs.readFile(Routes.error, "utf-8")
               : page.tpe_data,
@@ -151,7 +147,7 @@ export async function StartApp(options: Options) {
   }
 
   app.get("*", async (req, res) => {
-    const response = parser(await fs.readFile(Routes.error, "utf-8"), {
+    const response = TemplateParser(await fs.readFile(Routes.error, "utf-8"), {
       error: "404",
     });
 

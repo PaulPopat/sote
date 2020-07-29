@@ -3,7 +3,6 @@ import path from "path";
 const compiled_js = "./.sote/js";
 
 export const Routes = {
-  components: "./.sote/components.json",
   compiled_js: "./.sote/js",
   pages: "./.sote/pages.json",
   sass: "./.sote/rendered-sass.css",
