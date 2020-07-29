@@ -19,6 +19,15 @@ it("Adds a component within a component", () => {
   ).toBe(layout.replace("<BODY_CONTENT></BODY_CONTENT>", `<p><span>Hello world</span></p>`));
 });
 
+it("Adds a component within a component with no children", () => {
+  expect(
+    CompileTpe(layout, `<app-footer></app-footer>`, {
+      "app-footer": `<b-grid-container>Hello world</b-grid-container>`,
+      "b-grid-container": `<div><children></children></div>`
+    }).template
+  ).toBe(layout.replace("<BODY_CONTENT></BODY_CONTENT>", `<div>Hello world</div>`));
+});
+
 it("Adds a component within an element", () => {
   expect(
     CompileTpe(layout, `<p><other>Hello world</other></p>`, {

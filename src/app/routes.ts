@@ -4,6 +4,7 @@ const compiled_js = "./.sote/js";
 
 export const Routes = {
   compiled_js: "./.sote/js",
+  compiled_css: "./.sote/css",
   pages: "./.sote/pages.json",
   sass: "./.sote/rendered-sass.css",
   error: "./.sote/_error.tpe",

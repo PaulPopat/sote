@@ -50,6 +50,11 @@ export async function StartApp(options: Options) {
       `/js${page.url === "/" ? "" : page.url}`,
       app
     );
+    await ServeIfExists(
+      page.css_path,
+      `/css/pages${page.url === "/" ? "" : page.url}`,
+      app
+    );
     const imported = require(path.resolve(page.server_js_path));
 
     const HandleQueryType = (

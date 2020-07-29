@@ -1,9 +1,9 @@
 import { JSDOM } from "jsdom";
 import {
   CreateElementsFromHTML,
-  AllNodes,
   IsElement,
   ChildNodesToArray,
+  IsValidTag,
 } from "../utils/html";
 import { Apply } from "./component-applier";
 
@@ -40,11 +40,11 @@ function AddChildren(component: string, children: NodeListOf<ChildNode>) {
 }
 
 function Pass(
-  element: Element,
+  nodes: ChildNode[],
   components: NodeJS.Dict<string>,
   components_used: string[]
 ) {
-  for (const node of ChildNodesToArray(element.childNodes)) {
+  for (const node of nodes) {
     if (!IsElement(node)) {
       continue;
     }
@@ -52,7 +52,7 @@ function Pass(
     const tag = node.tagName.toLowerCase();
     const component = components[tag];
     if (!component) {
-      Pass(node, components, components_used);
+      Pass(ChildNodesToArray(node.childNodes), components, components_used);
       continue;
     }
 
@@ -60,12 +60,8 @@ function Pass(
     const input = ChildNodesToArray(
       AddChildren(Apply(component, GetPropsStrings(node)), node.childNodes)
     );
-    for (const i of input) {
-      if (IsElement(i)) {
-        Pass(i, components, components_used);
-      }
-    }
     node.replaceWith(...input);
+    Pass(input, components, components_used);
   }
 }
 
@@ -80,7 +76,11 @@ export function CompileTpe(
     .querySelector("BODY_CONTENT")
     ?.replaceWith(...CreateElementsFromHTML(dom.window.document, tpe));
 
-  Pass(dom.window.document.body, components, components_used);
+  Pass(
+    ChildNodesToArray(dom.window.document.body.childNodes),
+    components,
+    components_used
+  );
 
   return { template: dom.serialize(), components: components_used };
 }

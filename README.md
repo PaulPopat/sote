@@ -26,7 +26,6 @@ The app can be customised with various command line parameters.
 --layout="The path to the layout .html file"
 --port="The port that the app will listen on (default is 3000)"
 --static="The path to any static files. These files will then be accessible under the _ subdirectory. E.G. /_/image.png"
---error_page="The path to the error page .tpe file"
 --sass="The path to the index sass file, if available. If this option is set then the rendered css will added into the pages automatically"
 ```
 
@@ -45,8 +44,7 @@ Options can also be loaded from a config JSON file. The app will look for `./tpe
   "layout": "./test-data/layout.html",
   "sass": "./test-data/styles/index.scss",
   "static": "./test-data/public",
-  "port": "3000",
-  "error_page": "./test-data/error.tpe"
+  "port": "3000"
 }
 ```
 
@@ -79,6 +77,10 @@ export async function post(query: unknown, body: unknown, headers: NodeJS.Dict<s
 # Page TypeScript files
 
 If you want to add any JavaScript to a page you can include a file alongside the `.tpe` file. This file should be alongside the `.tpe` file with the same name and the extension `.page.ts`. This will then be compiled alongside any other page files and have the common JavaScript placed into a bundle file. The page file and the bundle file will both be included in the page automatically.
+
+# Page Scss Files
+
+If you want to add any Sass to a page you can include a file alongside the `.tpe` file. This file should be alongside the `.tpe` file with the same name and the extension `.scss`. This will then be compiled alongside any other page files and have the common CSS placed into a bundle file. The page file and the bundle file will both be included in the page automatically
 
 # TPE files
 
@@ -165,4 +167,3 @@ Any variable accessors can be TypeScript expressions. These expressions are prov
 # Maybe to come
 
 - More unit tests for production readiness. Requires some refactoring as external dependencies are too baked into the code.
-- Ahead compiling in components to allow for pre generation of page specific css files.
