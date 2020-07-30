@@ -5,6 +5,7 @@ import {
   IsString,
   IsUnion,
   IsArray,
+  IsBoolean,
 } from "@paulpopat/safe-type";
 import { Assert, ArrayIfNotArray, PromiseType } from "./types";
 import path from "path";
@@ -16,8 +17,8 @@ const IsOptions = IsObject({
   layout: Optional(IsString),
   port: Optional(IsString),
   static: Optional(IsString),
-  error_page: Optional(IsString),
   sass: Optional(IsString),
+  css_in_style_tag: Optional(IsBoolean),
 });
 
 function ParseQueryString(): { [key: string]: string } {
@@ -52,9 +53,6 @@ export async function GetOptions() {
   const components = ArrayIfNotArray(
     options.components ?? "./src/components"
   ).map(path.normalize);
-  const error_page = path.normalize(
-    options.error_page ?? path.join(pages, "_error.tpe")
-  );
   const layout = path.normalize(options.layout ?? "./src/layout.html");
   const sass = options.sass && path.normalize(options.sass);
   const staticroute = options.static && path.normalize(options.static);
@@ -69,11 +67,11 @@ export async function GetOptions() {
     GetLayout,
     sass,
     staticroute,
-    error_page,
     components,
     pages,
     port: options.port,
     mode: mode,
+    css_in_tag: options.css_in_style_tag ?? false
   };
 }
 

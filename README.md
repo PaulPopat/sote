@@ -16,7 +16,7 @@ Components will be taken from `./src/components`. The components are then given 
 
 The layout will accessed as `./src/layout.html`. This file should contain a tag called `BODY_CONTENT`, which will be replaced with the body content for the page being loaded.
 
-The error page will be listed as `{pages_dir}/_error.tpe`. This will be loaded instead of the page file if the page function returns a status above 399. The error page will have access to the data returned from the function, so try to provide good error information for the user. In the event of a 404, this page will be rendered with the data `{ error: "404" }`.
+The error page will be listed as `{pages_dir}/_error.tpe`. This will be loaded instead of the page file if the page function returns a status above 399. Will have the data from the function or an `Error` object handed to it as props. The error page can have a `.js`. This file must have a get handler and will be passed the data that would go to the page as props. The error page can also have a `.page.js` file and a `.scss` file for custom styling.
 
 The app can be customised with various command line parameters.
 
@@ -35,7 +35,7 @@ For production you need to run the build with `sote build [args]` and then run `
 
 ## Config file
 
-Options can also be loaded from a config JSON file. The app will look for `./tpe-config.json` at the root of the project. This file contains the same parameters as the command line but with no `--` at the begining. An array of component directories is supported, for if you want to import component libraries.
+Options can also be loaded from a config JSON file. The app will look for `./tpe-config.json` at the root of the project. This file contains the same parameters as the command line but with no `--` at the begining. An array of component directories is supported, for if you want to import component libraries. There is an option for "css_in_style_tag" in the config file that will include all of the styles in a tag in the head. This is useful if you are using this tool as an email template engine.
 
 ```JSON
 {
@@ -44,7 +44,8 @@ Options can also be loaded from a config JSON file. The app will look for `./tpe
   "layout": "./test-data/layout.html",
   "sass": "./test-data/styles/index.scss",
   "static": "./test-data/public",
-  "port": "3000"
+  "port": "3000",
+  "css_in_style_tag": true
 }
 ```
 

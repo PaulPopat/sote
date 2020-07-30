@@ -44,6 +44,39 @@ export async function StartApp(options: Options) {
     app.use("/_", express.static(options.staticroute));
   }
 
+  const error_page = pages.find((p) => p.url === "/_error");
+  if (!error_page) {
+    throw new Error("No error page");
+  }
+
+  const error_imported = require(path.resolve(error_page.server_js_path));
+  await ServeIfExists(
+    error_page.page_js_path,
+    `/js${error_page.url === "/" ? "" : error_page.url}`,
+    app
+  );
+  await ServeIfExists(
+    error_page.css_path,
+    `/css/pages${error_page.url === "/" ? "" : error_page.url}`,
+    app
+  );
+  const render_error = async (data: any, req: Request, res: Response) => {
+    try {
+      const result = await error_imported.get(data);
+      Assert(IsResponse, result, "Invalid JSON response");
+      const response = TemplateParser(error_page.tpe_data, result.data);
+
+      for (const key in result.headers) {
+        res.setHeader(key, result.headers[key]);
+      }
+      res.setHeader("Content-Type", "text/html; charset=UTF-8");
+      res.status(result.status).send(response);
+    } catch (e) {
+      console.error(e);
+      res.status(500).send("Internal server error");
+    }
+  };
+
   for (const page of pages) {
     await ServeIfExists(
       page.page_js_path,
@@ -69,12 +102,11 @@ export async function StartApp(options: Options) {
           const query = { ...req.params, ...req.query };
           const result = await handler(query, req.headers);
           Assert(IsResponse, result, "Invalid JSON response");
-          const response = TemplateParser(
-            result.status > 399
-              ? await fs.readFile(Routes.error, "utf-8")
-              : page.tpe_data,
-            result.data
-          );
+          if (result.status > 399) {
+            throw result.data;
+          }
+
+          const response = TemplateParser(page.tpe_data, result.data);
 
           for (const key in result.headers) {
             res.setHeader(key, result.headers[key]);
@@ -82,8 +114,7 @@ export async function StartApp(options: Options) {
           res.setHeader("Content-Type", "text/html; charset=UTF-8");
           res.status(result.status).send(response);
         } catch (e) {
-          console.error(e);
-          res.status(500).send("Internal server error");
+          await render_error(e, req, res);
         }
 
         console.log(`Finished handling ${req.method} for ${page.url}`);
@@ -104,12 +135,11 @@ export async function StartApp(options: Options) {
           const body = { ...req.body };
           const result = await handler(query, body, req.headers);
           Assert(IsResponse, result, "Invalid JSON response");
-          const response = TemplateParser(
-            result.status > 399
-              ? await fs.readFile(Routes.error, "utf-8")
-              : page.tpe_data,
-            result.data
-          );
+          if (result.status > 399) {
+            throw result.data;
+          }
+
+          const response = TemplateParser(page.tpe_data, result.data);
 
           for (const key in result.headers) {
             res.setHeader(key, result.headers[key]);
@@ -117,8 +147,7 @@ export async function StartApp(options: Options) {
           res.setHeader("Content-Type", "text/html; charset=UTF-8");
           res.status(result.status).send(response);
         } catch (e) {
-          console.error(e);
-          res.status(500).send("Internal server error");
+          await render_error(e, req, res);
         }
 
         console.log(`Finished handling ${req.method} for ${page.url}`);

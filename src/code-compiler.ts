@@ -154,7 +154,7 @@ export async function Compile(options: Options, quick: boolean) {
       dom.window.document.body.append(page_e);
     }
 
-    if (options.sass || components_used.length) {
+    if ((options.sass || components_used.length) && !options.css_in_tag) {
       const sass_e = dom.window.document.createElement("link");
       sass_e.rel = "stylesheet";
       sass_e.type = "text/css";
@@ -166,11 +166,23 @@ export async function Compile(options: Options, quick: boolean) {
       page_sass_e.type = "text/css";
       page_sass_e.href = `/css/pages${url === "/" ? "" : url}`;
       dom.window.document.head.append(page_sass_e);
+
+      return {
+        data: dom.serialize(),
+        css: await GetPageCss(options, components_used, page),
+      };
+    }
+
+    if (options.sass || components_used.length) {
+      const sass_e = dom.window.document.createElement("style");
+      sass_e.type = "text/css";
+      sass_e.textContent = await GetPageCss(options, components_used, page);
+      dom.window.document.head.append(sass_e);
     }
 
     return {
       data: dom.serialize(),
-      css: await GetPageCss(options, components_used, page),
+      css: "",
     };
   }
 
