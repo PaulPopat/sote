@@ -181,12 +181,7 @@ export async function StartApp(options: Options) {
   }
 
   app.get("*", async (req, res) => {
-    const response = TemplateParser(await fs.readFile(Routes.error, "utf-8"), {
-      error: "404",
-    });
-
-    res.setHeader("Content-Type", "text/html; charset=UTF-8");
-    res.status(404).send(response);
+    await render_error({ error: 404 }, req, res);
   });
 
   const port = parseInt(options.port ?? "3000");

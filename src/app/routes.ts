@@ -7,6 +7,5 @@ export const Routes = {
   compiled_css: "./.sote/css",
   pages: "./.sote/pages.json",
   sass: "./.sote/rendered-sass.css",
-  error: "./.sote/_error.tpe",
   common_js: path.join(compiled_js, "common.bundle.js"),
 };
