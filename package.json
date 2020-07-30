@@ -50,5 +50,6 @@
   },
   "bin": {
     "sote": "./bin/index.js"
-  }
+  },
+  "license": "ISC"
 }
