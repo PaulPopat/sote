@@ -35,7 +35,7 @@ For production you need to run the build with `sote build [args]` and then run `
 
 ## Config file
 
-Options can also be loaded from a config JSON file. The app will look for `./tpe-config.json` at the root of the project. This file contains the same parameters as the command line but with no `--` at the begining. An array of component directories is supported, for if you want to import component libraries. There is an option for "css_in_style_tag" in the config file that will include all of the styles in a tag in the head. This is useful if you are using this tool as an email template engine.
+Options can also be loaded from a config JSON file. The app will look for `./tpe-config.json` at the root of the project. This file contains the same parameters as the command line but with no `--` at the beginning. An array of component directories is supported, for if you want to import component libraries. There is an option for "css_in_style_tag" in the config file that will include all of the styles in a tag in the head. This is useful if you are using this tool as an email template engine.
 
 ```JSON
 {
@@ -51,7 +51,7 @@ Options can also be loaded from a config JSON file. The app will look for `./tpe
 
 # Url structure
 
-The Url structure will be generated as described as above. This is used in ExpressJs so using a colon at the start of a section in the path will turn it into a parameter. This parameter can accessed in the query parameter, supplied to the TypeScript files.
+The Url structure will be generated as described as above. Wrapping a file in square brackets will turn it into a parameter. This parameter can accessed in the query parameter, supplied to the TypeScript files.
 
 # TypeScript files
 

@@ -16,6 +16,7 @@ import {
 import { IsPageJson } from "./code-compiler";
 import { Options } from "./utils/options-parser";
 import TemplateParser from "./template-parser";
+import { RemoveUrlParameters, ParseUrl } from "./utils/url";
 
 const IsResponse = IsObject({
   status: IsNumber,
@@ -25,8 +26,8 @@ const IsResponse = IsObject({
 
 async function ServeIfExists(path: string, url: string, app: Express) {
   if (await fs.pathExists(path)) {
-    console.log("Serving " + url);
-    app.use(url, express.static(path));
+    console.log("Serving " + RemoveUrlParameters(url));
+    app.use(RemoveUrlParameters(url), express.static(path));
   }
 }
 
@@ -156,27 +157,27 @@ export async function StartApp(options: Options) {
 
     if (imported.get) {
       console.log("Setting up get at " + page.url);
-      app.get(page.url, HandleQueryType(imported.get));
+      app.get(ParseUrl(page.url), HandleQueryType(imported.get));
     }
 
     if (imported.delete) {
       console.log("Setting up delete at " + page.url);
-      app.delete(page.url, HandleQueryType(imported.delete));
+      app.delete(ParseUrl(page.url), HandleQueryType(imported.delete));
     }
 
     if (imported.patch) {
       console.log("Setting up patch at " + page.url);
-      app.patch(page.url, HandleBodyType(imported.patch));
+      app.patch(ParseUrl(page.url), HandleBodyType(imported.patch));
     }
 
     if (imported.post) {
       console.log("Setting up post at " + page.url);
-      app.post(page.url, HandleBodyType(imported.post));
+      app.post(ParseUrl(page.url), HandleBodyType(imported.post));
     }
 
     if (imported.put) {
       console.log("Setting up put at " + page.url);
-      app.put(page.url, HandleBodyType(imported.put));
+      app.put(ParseUrl(page.url), HandleBodyType(imported.put));
     }
   }
 

@@ -14,6 +14,7 @@ import { CompileComponents, Components } from "./app/components-compiler";
 import { CompileSass } from "./app/sass-compiler";
 import { CompileTpe } from "./app/tpe-compiler";
 import { ChunkCss } from "./app/chunk-css";
+import { RemoveUrlParameters } from "./utils/url";
 
 const isWin = process.platform === "win32";
 
@@ -150,7 +151,7 @@ export async function Compile(options: Options, quick: boolean) {
       bundle_e.src = "/js/common.bundle.js";
       dom.window.document.body.append(bundle_e);
       const page_e = dom.window.document.createElement("script");
-      page_e.src = `/js${url === "/" ? "" : url}`;
+      page_e.src = RemoveUrlParameters(`/js${url === "/" ? "" : url}`);
       dom.window.document.body.append(page_e);
     }
 
@@ -164,7 +165,7 @@ export async function Compile(options: Options, quick: boolean) {
       const page_sass_e = dom.window.document.createElement("link");
       page_sass_e.rel = "stylesheet";
       page_sass_e.type = "text/css";
-      page_sass_e.href = `/css/pages${url === "/" ? "" : url}`;
+      page_sass_e.href = RemoveUrlParameters(`/css/pages${url === "/" ? "" : url}`);
       dom.window.document.head.append(page_sass_e);
 
       return {
