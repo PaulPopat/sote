@@ -28,7 +28,7 @@ var proxy = URL.createObjectURL(
   )
 );
 
-var text = '${props.default.replace(/\n/gm, "\\n").replace(/'/gm, "\\'")}';
+var text = '${props.default.replace(/\r\n/gm, "\\n").replace(/\n/gm, "\\n").replace(/'/gm, "\\'")}';
 document.getElementById('${props.id + '-hidden-input'}').value = text;
 require(["vs/editor/editor.main"], function () {
   var editor = monaco.editor.create(document.getElementById("${props.id + '-monaco-editor'}"), {
