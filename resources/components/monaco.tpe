@@ -32,7 +32,7 @@ var listeners = [];
 
 require(["vs/editor/editor.main"], function () {
   var editor = monaco.editor.create(document.getElementById("${props.id + '-monaco-editor'}"), {
-    value: decodeHTML('${props.default.replace(/\n/gm, "\\n")}'),
+    value: decodeHTML('${props.default.replace(/\n/gm, "\\n").replace(/'/gm, "\\'")}'),
     language: "${props.language}",
     theme: "vs",
   });

@@ -170,6 +170,7 @@ Any variable accessors can be TypeScript expressions. These expressions are prov
 Common component use cases will be added to the available components for standard usage, built into the app. These are currently being developed. Current there is:
 
 - `<std-monaco id="input-name" height="500px" width="500px" language="html" default="<div>Hello world</div>"></std-monaco>`
+  - A implementation of the monaco-editor using a CDN to pull the monaco JavaScript
 
 # Maybe to come
 
