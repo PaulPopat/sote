@@ -3,7 +3,6 @@ import {
   CreateElementsFromHTML,
   IsElement,
   ChildNodesToArray,
-  IsValidTag,
 } from "../utils/html";
 import { Apply } from "./component-applier";
 

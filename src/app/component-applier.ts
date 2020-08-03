@@ -54,7 +54,7 @@ export function Apply(component: string, props: NodeJS.Dict<string>) {
       ReduceAttributes(node, props);
     }
 
-    if (IsText(node)) {
+    if (IsText(node) && node.parentElement?.tagName !== "script") {
       ReduceText(node, props);
     }
   }

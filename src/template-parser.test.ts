@@ -181,6 +181,52 @@ it("Resolves props", () => {
   expect(result.window.document.body).toContainHTML(`<div>Hello world</div>`);
 });
 
+it("Encodes HTML", () => {
+  // Arrange
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<div>{props.text}</div>`
+  );
+  const props = { text: "<div>Hello world</div>" };
+
+  // Assert
+  expect(Builder(page, props)).toContain(
+    `<div>&lt;div&gt;Hello world&lt;/div&gt;</div>`
+  );
+});
+
+it("Resolves empty string attributes", () => {
+  // Arrange
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<form action="" method="POST">{props.text}</form>`
+  );
+  const props = { text: "Hello world" };
+
+  // Act
+  const result = new JSDOM(Builder(page, props));
+
+  // Assert
+  expect(result.window.document.body).toContainHTML(
+    `<form action="" method="POST">Hello world</form>`
+  );
+});
+
+it("Does not error", () => {
+  // Arrange
+  const page = layout.replace(
+    "<BODY_CONTENT></BODY_CONTENT>",
+    `<form action="" method="POST">
+    <input type="hidden" name="text" id="content-text">
+    <button type="submit">Submit</button>
+</form>`
+  );
+  const props = {};
+
+  // Act / Assert
+  expect(() => new JSDOM(Builder(page, props))).not.toThrow();
+});
+
 it("Resolves props function", () => {
   // Arrange
   const page = layout.replace(

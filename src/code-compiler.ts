@@ -29,7 +29,16 @@ export const IsPageJson = IsObject({
 type PageJson = IsType<typeof IsPageJson>;
 
 export async function Compile(options: Options, quick: boolean) {
-  const components = await CompileComponents(options.components, quick);
+  const components = await CompileComponents(
+    [
+      {
+        prefix: "std",
+        path: path.resolve(__dirname, "..", "resources", "components"),
+      },
+      ...options.components,
+    ],
+    quick
+  );
   const componentsDictionary = Object.keys(components).reduce(
     (c, n) => ({ ...c, [n]: components[n].tpe }),
     {} as NodeJS.Dict<string>
@@ -165,7 +174,9 @@ export async function Compile(options: Options, quick: boolean) {
       const page_sass_e = dom.window.document.createElement("link");
       page_sass_e.rel = "stylesheet";
       page_sass_e.type = "text/css";
-      page_sass_e.href = RemoveUrlParameters(`/css/pages${url === "/" ? "" : url}`);
+      page_sass_e.href = RemoveUrlParameters(
+        `/css/pages${url === "/" ? "" : url}`
+      );
       dom.window.document.head.append(page_sass_e);
 
       return {

@@ -64,6 +64,19 @@ it("Applies component props", () => {
   );
 });
 
+it("Applies component props in text", () => {
+  expect(
+    CompileTpe(layout, `<paragraph class="test">Hello world</paragraph>`, {
+      paragraph: `<p>{props.class}<children></children></p>`,
+    }).template
+  ).toBe(
+    layout.replace(
+      "<BODY_CONTENT></BODY_CONTENT>",
+      `<p>{('test')}Hello world</p>`
+    )
+  );
+});
+
 it("Applies component props objects", () => {
   expect(
     CompileTpe(
@@ -77,6 +90,23 @@ it("Applies component props objects", () => {
     layout.replace(
       "<BODY_CONTENT></BODY_CONTENT>",
       `<p class=":(props.thing.other)">Hello world</p>`
+    )
+  );
+});
+
+it("Applies component props objects in text", () => {
+  expect(
+    CompileTpe(
+      layout,
+      `<paragraph class=":props.thing.other">Hello world</paragraph>`,
+      {
+        paragraph: `<p>{props.class}<children></children></p>`,
+      }
+    ).template
+  ).toBe(
+    layout.replace(
+      "<BODY_CONTENT></BODY_CONTENT>",
+      `<p>{(props.thing.other)}Hello world</p>`
     )
   );
 });

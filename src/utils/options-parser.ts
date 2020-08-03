@@ -6,13 +6,18 @@ import {
   IsUnion,
   IsArray,
   IsBoolean,
+  IsType,
 } from "@paulpopat/safe-type";
 import { Assert, ArrayIfNotArray, PromiseType } from "./types";
 import path from "path";
 import { CacheInProduction } from "./cache";
 
+const IsComponentsDir = IsArray(
+  IsUnion(IsString, IsObject({ prefix: IsString, path: IsString }))
+);
+
 const IsOptions = IsObject({
-  components: Optional(IsUnion(IsString, IsArray(IsString))),
+  components: Optional(IsUnion(IsString, IsComponentsDir)),
   pages: Optional(IsString),
   layout: Optional(IsString),
   port: Optional(IsString),
@@ -20,6 +25,8 @@ const IsOptions = IsObject({
   sass: Optional(IsString),
   css_in_style_tag: Optional(IsBoolean),
 });
+
+export type ComponentsDir = IsType<typeof IsComponentsDir>;
 
 function ParseQueryString(): { [key: string]: string } {
   const result: { [key: string]: string } = {};
@@ -52,7 +59,11 @@ export async function GetOptions() {
   const pages = path.normalize(options.pages ?? "./src/pages");
   const components = ArrayIfNotArray(
     options.components ?? "./src/components"
-  ).map(path.normalize);
+  ).map((c) =>
+    IsString(c)
+      ? path.normalize(c)
+      : { prefix: c.prefix, path: path.normalize(c.path) }
+  );
   const layout = path.normalize(options.layout ?? "./src/layout.html");
   const sass = options.sass && path.normalize(options.sass);
   const staticroute = options.static && path.normalize(options.static);
@@ -71,7 +82,7 @@ export async function GetOptions() {
     pages,
     port: options.port,
     mode: mode,
-    css_in_tag: options.css_in_style_tag ?? false
+    css_in_tag: options.css_in_style_tag ?? false,
   };
 }
 

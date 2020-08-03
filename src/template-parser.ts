@@ -59,7 +59,7 @@ const ImplementTextReferences = (template: string | null, props: any) => {
       accessed,
       "Text references must be strings or numbers for (" + match + ")"
     );
-    result = result.replace("{" + match + "}", escape(accessed.toString()));
+    result = result.replace("{" + match + "}", accessed.toString());
   }
 
   return result;
@@ -151,20 +151,6 @@ const ProcessCollection = (
   for (const action of onFinish) {
     action();
   }
-};
-
-const BuildTemplate = (template: string, props: any, children: string) => {
-  const dom = new JSDOM(template);
-  const document = dom.window.document;
-  const body = document.body;
-  if (!body) {
-    throw new Error();
-  }
-
-  ProcessCollection(body.childNodes, body, props);
-  const children_tag = document.querySelector("children");
-  children_tag?.replaceWith(...CreateElementsFromHTML(document, children));
-  return body.innerHTML ?? "";
 };
 
 export default (template: string, props: any) => {

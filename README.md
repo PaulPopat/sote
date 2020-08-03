@@ -35,11 +35,11 @@ For production you need to run the build with `sote build [args]` and then run `
 
 ## Config file
 
-Options can also be loaded from a config JSON file. The app will look for `./tpe-config.json` at the root of the project. This file contains the same parameters as the command line but with no `--` at the beginning. An array of component directories is supported, for if you want to import component libraries. There is an option for "css_in_style_tag" in the config file that will include all of the styles in a tag in the head. This is useful if you are using this tool as an email template engine.
+Options can also be loaded from a config JSON file. The app will look for `./tpe-config.json` at the root of the project. This file contains the same parameters as the command line but with no `--` at the beginning. An array of component directories is supported, for if you want to import component libraries. Components directories can also have a prefix, to easily avoid conflicts. There is an option for "css_in_style_tag" in the config file that will include all of the styles in a tag in the head. This is useful if you are using this tool as an email template engine.
 
 ```JSON
 {
-  "components": ["./test-data/components", "./test-data/other-components"],
+  "components": ["./test-data/components", { "prefix": "test", "path": "./test-data/other-components" }],
   "pages": "./test-data/pages",
   "layout": "./test-data/layout.html",
   "sass": "./test-data/styles/index.scss",
@@ -164,6 +164,12 @@ You can also include a `.scss` file with the same name in the same directory to 
 # Expressions
 
 Any variable accessors can be TypeScript expressions. These expressions are provided with the props and can access all standard libraries but will not be able to access anything else. It is worth noting that functions can be passed into the props.
+
+# Standard libraries
+
+Common component use cases will be added to the available components for standard usage, built into the app. These are currently being developed. Current there is:
+
+- `<std-monaco id="input-name" height="500px" width="500px" language="html" default="<div>Hello world</div>"></std-monaco>`
 
 # Maybe to come
 
