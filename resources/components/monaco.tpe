@@ -28,17 +28,18 @@ var proxy = URL.createObjectURL(
   )
 );
 
-var listeners = [];
-
+var text = '${props.default.replace(/\n/gm, "\\n").replace(/'/gm, "\\'")}';
+document.getElementById('${props.id + '-hidden-input'}').value = text;
 require(["vs/editor/editor.main"], function () {
   var editor = monaco.editor.create(document.getElementById("${props.id + '-monaco-editor'}"), {
-    value: decodeHTML('${props.default.replace(/\n/gm, "\\n").replace(/'/gm, "\\'")}'),
+    value: decodeHTML(text),
     language: "${props.language}",
     theme: "vs",
   });
 
   editor.onDidChangeModelContent(function () {
     var value = editor.getValue();
+    document.getElementById('${props.id + '-hidden-input'}').value = value;
   });
 });
 `}</script>
