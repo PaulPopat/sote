@@ -81,7 +81,9 @@ If you want to add any JavaScript to a page you can include a file alongside the
 
 # Page Scss Files
 
-If you want to add any Sass to a page you can include a file alongside the `.tpe` file. This file should be alongside the `.tpe` file with the same name and the extension `.scss`. This will then be compiled alongside any other page files and have the common CSS placed into a bundle file. The page file and the bundle file will both be included in the page automatically
+If you want to add any Sass to a page you can include a file alongside the `.tpe` file. This file should be alongside the `.tpe` file with the same name and the extension `.scss`. This will then be compiled alongside any other page files and have the common CSS placed into a bundle file. The page file and the bundle file will both be included in the page automatically.
+
+`.scss` files will also have vendor prefixes applied automatically.
 
 # TPE files
 

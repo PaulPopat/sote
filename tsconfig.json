@@ -2,10 +2,10 @@
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "rootDir": ".",
-    "outDir": "./.sote/js",
-    "lib": ["es2020", "DOM", "ES5", "ScriptHost"],
+    "outDir": "./lib",
+    "sourceMap": true,
+    "rootDir": "./src",
     "downlevelIteration": true
-  }
+  },
+  "exclude": ["./test-data/**/*"]
 }
