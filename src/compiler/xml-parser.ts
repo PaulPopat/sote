@@ -37,7 +37,7 @@ function Reduce(parsed: convert.Element): XmlNode {
   };
 }
 
-export function ParseXml(xml: string): Promise<XmlNode[]> {
+export function ParseXml(xml: string): XmlNode[] {
   const parsed = convert.xml2js(
     `<?xml version="1.0" encoding="utf-8"?><body>${xml}</body>`,
     { compact: false }

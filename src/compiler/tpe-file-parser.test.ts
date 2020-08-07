@@ -28,7 +28,7 @@ describe("ParseTpeFile", () => {
   it("Parses server javascript method", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><script area=\"server\" method=\"post\">console.log('hello world')</script>"
+        '<template><div/></template><script area="server" method="post">console.log(\'hello world\')</script>'
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -71,9 +71,17 @@ describe("ParseTpeFile", () => {
 
   it("Parses file css", () => {
     expect(
-      ParseTpeFile("<template><div/></template><style>div{display:block}</style>")
+      ParseTpeFile(
+        "<template><div/></template><style>div{display:block}</style>"
+      )
     ).toEqual({
-      xml_template: [{ tag: "div", attributes: {}, children: [] }],
+      xml_template: [
+        {
+          tag: "div",
+          attributes: { "data-specifier": "08da3a1771d2251c8fc150c3f1dfd6b6" },
+          children: [],
+        },
+      ],
       server_js: {},
       css: `div[data-specifier="08da3a1771d2251c8fc150c3f1dfd6b6"]{display:block;}`,
     });

@@ -8,6 +8,7 @@ import {
 } from "./xml-parser";
 import { CompileCss } from "./css-manipulator";
 import crypto from "crypto";
+import { ApplySpecifier } from "./tpe-manipulator";
 
 export type TpeFile = {
   server_js?: NodeJS.Dict<string>;
@@ -45,7 +46,10 @@ export function ParseTpeFile(tpe: string) {
       return undefined;
     }
 
-    const id_text = [...Object.keys(attributes).map(k => attributes[k]), tag].join(" ");
+    const id_text = [
+      ...Object.keys(attributes).map((k) => attributes[k]),
+      tag,
+    ].join(" ");
     if (elements.length !== 1) {
       throw new Error(`More than one ${id_text} element`);
     }
@@ -65,8 +69,13 @@ export function ParseTpeFile(tpe: string) {
 
   const server_js_e = find("script", { area: "server" }).filter(ValidText);
   const css = get_text_script("style", {});
+  const css_hash = css
+    ? crypto.createHash("md5").update(css).digest("hex")
+    : "";
   return {
-    xml_template: xml_template[0].children,
+    xml_template: css
+      ? ApplySpecifier(xml_template[0].children, css_hash)
+      : xml_template[0].children,
     server_js: server_js_e.reduce(
       (c, n) => ({
         ...c,
@@ -75,9 +84,7 @@ export function ParseTpeFile(tpe: string) {
       {} as NodeJS.Dict<string>
     ),
     client_js: get_text_script("script", { area: "client" }),
-    css: css
-      ? CompileCss(css, crypto.createHash("md5").update(css).digest("hex"))
-      : undefined,
+    css: css ? CompileCss(css, css_hash) : undefined,
     title: get_text_script("title", {}),
     description: get_text_script("description", {}),
   };
