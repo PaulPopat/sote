@@ -1,0 +1,366 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Bundles component css 1`] = `
+Object {
+  "css_bundle": "
+div[data-specifier=\\"3a003c8ed08e0f1e53bff9cac752c55e\\"]{display:block;}",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": ".test[data-specifier=\\"edf762dd4e455c036183858efa983eaf\\"]{display:block;}",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {
+              "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+            },
+            "children": Array [
+              Object {
+                "attributes": Object {
+                  "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                },
+                "children": Array [],
+                "tag": "div",
+              },
+            ],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Bundles component javascript 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "
+console.log(\\"Hello world\\");",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": ".test[data-specifier=\\"edf762dd4e455c036183858efa983eaf\\"]{display:block;}",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {},
+            "children": Array [
+              Object {
+                "attributes": Object {
+                  "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                },
+                "children": Array [],
+                "tag": "div",
+              },
+            ],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Bundles component javascript 2`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "undefinedconsole.log(\\"Hello world\\");",
+        "css": ".test[data-specifier=\\"edf762dd4e455c036183858efa983eaf\\"]{display:block;}",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {},
+            "children": Array [
+              Object {
+                "attributes": Object {
+                  "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                },
+                "children": Array [],
+                "tag": "div",
+              },
+            ],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": ".test[data-specifier=\\"edf762dd4e455c036183858efa983eaf\\"]{display:block;}",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {
+              "data-specifier": "edf762dd4e455c036183858efa983eaf",
+            },
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Compiles a basic page 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": "",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {},
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Compiles client javascript 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "console.log(\\"Hello world\\")",
+        "css": "",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {},
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Compiles method js for server 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": "",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+          "post": "console.log(\\"Hello world\\");
+  return {};",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {},
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Compiles page css 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": ".test[data-specifier=\\"edf762dd4e455c036183858efa983eaf\\"]{display:block;}",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {
+              "data-specifier": "edf762dd4e455c036183858efa983eaf",
+            },
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Compiles server get js 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": "",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "console.log(\\"Hello world\\");
+  return {};",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {},
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Does not bundle css if the component is not always used 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": ".test[data-specifier=\\"edf762dd4e455c036183858efa983eaf\\"]{display:block;}div[data-specifier=\\"3a003c8ed08e0f1e53bff9cac752c55e\\"]{display:block;}",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {
+              "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+            },
+            "children": Array [
+              Object {
+                "attributes": Object {
+                  "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                },
+                "children": Array [],
+                "tag": "div",
+              },
+            ],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+    Object {
+      "model": Object {
+        "client_js": "",
+        "css": ".test[data-specifier=\\"edf762dd4e455c036183858efa983eaf\\"]{display:block;}",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {
+              "data-specifier": "edf762dd4e455c036183858efa983eaf",
+            },
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
+
+exports[`Minifies client js for production 1`] = `
+Object {
+  "css_bundle": "",
+  "js_bundle": "",
+  "pages": Array [
+    Object {
+      "model": Object {
+        "client_js": "function thing(){console.log(\\"hello world\\")}",
+        "css": "",
+        "description": "A test description",
+        "server_js": Object {
+          "get": "return query",
+        },
+        "title": "A test page",
+        "xml_template": Array [
+          Object {
+            "attributes": Object {},
+            "children": Array [],
+            "tag": "div",
+          },
+        ],
+      },
+      "url": "/test",
+    },
+  ],
+}
+`;
