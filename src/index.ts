@@ -36,18 +36,22 @@ const command = (process.argv.find(
           ignored: ["node_modules**/*"],
         })
         .on("all", run);
+      break;
     }
     case "build": {
       console.log("Building a production version of the app.");
       const options = await GetOptions();
       await BuildApp(options, true);
+      break;
     }
     case "init": {
       await InitialiseApp();
+      break;
     }
     case "start": {
       const options = await GetOptions();
       await StartApp(options);
+      break;
     }
   }
 })().catch((err) => {

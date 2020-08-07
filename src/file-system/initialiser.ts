@@ -28,7 +28,7 @@ export async function InitialiseApp() {
   Hello world
 </template>
 <style>
-  // This is optional
+  /* This is optional */
 </style>
 <script area="client">
   // This is optional

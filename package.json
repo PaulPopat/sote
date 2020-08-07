@@ -5,7 +5,8 @@
   "main": "./bin/index.js",
   "scripts": {
     "build": "jest && babel src --out-dir lib --extensions \".ts\" --source-maps inline",
-    "test": "jest"
+    "test": "jest",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
