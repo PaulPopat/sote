@@ -17,7 +17,7 @@ describe("ParseTpeFile", () => {
   it("Parses server javascript", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><server-js>console.log('hello world')</server-js>"
+        "<template><div/></template><script area=\"server\">console.log('hello world')</script>"
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -25,10 +25,21 @@ describe("ParseTpeFile", () => {
     });
   });
 
+  it("Parses server javascript method", () => {
+    expect(
+      ParseTpeFile(
+        "<template><div/></template><script area=\"server\" method=\"post\">console.log('hello world')</script>"
+      )
+    ).toEqual({
+      xml_template: [{ tag: "div", attributes: {}, children: [] }],
+      server_js: { post: "console.log('hello world')" },
+    });
+  });
+
   it("Parses client javascript", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><client-js>console.log('hello world')</client-js>"
+        "<template><div/></template><script area=\"client\">console.log('hello world')</script>"
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -42,10 +53,10 @@ describe("ParseTpeFile", () => {
       ParseTpeFile(
         `
         <template><div/></template>
-        <client-js>console.log('hello world')</client-js>
-        <client-js>console.log('hello world')</client-js>`
+        <script area=\"client\">console.log('hello world')</script>
+        <script area=\"client\">console.log('hello world')</script>`
       )
-    ).toThrowError("More than one client-js element");
+    ).toThrowError("More than one client script element");
   });
 
   it("Throws the client javascript is invalid", () => {
@@ -53,20 +64,18 @@ describe("ParseTpeFile", () => {
       ParseTpeFile(
         `
         <template><div/></template>
-        <client-js><div>hello world</div></client-js>`
+        <script area="client"><div>hello world</div></script>`
       )
-    ).toThrowError("client-js is not a valid script");
+    ).toThrowError("client script is not a valid script");
   });
 
   it("Parses file css", () => {
     expect(
-      ParseTpeFile(
-        "<template><div/></template><css>console.log('hello world')</css>"
-      )
+      ParseTpeFile("<template><div/></template><style>div{display:block}</style>")
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
       server_js: {},
-      css: "console.log('hello world')",
+      css: `div[data-specifier="08da3a1771d2251c8fc150c3f1dfd6b6"]{display:block;}`,
     });
   });
 
@@ -75,10 +84,10 @@ describe("ParseTpeFile", () => {
       ParseTpeFile(
         `
         <template><div/></template>
-        <css>console.log('hello world')</css>
-        <css>console.log('hello world')</css>`
+        <style>console.log('hello world')</style>
+        <style>console.log('hello world')</style>`
       )
-    ).toThrowError("More than one css element");
+    ).toThrowError("More than one style element");
   });
 
   it("Throws the css is invalid", () => {
@@ -86,9 +95,9 @@ describe("ParseTpeFile", () => {
       ParseTpeFile(
         `
         <template><div/></template>
-        <css><div>hello world</div></css>`
+        <style><div>hello world</div></style>`
       )
-    ).toThrowError("css is not a valid script");
+    ).toThrowError("style is not a valid script");
   });
 
   it("Parses page title", () => {
@@ -122,5 +131,38 @@ describe("ParseTpeFile", () => {
         <title><div>hello world</div></title>`
       )
     ).toThrowError("title is not a valid script");
+  });
+
+  it("Parses page description", () => {
+    expect(
+      ParseTpeFile(
+        "<template><div/></template><description>console.log('hello world')</description>"
+      )
+    ).toEqual({
+      xml_template: [{ tag: "div", attributes: {}, children: [] }],
+      server_js: {},
+      description: "console.log('hello world')",
+    });
+  });
+
+  it("Throws if there is more than one page title", () => {
+    expect(() =>
+      ParseTpeFile(
+        `
+        <template><div/></template>
+        <description>console.log('hello world')</description>
+        <description>console.log('hello world')</description>`
+      )
+    ).toThrowError("More than one description element");
+  });
+
+  it("Throws the description is invalid", () => {
+    expect(() =>
+      ParseTpeFile(
+        `
+        <template><div/></template>
+        <description><div>hello world</div></description>`
+      )
+    ).toThrowError("description is not a valid script");
   });
 });

@@ -97,6 +97,23 @@ describe("ParseXml", () => {
       },
     ]);
   });
+
+  it("Parses multiple root elements with children and the same tag with attributes", () => {
+    expect(
+      ParseXml("<div class='test1'>test1</div><div class='test2'>test2</div>")
+    ).toEqual([
+      {
+        tag: "div",
+        attributes: { class: "test1" },
+        children: [{ text: "test1" }],
+      },
+      {
+        tag: "div",
+        attributes: { class: "test2" },
+        children: [{ text: "test2" }],
+      },
+    ]);
+  });
 });
 
 describe("ToXml", () => {

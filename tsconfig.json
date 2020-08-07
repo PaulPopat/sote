@@ -5,7 +5,8 @@
     "outDir": "./lib",
     "sourceMap": true,
     "rootDir": "./src",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "lib": ["es2019"]
   },
   "exclude": ["./test-data/**/*"]
 }
