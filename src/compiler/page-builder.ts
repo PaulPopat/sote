@@ -88,7 +88,10 @@ export function CompileApp(
             css_bundle += "\n" + component.css;
           }
 
-          if (component.client_js?.trim() && component.client_js.trim() !== "undefined") {
+          if (
+            component.client_js?.trim() &&
+            component.client_js.trim() !== "undefined"
+          ) {
             js_bundle += "\n" + component.client_js;
           }
         } else {
@@ -136,6 +139,8 @@ export function CompileApp(
               : page.model.css.trim() === "undefined"
               ? ""
               : page.model.css,
+          title: page.model.title ?? "",
+          description: page.model.description ?? "",
         },
       };
     });
