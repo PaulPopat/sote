@@ -1,8 +1,8 @@
 import { ParseXml, ToXml } from "./xml-parser";
 
 describe("ParseXml", () => {
-  it("Parses a simple tag", () => {
-    expect(ParseXml("<div/>")).toEqual([
+  test("Parses a simple tag", async () => {
+    expect(await ParseXml("<div/>")).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -11,8 +11,8 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses attributes", () => {
-    expect(ParseXml("<div class='test'/>")).toEqual([
+  test("Parses attributes", async () => {
+    expect(await ParseXml("<div class='test'/>")).toEqual([
       {
         tag: "div",
         attributes: { class: "test" },
@@ -21,8 +21,8 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses text", () => {
-    expect(ParseXml("<div>test text</div>")).toEqual([
+  test("Parses text", async () => {
+    expect(await ParseXml("<div>test text</div>")).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -31,8 +31,8 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses child elements", () => {
-    expect(ParseXml("<div><span>test text</span></div>")).toEqual([
+  test("Parses child elements", async () => {
+    expect(await ParseXml("<div><span>test text</span></div>")).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -43,8 +43,8 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses attributes on child elements", () => {
-    expect(ParseXml('<div><span test="other" /></div>')).toEqual([
+  test("Parses attributes on child elements", async () => {
+    expect(await ParseXml('<div><span test="other" /></div>')).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -55,8 +55,10 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses child text and elements", () => {
-    expect(ParseXml("<div>test test <span>test text</span></div>")).toEqual([
+  test("Parses child text and elements", async () => {
+    expect(
+      await ParseXml("<div>test test <span>test text</span></div>")
+    ).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -68,8 +70,24 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses multiple root elements", () => {
-    expect(ParseXml("<div/><span/>")).toEqual([
+  test("Parses child elements with text on either side", async () => {
+    expect(
+      await ParseXml("<div>test test <span>test text</span> test test</div>")
+    ).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [
+          { text: "test test" },
+          { tag: "span", attributes: {}, children: [{ text: "test text" }] },
+          { text: "test test" },
+        ],
+      },
+    ]);
+  });
+
+  test("Parses multiple root elements", async () => {
+    expect(await ParseXml("<div/><span/>")).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -83,8 +101,8 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses multiple root elements with children and the same tag", () => {
-    expect(ParseXml("<div>test1</div><div>test2</div>")).toEqual([
+  test("Parses multiple root elements with children and the same tag", async () => {
+    expect(await ParseXml("<div>test1</div><div>test2</div>")).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -98,9 +116,11 @@ describe("ParseXml", () => {
     ]);
   });
 
-  it("Parses multiple root elements with children and the same tag with attributes", () => {
+  test("Parses multiple root elements with children and the same tag with attributes", async () => {
     expect(
-      ParseXml("<div class='test1'>test1</div><div class='test2'>test2</div>")
+      await ParseXml(
+        "<div class='test1'>test1</div><div class='test2'>test2</div>"
+      )
     ).toEqual([
       {
         tag: "div",

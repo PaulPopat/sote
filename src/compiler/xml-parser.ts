@@ -1,7 +1,6 @@
-import parser from "fast-xml-parser";
+import convert from "xml-js";
 import xmlescape from "xml-escape";
-import { IsString, IsArray } from "@paulpopat/safe-type";
-import { TransformKeys } from "../utils/object";
+import { TransformKeys, TransformProperties } from "../utils/object";
 
 export type XmlElement = {
   tag: string;
@@ -23,52 +22,27 @@ export function IsElement(e: XmlNode): e is XmlElement {
   return "tag" in e;
 }
 
-function Reduce(parsed: any): XmlNode[] {
-  return Object.keys(parsed)
-    .flatMap((k) =>
-      IsArray(IsString)(parsed[k])
-        ? parsed[k].map((t: string) => ({
-            tag: k,
-            attributes: {},
-            children: [{ text: t }],
-          }))
-        : k === "attributes"
-        ? // Eeewww!!!
-          ((undefined as any) as XmlNode)
-        : k === "#text"
-        ? { text: parsed[k] }
-        : {
-            tag: k,
-            attributes: parsed[k].attributes
-              ? TransformKeys(
-                  parsed[k].attributes as NodeJS.Dict<string>,
-                  (k) => k.replace("@_", "")
-                )
-              : {},
-            children:
-              IsString(parsed[k]) && parsed[k]
-                ? [{ text: parsed[k] }]
-                : typeof parsed[k] === "object"
-                ? Reduce(parsed[k])
-                : [],
-          }
-    )
-    .filter((r) => r);
+function Reduce(parsed: convert.Element): XmlNode {
+  if (parsed.type === "text") {
+    return { text: parsed.text?.toString().trim() ?? "" };
+  }
+
+  return {
+    tag: parsed.name ?? "",
+    attributes: TransformProperties(
+      TransformKeys(parsed.attributes ?? {}, (k) => k.replace("@_", "")),
+      (a) => a.toString()
+    ),
+    children: parsed.elements?.map(Reduce) ?? [],
+  };
 }
 
-export function ParseXml(xml: string): XmlNode[] {
-  const parsed = parser.parse(xml, {
-    attrNodeName: "attributes",
-    textNodeName: "#text",
-    ignoreAttributes: false,
-    ignoreNameSpace: true,
-    parseNodeValue: true,
-    trimValues: true,
-    parseTrueNumberOnly: false,
-    arrayMode: false,
-  });
-  const json = JSON.stringify(parsed);
-  return Reduce(parsed);
+export function ParseXml(xml: string): Promise<XmlNode[]> {
+  const parsed = convert.xml2js(
+    `<?xml version="1.0" encoding="utf-8"?><body>${xml}</body>`,
+    { compact: false }
+  );
+  return parsed.elements[0]?.elements?.map(Reduce) ?? [];
 }
 
 function WriteNode(node: XmlNode): string {
