@@ -10,10 +10,17 @@ export function TransformKeys<T>(
 
 export function TransformProperties<TI, TR>(
   input: NodeJS.Dict<TI>,
-  transform: (key: TI) => TR
+  transform: (property: TI) => TR
 ) {
   return Object.keys(input).reduce(
     (c, n) => ({ ...c, [n]: transform(input[n] as any) }),
     {} as NodeJS.Dict<TR>
+  );
+}
+
+export function ToKeyValuePairing<T>(input: NodeJS.Dict<T>) {
+  return Object.keys(input).reduce(
+    (c, k) => [...c, [k, input[k] as any] as const],
+    [] as (readonly [string, T])[]
   );
 }
