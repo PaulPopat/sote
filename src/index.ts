@@ -16,43 +16,47 @@ const command = (process.argv.find(
 ) ?? "dev") as "dev" | "build" | "start" | "init";
 
 (async () => {
-  switch (command) {
-    case "dev": {
-      let running = false;
-      const run = Debounce(async () => {
+  if (command === "dev") {
+    let running = false;
+    let app: any;
+    const run = Debounce(async () => {
+      try {
         if (running) {
           return;
         }
 
         running = true;
+        app?.stop();
         console.log("Compiling app and running.");
         const options = await GetOptions();
+        console.log("Got options and starting the build.");
         await BuildApp(options, false);
+        console.log("Finished building the app. Starting it up.");
+        app = await StartApp(options);
         running = false;
-      }, 200);
+      } catch (e) {
+        console.log(
+          "Compile failed. See error below. This will have stopped the app and you will need to run the build again."
+        );
+        console.error(e);
+      }
+    }, 200);
 
-      chokidar
-        .watch(["./**/*.tpe", "./tpe-config.json"], {
-          ignored: ["node_modules**/*"],
-        })
-        .on("all", run);
-      break;
-    }
-    case "build": {
-      console.log("Building a production version of the app.");
-      const options = await GetOptions();
-      await BuildApp(options, true);
-      break;
-    }
-    case "init": {
-      await InitialiseApp();
-      break;
-    }
-    case "start": {
-      const options = await GetOptions();
-      await StartApp(options);
-      break;
-    }
+    chokidar
+      .watch(["./**/*.tpe", "./tpe-config.json"], {
+        ignored: ["node_modules/**/*", ".git/**/*", ".sote/**/*"],
+      })
+      .on("all", run);
+  } else if (command === "build") {
+    console.log("Building a production version of the app.");
+    const options = await GetOptions();
+    await BuildApp(options, true);
+  } else if (command === "init") {
+    await InitialiseApp();
+  } else if (command === "start") {
+    console.log("Running the production version of the app.");
+    const options = await GetOptions();
+    await StartApp(options);
   }
 })().catch((err) => {
   console.error(err);

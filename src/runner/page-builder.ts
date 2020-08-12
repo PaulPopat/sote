@@ -59,7 +59,7 @@ export function BuildPage(
         ]),
     `</head>`,
 
-    `<body>`,
+    `<body style="margin:0;padding:0;">`,
     ToXml(BuildTpe(page.model.xml_template, props)),
     `</body>`,
     `</html>`,

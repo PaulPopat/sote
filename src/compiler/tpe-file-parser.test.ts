@@ -59,16 +59,6 @@ describe("ParseTpeFile", () => {
     ).toThrowError("More than one client script element");
   });
 
-  it("Throws the client javascript is invalid", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
-        <template><div/></template>
-        <script area="client"><div>hello world</div></script>`
-      )
-    ).toThrowError("client script is not a valid script");
-  });
-
   it("Parses file css", () => {
     expect(
       ParseTpeFile(
@@ -92,20 +82,10 @@ describe("ParseTpeFile", () => {
       ParseTpeFile(
         `
         <template><div/></template>
-        <style>console.log('hello world')</style>
-        <style>console.log('hello world')</style>`
+        <style>div{display:block;}</style>
+        <style>div{display:block;}</style>`
       )
     ).toThrowError("More than one style element");
-  });
-
-  it("Throws the css is invalid", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
-        <template><div/></template>
-        <style><div>hello world</div></style>`
-      )
-    ).toThrowError("style is not a valid script");
   });
 
   it("Parses page title", () => {

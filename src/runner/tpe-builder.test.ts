@@ -16,3 +16,38 @@ it("Applies text props", () => {
     )
   ).toBe(`<div>hello world</div>`);
 });
+
+it("Applies for loops", () => {
+  expect(
+    ToXml(
+      BuildTpe(
+        ParseXml(
+          `<for subject=":props.test" key="key"><div>{props.key}</div></for>`
+        ),
+        { test: ["hello", "world"] }
+      )
+    )
+  ).toBe(`<div>hello</div><div>world</div>`);
+});
+
+it("Will not apply if statements", () => {
+  expect(
+    ToXml(
+      BuildTpe(
+        ParseXml(`<if check=":props.test"><div>Hello world</div></if>`),
+        { test: false }
+      )
+    )
+  ).toBe(``);
+});
+
+it("Will apply if statements", () => {
+  expect(
+    ToXml(
+      BuildTpe(
+        ParseXml(`<if check=":props.test"><div>Hello world</div></if>`),
+        { test: true }
+      )
+    )
+  ).toBe(`<div>Hello world</div>`);
+});

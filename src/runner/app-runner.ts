@@ -101,7 +101,7 @@ export async function StartApp(options: Options) {
       console.log(`Serving /css${RemoveUrlParameters(page.url)}.css`);
       app.get(
         RemoveUrlParameters(`/css${page.url}.css`),
-        ServeAsStatic(page.model.client_js, "text/css")
+        ServeAsStatic(page.model.css, "text/css")
       );
     }
 

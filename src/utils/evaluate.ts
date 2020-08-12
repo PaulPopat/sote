@@ -14,6 +14,6 @@ export function EvaluateAsync(
 ): Promise<any> {
   return Function(`"use strict"; 
   return async function (${argument.map((a) => a.name).join(", ")}) { 
-    return (${expression}); 
+    ${expression}
   }`)()(...argument.map((a) => a.value));
 }

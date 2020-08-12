@@ -62,7 +62,7 @@ export async function GetCompiledApp(): Promise<PagesModel> {
 }
 
 export async function WriteCompiledApp(app: PagesModel) {
-  await fs.writeJson("./.sote/app.json", app);
+  await fs.outputJson("./.sote/app.json", app);
 }
 
 const IsOptions = IsObject({

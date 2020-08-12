@@ -27,6 +27,8 @@ function TransformStatement(statement: string, props: NodeJS.Dict<string>) {
     let value = props[key];
     if (value?.startsWith(":")) {
       value = value.replace(":", "");
+    } else {
+      value = "'" + value + "'";
     }
 
     result = result.replace(

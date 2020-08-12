@@ -45,8 +45,7 @@
     "fs-extra": "^9.0.1",
     "uglify-js": "^3.10.1",
     "uglifycss": "0.0.29",
-    "xml-escape": "^1.1.0",
-    "xml-js": "^1.6.11"
+    "xml-escape": "^1.1.0"
   },
   "bin": {
     "sote": "./bin/index.js"

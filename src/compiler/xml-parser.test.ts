@@ -31,6 +31,34 @@ describe("ParseXml", () => {
     ]);
   });
 
+  test("Parses special characters in style tags", () => {
+    expect(ParseXml('<style><></>""=</style>')).toEqual([
+      {
+        tag: "style",
+        attributes: {},
+        children: [
+          {
+            text: '<></>""=',
+          },
+        ],
+      },
+    ]);
+  });
+
+  test("Parses special characters in script tags", () => {
+    expect(ParseXml('<script><></>""=</script>')).toEqual([
+      {
+        tag: "script",
+        attributes: {},
+        children: [
+          {
+            text: '<></>""=',
+          },
+        ],
+      },
+    ]);
+  });
+
   test("Parses child elements", () => {
     expect(ParseXml("<div><span>test text</span></div>")).toEqual([
       {
@@ -110,6 +138,27 @@ describe("ParseXml", () => {
         tag: "div",
         attributes: {},
         children: [{ text: "test2" }],
+      },
+    ]);
+  });
+
+  test("Parses multiple child elements with children and the same tag", () => {
+    expect(ParseXml("<div><script>test1</script><div>test2</div></div>")).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [
+          {
+            tag: "script",
+            attributes: {},
+            children: [{ text: "test1" }],
+          },
+          {
+            tag: "div",
+            attributes: {},
+            children: [{ text: "test2" }],
+          },
+        ],
       },
     ]);
   });

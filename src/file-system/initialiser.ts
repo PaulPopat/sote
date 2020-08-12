@@ -17,8 +17,12 @@ export async function InitialiseApp() {
   <h1><children></children></h1>
 </template>
 <style>
+  /* This is optional */
+</style>
+<script area="client">
   // This is optional
-</style>`,
+</script>
+`,
     "utf-8"
   );
 
@@ -38,7 +42,8 @@ export async function InitialiseApp() {
   return query;
 </script>
 <title>This is a test page</title>
-<description>This the description of a test page</description>`,
+<description>This the description of a test page</description>
+`,
     "utf-8"
   );
 
