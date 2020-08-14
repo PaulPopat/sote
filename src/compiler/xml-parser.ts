@@ -23,15 +23,25 @@ export function IsElement(e: XmlNode): e is XmlElement {
 
 function* SplitXml(xml: string) {
   let current = "";
-  let expressionDepth = 0;
+  let expression_depth = 0;
+  let whitespace_count = 0;
+  let in_script = false;
+
+  const is_script_start = (expression: string) =>
+    expression.match(/<\s*script/) || expression.match(/<\s*style/);
+
+  const is_script_end = (expression: string) =>
+    expression.match(/<\/\s*script/) || expression.match(/<\/\s*style/);
+
   for (const char of xml) {
     if (char === "{") {
-      expressionDepth += 1;
+      expression_depth += 1;
+      whitespace_count = 0;
     } else if (char === "}") {
-      expressionDepth -= 1;
+      expression_depth -= 1;
     }
 
-    if (char === "<" && !expressionDepth) {
+    if (char === "<" && !expression_depth) {
       if (current) {
         yield current;
       }
@@ -40,14 +50,31 @@ function* SplitXml(xml: string) {
       continue;
     }
 
-    if (char === ">" && !expressionDepth) {
+    if (char === ">" && !expression_depth) {
       current += char;
       if (current) {
+        if (in_script && is_script_end(current)) {
+          in_script = false;
+        } else if (!in_script && is_script_start(current)) {
+          in_script = true;
+        }
+
         yield current;
       }
 
       current = "";
       continue;
+    }
+
+    if (!char.trim() && !expression_depth && !in_script) {
+      whitespace_count += 1;
+      if (whitespace_count === 1) {
+        current += " ";
+      }
+
+      continue;
+    } else if (char.trim()) {
+      whitespace_count = 0;
     }
 
     current += char;

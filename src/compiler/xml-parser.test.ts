@@ -31,6 +31,39 @@ describe("ParseXml", () => {
     ]);
   });
 
+  test("Converts all whitespace into spaces", () => {
+    expect(ParseXml(`<div>test
+text</div>`)).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [{ text: "test text" }],
+      },
+    ]);
+  });
+
+  test("Strips out repeated whitespace", () => {
+    expect(ParseXml(`<div>test   text</div>`)).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [{ text: "test text" }],
+      },
+    ]);
+  });
+
+  test("Preserves whitespace in expressions", () => {
+    expect(ParseXml(`<div>{test
+ text}</div>`)).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [{ text: `{test
+ text}` }],
+      },
+    ]);
+  });
+
   test("Parses special characters in style tags", () => {
     expect(ParseXml('<style><></>""=</style>')).toEqual([
       {
