@@ -12,7 +12,7 @@ describe("ApplyComponents", () => {
         }
       )
     ).toEqual({
-      tpe: [{ tag: "div", attributes: {}, children: [] }],
+      tpe: [{ tag: "div", attributes: {}, children: [], props: [{}] }],
       components: ["test-component"],
     });
   });
@@ -38,7 +38,8 @@ describe("ApplyComponents", () => {
         {
           tag: "span",
           attributes: {},
-          children: [{ tag: "div", attributes: {}, children: [] }],
+          children: [{ tag: "div", attributes: {}, children: [], props: [{}] }],
+          props: [],
         },
       ],
       components: ["test-component"],
@@ -72,7 +73,8 @@ describe("ApplyComponents", () => {
         {
           tag: "div",
           attributes: {},
-          children: [{ tag: "span", attributes: {}, children: [] }],
+          children: [{ tag: "span", attributes: {}, children: [], props: [] }],
+          props: [{}],
         },
       ],
       components: ["test-component"],
@@ -106,7 +108,8 @@ describe("ApplyComponents", () => {
         {
           tag: "div",
           attributes: {},
-          children: [{ tag: "div", attributes: {}, children: [] }],
+          children: [{ tag: "div", attributes: {}, children: [], props: [{}] }],
+          props: [{}],
         },
       ],
       components: ["test-component"],
@@ -137,19 +140,24 @@ describe("ApplyComponents", () => {
       )
     ).toEqual({
       tpe: [
-        { tag: "div", attributes: { class: ":(props.test)" }, children: [] },
+        {
+          tag: "div",
+          attributes: { class: ":props.tester" },
+          children: [],
+          props: [{ tester: ":props.test" }],
+        },
       ],
       components: ["test-component"],
     });
   });
 
-  it("Applies string attributes on props", () => {
+  it("Applies deeps props to a component", () => {
     expect(
       ApplyComponents(
         [
           {
             tag: "test-component",
-            attributes: { tester: "this-is-a-class" },
+            attributes: { tester: ":props.test" },
             children: [],
           },
         ],
@@ -159,6 +167,23 @@ describe("ApplyComponents", () => {
               {
                 tag: "div",
                 attributes: { class: ":props.tester" },
+                children: [
+                  {
+                    tag: "second-test-component",
+                    attributes: {
+                      second_tester: ":props.tester",
+                    },
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+          "second-test-component": {
+            xml_template: [
+              {
+                tag: "div",
+                attributes: { class: ":props.second_tester" },
                 children: [],
               },
             ],
@@ -169,15 +194,26 @@ describe("ApplyComponents", () => {
       tpe: [
         {
           tag: "div",
-          attributes: { class: ":('this-is-a-class')" },
-          children: [],
+          attributes: { class: ":props.tester" },
+          children: [
+            {
+              tag: "div",
+              attributes: { class: ":props.second_tester" },
+              children: [],
+              props: [
+                { tester: ":props.test" },
+                { second_tester: ":props.tester" },
+              ],
+            },
+          ],
+          props: [{ tester: ":props.test" }],
         },
       ],
-      components: ["test-component"],
+      components: ["test-component", "second-test-component"],
     });
   });
 
-  it("Applies attribute props on a component with whitespace", () => {
+  it("Applies attribute string accessor props on a component", () => {
     expect(
       ApplyComponents(
         [
@@ -192,37 +228,7 @@ describe("ApplyComponents", () => {
             xml_template: [
               {
                 tag: "div",
-                attributes: { class: ":props   .    tester" },
-                children: [],
-              },
-            ],
-          },
-        }
-      )
-    ).toEqual({
-      tpe: [
-        { tag: "div", attributes: { class: ":(props.test)" }, children: [] },
-      ],
-      components: ["test-component"],
-    });
-  });
-
-  it("Applies props as part of an expression", () => {
-    expect(
-      ApplyComponents(
-        [
-          {
-            tag: "test-component",
-            attributes: { tester: ":props.test" },
-            children: [],
-          },
-        ],
-        {
-          "test-component": {
-            xml_template: [
-              {
-                tag: "div",
-                attributes: { class: ":props.tester + 'test'" },
+                attributes: { class: ":props['tester']" },
                 children: [],
               },
             ],
@@ -233,42 +239,9 @@ describe("ApplyComponents", () => {
       tpe: [
         {
           tag: "div",
-          attributes: { class: ":(props.test) + 'test'" },
+          attributes: { class: ":props['tester']" },
           children: [],
-        },
-      ],
-      components: ["test-component"],
-    });
-  });
-
-  it("Applies string props as part of an expression", () => {
-    expect(
-      ApplyComponents(
-        [
-          {
-            tag: "test-component",
-            attributes: { tester: "this-is-a-class" },
-            children: [],
-          },
-        ],
-        {
-          "test-component": {
-            xml_template: [
-              {
-                tag: "div",
-                attributes: { class: ":props.tester + 'test'" },
-                children: [],
-              },
-            ],
-          },
-        }
-      )
-    ).toEqual({
-      tpe: [
-        {
-          tag: "div",
-          attributes: { class: ":('this-is-a-class') + 'test'" },
-          children: [],
+          props: [{ tester: ":props.test" }],
         },
       ],
       components: ["test-component"],
@@ -302,41 +275,13 @@ describe("ApplyComponents", () => {
         {
           tag: "div",
           attributes: {},
-          children: [{ text: "Hello {(props.test)} world" }],
-        },
-      ],
-      components: ["test-component"],
-    });
-  });
-
-  it("Transforms deep expressions", () => {
-    expect(
-      ApplyComponents(
-        [
-          {
-            tag: "test-component",
-            attributes: { test: ":props.another" },
-            children: [],
-          },
-        ],
-        {
-          "test-component": {
-            xml_template: [
-              {
-                tag: "div",
-                attributes: { class: ":props.test.something" },
-                children: [],
-              },
-            ],
-          },
-        }
-      )
-    ).toEqual({
-      tpe: [
-        {
-          tag: "div",
-          attributes: { class: ":(props.another).something" },
-          children: [],
+          children: [
+            {
+              text: "Hello {props.tester} world",
+              props: [{ tester: ":props.test" }],
+            },
+          ],
+          props: [{ tester: ":props.test" }],
         },
       ],
       components: ["test-component"],

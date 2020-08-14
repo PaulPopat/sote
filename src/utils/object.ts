@@ -24,3 +24,7 @@ export function ToKeyValuePairing<T>(input: NodeJS.Dict<T>) {
     [] as (readonly [string, T])[]
   );
 }
+
+export function NotUndefined<T>(input: T | undefined): input is T {
+  return input != null;
+}

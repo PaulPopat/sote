@@ -1,10 +1,9 @@
-import fs from "fs-extra";
-import express, { Express, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { PassThrough } from "stream";
 import axios from "axios";
 import { ParseUrl, RemoveUrlParameters } from "../utils/url";
-import { Options, GetCompiledApp, GetResources } from "../file-system";
+import { Options } from "../file-system";
 import { PagesModel } from "../compiler/page-builder";
 import { EvaluateAsync } from "../utils/evaluate";
 import { BuildPage } from "./page-builder";
@@ -22,12 +21,22 @@ function ServeAsStatic(content: string, content_type: string) {
     readStream.pipe(res);
   };
 }
-export async function StartApp(options: Options) {
+export async function StartApp(resources: PagesModel, options: Options) {
   const app = express();
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-  const resources = GetResources(options);
-  const data = await GetCompiledApp();
+
+  if (options.external_css) {
+    resources.css_bundle = options.external_css
+      .reverse()
+      .reduce((c, n) => n + c, resources.css_bundle);
+  }
+
+  if (options.external_scripts) {
+    resources.js_bundle = options.external_scripts
+      .reverse()
+      .reduce((c, n) => n + c, resources.js_bundle);
+  }
 
   async function RenderPage(
     page: PagesModel["pages"][number],
@@ -51,8 +60,8 @@ export async function StartApp(options: Options) {
 
       const html = BuildPage(
         page,
-        data.js_bundle,
-        data.css_bundle,
+        resources.js_bundle,
+        resources.css_bundle,
         props,
         options
       );
@@ -72,23 +81,23 @@ export async function StartApp(options: Options) {
     app.use("/_", express.static(options.static));
   }
 
-  if (data.js_bundle) {
+  if (resources.js_bundle) {
     console.log(`Serving common js at /js/common.bundle.js`);
     app.get(
       "/js/common.bundle.js",
-      ServeAsStatic(data.js_bundle, "text/javascript")
+      ServeAsStatic(resources.js_bundle, "text/javascript")
     );
   }
 
-  if (data.css_bundle) {
+  if (resources.css_bundle) {
     console.log(`Serving common css at /css/index.bundle.css`);
     app.get(
       "/css/index.bundle.css",
-      ServeAsStatic(data.css_bundle, "text/css")
+      ServeAsStatic(resources.css_bundle, "text/css")
     );
   }
 
-  for (const page of data.pages) {
+  for (const page of resources.pages) {
     if (page.model.client_js) {
       console.log(`Serving /js${RemoveUrlParameters(page.url)}.js`);
       app.get(

@@ -1,43 +1,26 @@
-import { XmlNode, IsText } from "./xml-parser";
+import { XmlNode, IsText, XmlText, XmlElement } from "./xml-parser";
 import { TpeFile } from "./tpe-file-parser";
-import { TransformProperties } from "../utils/object";
-import { GetExpressions } from "../utils/html";
 
 type ApplierContext = {
-  children: XmlNode[];
-  props: NodeJS.Dict<string>;
+  children: AppliedXmlNode[];
+  props: NodeJS.Dict<string>[];
 };
 
-function ReduceText(node: string, props: NodeJS.Dict<string>) {
-  if (!node) {
-    return node;
-  }
+export type AppliedXmlText = XmlText & { props: NodeJS.Dict<string>[] };
 
-  let text = node;
-  for (const expression of GetExpressions(text)) {
-    text = text.replace(expression, TransformStatement(expression, props));
-  }
+export type AppliedXmlElement = XmlElement & {
+  props: NodeJS.Dict<string>[];
+  children: AppliedXmlNode[];
+};
 
-  return text;
+export type AppliedXmlNode = AppliedXmlText | AppliedXmlElement;
+
+export function IsAppliedText(e: AppliedXmlNode): e is AppliedXmlText {
+  return "text" in e;
 }
 
-function TransformStatement(statement: string, props: NodeJS.Dict<string>) {
-  let result = statement;
-  for (const key in props) {
-    let value = props[key];
-    if (value?.startsWith(":")) {
-      value = value.replace(":", "");
-    } else {
-      value = "'" + value + "'";
-    }
-
-    result = result.replace(
-      new RegExp(`props\\s*\\.\\s*${key}`, "gm"),
-      "(" + value + ")"
-    );
-  }
-
-  return result;
+export function IsAppliedElement(e: AppliedXmlNode): e is AppliedXmlElement {
+  return "tag" in e;
 }
 
 function internal(
@@ -45,10 +28,10 @@ function internal(
   components: NodeJS.Dict<TpeFile>,
   used: string[],
   context: ApplierContext
-): XmlNode[] {
+): AppliedXmlNode[] {
   return tpe.flatMap((n) => {
     if (IsText(n)) {
-      return { ...n, text: ReduceText(n.text, context.props) };
+      return { ...n, text: n.text, props: context.props };
     }
 
     if (n.tag === "children") {
@@ -60,16 +43,15 @@ function internal(
       used.push(n.tag);
       return internal(component.xml_template, components, used, {
         children: internal(n.children, components, used, context),
-        props: n.attributes,
+        props: [...context.props, n.attributes],
       });
     }
 
     return {
       ...n,
-      attributes: TransformProperties(n.attributes, (p) =>
-        TransformStatement(p, context.props)
-      ),
+      attributes: n.attributes,
       children: internal(n.children, components, used, context),
+      props: context.props,
     };
   });
 }
@@ -77,9 +59,9 @@ function internal(
 export function ApplyComponents(
   tpe: XmlNode[],
   components: NodeJS.Dict<TpeFile>
-): { tpe: XmlNode[]; components: string[] } {
+): { tpe: AppliedXmlNode[]; components: string[] } {
   const used = [] as string[];
-  const result = internal(tpe, components, used, { children: [], props: {} });
+  const result = internal(tpe, components, used, { children: [], props: [] });
 
   return {
     tpe: result,

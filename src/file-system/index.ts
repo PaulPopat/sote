@@ -77,6 +77,8 @@ const IsOptions = IsObject({
   lang: Optional(IsString),
   resources: Optional(IsString),
   port: Optional(IsNumber),
+  external_scripts: Optional(IsArray(IsString)),
+  external_css: Optional(IsArray(IsString)),
 });
 
 export type Options = IsType<typeof IsOptions>;
@@ -89,6 +91,25 @@ export async function GetOptions(): Promise<Options> {
       json,
       "Your tpe config is invalid. Please check the documentation."
     );
+
+    if (json.external_css) {
+      console.log(
+        "Adding " + json.external_css.join(", ") + " to the bundled CSS."
+      );
+      json.external_css = await Promise.all(
+        json.external_css.map((p) => fs.readFile(p, "utf-8"))
+      );
+    }
+
+    if (json.external_scripts) {
+      console.log(
+        "Adding " + json.external_scripts.join(", ") + " to the bundled JS."
+      );
+      json.external_scripts = await Promise.all(
+        json.external_scripts.map((p) => fs.readFile(p, "utf-8"))
+      );
+    }
+
     return json;
   }
 
@@ -102,6 +123,8 @@ export async function GetOptions(): Promise<Options> {
     lang: undefined,
     resources: undefined,
     port: undefined,
+    external_css: undefined,
+    external_scripts: undefined,
   };
 }
 

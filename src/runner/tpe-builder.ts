@@ -3,6 +3,19 @@ import { GetExpressions } from "../utils/html";
 import { Evaluate } from "../utils/evaluate";
 import { TransformProperties } from "../utils/object";
 import { IsString } from "@paulpopat/safe-type";
+import { AppliedXmlNode } from "../compiler/tpe-component-applier";
+
+function GetProps(props: any, path: NodeJS.Dict<string>[]) {
+  return path.reduce(
+    (c, n) =>
+      TransformProperties(n, (e) =>
+        e.startsWith(":")
+          ? Evaluate(e.replace(":", ""), [{ name: "props", value: c }])
+          : e
+      ),
+    props
+  );
+}
 
 function ReduceText(node: string, props: any) {
   if (!node) {
@@ -20,15 +33,16 @@ function ReduceText(node: string, props: any) {
   return text;
 }
 
-export function BuildTpe(tpe: XmlNode[], props: any): XmlNode[] {
+export function BuildTpe(tpe: AppliedXmlNode[], props: any): XmlNode[] {
   return tpe.flatMap((n) => {
+    const inner_props = GetProps(props, n.props);
     if (IsText(n)) {
-      return [{ text: ReduceText(n.text, props) } as XmlNode];
+      return [{ text: ReduceText(n.text, inner_props) } as XmlNode];
     }
 
     const attributes = TransformProperties(n.attributes, (p) =>
       p.startsWith(":")
-        ? Evaluate(p.replace(":", ""), [{ name: "props", value: props }])
+        ? Evaluate(p.replace(":", ""), [{ name: "props", value: inner_props }])
         : p
     );
 

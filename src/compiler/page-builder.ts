@@ -1,13 +1,13 @@
-import { XmlNode } from "./xml-parser";
 import { ParseTpeFile, TpeFile } from "./tpe-file-parser";
-import { ApplyComponents } from "./tpe-component-applier";
+import { ApplyComponents, AppliedXmlNode } from "./tpe-component-applier";
 import UglifyJS from "uglify-js";
 import UglifyCss from "uglifycss";
+import { NotUndefined } from "../utils/object";
 
 type PageModel = {
   server_js: NodeJS.Dict<string>;
   client_js: string;
-  xml_template: XmlNode[];
+  xml_template: AppliedXmlNode[];
   css: string;
   title: string;
   description: string;
@@ -43,22 +43,45 @@ export function CompileApp(
   pages_files: TpeFileModel[],
   components_files: TpeFileModel[],
   production: boolean
-) {
+): PagesModel {
   const components = components_files
-    .map((f) => ({ data: ParseTpeFile(f.text), url: f.path }))
+    .map((f) => {
+      try {
+        return { data: ParseTpeFile(f.text), url: f.path };
+      } catch (err) {
+        console.log("Failed to parse component " + f.path + " error below:");
+        console.error(err);
+
+        return undefined;
+      }
+    })
+    .filter(NotUndefined)
     .reduce(
       (c, n) => ({
         ...c,
-        [n.url.replace("/", "").replace(/\//gm, "::")]: n.data,
+        [n.url.replace("/", "").replace(/[\/\\]/gm, "::")]: n.data,
       }),
       {} as NodeJS.Dict<TpeFile>
     );
+  for (const component in components) {
+    console.log("Adding component " + component + " to the component list.");
+  }
 
   let css_bundle = "";
   let js_bundle = "";
   let included = [] as string[];
   const pages = pages_files
-    .map((f) => ({ model: ParseTpeFile(f.text), url: f.path }))
+    .map((f) => {
+      try {
+        return { model: ParseTpeFile(f.text), url: f.path };
+      } catch (err) {
+        console.log("Failed to parse page " + f.path + " error below:");
+        console.error(err);
+
+        return undefined;
+      }
+    })
+    .filter(NotUndefined)
     .map(({ model, url }) => ({
       url,
       model: {

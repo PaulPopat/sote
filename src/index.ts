@@ -4,6 +4,7 @@ import {
   GetAllTpe,
   WriteCompiledApp,
   Options,
+  GetCompiledApp,
 } from "./file-system";
 import { Debounce } from "./utils/debounce";
 import { CompileApp } from "./compiler/page-builder";
@@ -30,9 +31,9 @@ const command = (process.argv.find(
         console.log("Compiling app and running.");
         const options = await GetOptions();
         console.log("Got options and starting the build.");
-        await BuildApp(options, false);
+        const compiled = await BuildApp(options, false);
         console.log("Finished building the app. Starting it up.");
-        app = await StartApp(options);
+        app = await StartApp(compiled, options);
         running = false;
       } catch (e) {
         console.log(
@@ -56,7 +57,7 @@ const command = (process.argv.find(
   } else if (command === "start") {
     console.log("Running the production version of the app.");
     const options = await GetOptions();
-    await StartApp(options);
+    await StartApp(await GetCompiledApp(), options);
   }
 })().catch((err) => {
   console.error(err);
@@ -68,6 +69,7 @@ async function BuildApp(options: Options, production: boolean) {
   const pages = await GetAllTpe(options.pages ?? "./src/pages");
   const compiled = await CompileApp(pages, components, production);
   await WriteCompiledApp(compiled);
+  return compiled;
 }
 
 async function GetComponents(options: Options) {

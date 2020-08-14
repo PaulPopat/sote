@@ -9,6 +9,8 @@ export async function InitialiseApp() {
     lang: "en",
     port: 3000,
     behavior_in_tag: false,
+    external_scripts: [],
+    external_css: []
   });
 
   await fs.outputFile(
@@ -28,8 +30,10 @@ export async function InitialiseApp() {
 
   await fs.outputFile(
     "./src/pages/index.tpe",
-    `<template>
-  Hello world
+    `<title>This is a test page</title>
+<description>This the description of a test page</description>
+<template>
+  <c::header>Hello world</c::header>
 </template>
 <style>
   /* This is optional */
@@ -41,8 +45,6 @@ export async function InitialiseApp() {
   // This equivalent will be added if not included in the file
   return query;
 </script>
-<title>This is a test page</title>
-<description>This the description of a test page</description>
 `,
     "utf-8"
   );

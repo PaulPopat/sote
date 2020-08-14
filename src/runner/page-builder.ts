@@ -28,26 +28,12 @@ export function BuildPage(
       : []),
     ...(options.behavior_in_tag
       ? [
-          page.model.client_js
-            ? `<script type="text/javascript">${page.model.client_js}</script>`
-            : "",
-          bundle_js
-            ? `<script type="text/javascript">${bundle_js}</script>`
-            : "",
           page.model.css
             ? `<style type="text/css">${page.model.css}</style>`
             : "",
           bundle_css ? `<style type="text/css">${bundle_css}</style>` : "",
         ]
       : [
-          page.model.client_js
-            ? `<script type="text/javascript" src="/js${RemoveUrlParameters(
-                page.url
-              )}.js"></script>`
-            : "",
-          bundle_js
-            ? `<script type="text/javascript" src="/js/common.bundle.js"></script>`
-            : "",
           page.model.css
             ? `<link rel="stylesheet" type="text/css" href="/css${RemoveUrlParameters(
                 page.url
@@ -62,6 +48,25 @@ export function BuildPage(
     `<body style="margin:0;padding:0;">`,
     ToXml(BuildTpe(page.model.xml_template, props)),
     `</body>`,
+    ...(options.behavior_in_tag
+      ? [
+          bundle_js
+            ? `<script type="text/javascript">${bundle_js}</script>`
+            : "",
+          page.model.client_js
+            ? `<script type="text/javascript">${page.model.client_js}</script>`
+            : "",
+        ]
+      : [
+          bundle_js
+            ? `<script type="text/javascript" src="/js/common.bundle.js"></script>`
+            : "",
+          page.model.client_js
+            ? `<script type="text/javascript" src="/js${RemoveUrlParameters(
+                page.url
+              )}.js"></script>`
+            : "",
+        ]),
     `</html>`,
   ].join("");
 }
