@@ -23,8 +23,15 @@ export function IsElement(e: XmlNode): e is XmlElement {
 
 function* SplitXml(xml: string) {
   let current = "";
+  let expressionDepth = 0;
   for (const char of xml) {
-    if (char === "<") {
+    if (char === "{") {
+      expressionDepth += 1;
+    } else if (char === "}") {
+      expressionDepth -= 1;
+    }
+
+    if (char === "<" && !expressionDepth) {
       if (current) {
         yield current;
       }
@@ -33,7 +40,7 @@ function* SplitXml(xml: string) {
       continue;
     }
 
-    if (char === ">") {
+    if (char === ">" && !expressionDepth) {
       current += char;
       if (current) {
         yield current;

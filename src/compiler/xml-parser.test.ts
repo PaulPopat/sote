@@ -179,6 +179,18 @@ describe("ParseXml", () => {
       },
     ]);
   });
+
+  test("Ignores HTML in an expression", () => {
+    expect(
+      ParseXml("<div>{<div></div>}</div>")
+    ).toEqual([
+      {
+        tag: "div",
+        attributes: { },
+        children: [{ text: "{<div></div>}" }],
+      },
+    ]);
+  });
 });
 
 describe("ToXml", () => {

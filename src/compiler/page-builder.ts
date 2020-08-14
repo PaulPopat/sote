@@ -111,10 +111,7 @@ export function CompileApp(
             css_bundle += "\n" + component.css;
           }
 
-          if (
-            component.client_js?.trim() &&
-            component.client_js.trim() !== "undefined"
-          ) {
+          if (component.client_js?.trim()) {
             js_bundle += "\n" + component.client_js;
           }
         } else {
@@ -127,9 +124,11 @@ export function CompileApp(
         model: {
           ...model,
           xml_template: model.xml_template.tpe,
-          client_js:
-            model.client_js + add.reduce((c, n) => c + (n.client_js ?? ""), ""),
-          css: model.css + add.reduce((c, n) => c + (n.css ?? ""), ""),
+          client_js: add.reduce(
+            (c, n) => (c ?? "") + (n.client_js ?? ""),
+            model.client_js ?? ""
+          ),
+          css: add.reduce((c, n) => (c ?? "") + (n.css ?? ""), model.css ?? ""),
         },
       };
     })
@@ -151,17 +150,17 @@ export function CompileApp(
             get: page.model.server_js.get || "return query",
           },
           client_js:
-            production && page.model.client_js.trim() !== "undefined"
+            production && page.model.client_js?.trim()
               ? MinifyJs(page.model.client_js, page.url)
-              : page.model.client_js.trim() === "undefined"
-              ? ""
-              : page.model.client_js,
+              : page.model.client_js?.trim()
+              ? page.model.client_js
+              : "",
           css:
-            production && page.model.css.trim() !== "undefined"
+            production && page.model.css?.trim()
               ? MinifyCss(page.model.css)
-              : page.model.css.trim() === "undefined"
-              ? ""
-              : page.model.css,
+              : page.model.css?.trim()
+              ? page.model.css
+              : "",
           title: page.model.title ?? "",
           description: page.model.description ?? "",
         },

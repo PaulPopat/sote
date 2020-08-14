@@ -17,7 +17,32 @@ it("Compiles a basic page", () => {
       [],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Compiles client javascript", () => {
@@ -40,7 +65,32 @@ it("Compiles client javascript", () => {
       [],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: 'console.log("Hello world")',
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Minifies client js for production", () => {
@@ -65,7 +115,32 @@ it("Minifies client js for production", () => {
       [],
       true
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: 'function thing(){console.log("hello world")}',
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Compiles server get js", () => {
@@ -89,7 +164,33 @@ it("Compiles server get js", () => {
       [],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: `console.log("Hello world");
+  return {};`,
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Compiles method js for server", () => {
@@ -113,7 +214,34 @@ it("Compiles method js for server", () => {
       [],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+            post: `console.log("Hello world");
+  return {};`,
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Compiles page css", () => {
@@ -136,7 +264,35 @@ it("Compiles page css", () => {
       [],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {
+                "data-specifier": "edf762dd4e455c036183858efa983eaf",
+              },
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Bundles component css", () => {
@@ -175,7 +331,45 @@ it("Bundles component css", () => {
       ],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: `
+div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {
+                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+              },
+              children: [
+                {
+                  attributes: {
+                    "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                  },
+                  children: [],
+                  props: [],
+                  tag: "div",
+                },
+              ],
+              props: [{}],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Bundles component javascript", () => {
@@ -214,7 +408,43 @@ it("Bundles component javascript", () => {
       ],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: `
+console.log("Hello world");`,
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [
+                {
+                  attributes: {
+                    "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                  },
+                  children: [],
+                  props: [],
+                  tag: "div",
+                },
+              ],
+              props: [{}],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
 it("Does not bundle css if the component is not always used", () => {
@@ -265,10 +495,70 @@ it("Does not bundle css if the component is not always used", () => {
       ],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}',
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {
+                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+              },
+              children: [
+                {
+                  attributes: {
+                    "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                  },
+                  children: [],
+                  props: [],
+                  tag: "div",
+                },
+              ],
+              props: [{}],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+      {
+        model: {
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {
+                "data-specifier": "edf762dd4e455c036183858efa983eaf",
+              },
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
 });
 
-it("Bundles component javascript", () => {
+it("Does not bundle component JavaScript in one page", () => {
   expect(
     CompileApp(
       [
@@ -280,21 +570,15 @@ it("Bundles component javascript", () => {
     <div />
   </test::component>
 </template>
-<style>
-  .test { display: block; }
-</style>
 <title>A test page</title>
 <description>A test description</description>`,
         },
         {
-          path: "/test",
+          path: "/test2",
           text: `
 <template>
   <div />
 </template>
-<style>
-  .test { display: block; }
-</style>
 <title>A test page</title>
 <description>A test description</description>`,
         },
@@ -316,5 +600,57 @@ it("Bundles component javascript", () => {
       ],
       false
     )
-  ).toMatchSnapshot();
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: 'console.log("Hello world");',
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [
+                {
+                  attributes: {},
+                  children: [],
+                  props: [],
+                  tag: "div",
+                },
+              ],
+              props: [{}],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+      {
+        model: {
+          client_js: ``,
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test2",
+      },
+    ],
+  });
 });

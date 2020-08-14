@@ -29,13 +29,13 @@ export async function StartApp(resources: PagesModel, options: Options) {
   if (options.external_css) {
     resources.css_bundle = options.external_css
       .reverse()
-      .reduce((c, n) => n + c, resources.css_bundle);
+      .reduce((c, n) => n + (c ?? ""), resources.css_bundle);
   }
 
   if (options.external_scripts) {
     resources.js_bundle = options.external_scripts
       .reverse()
-      .reduce((c, n) => n + c, resources.js_bundle);
+      .reduce((c, n) => n + (c ?? ""), resources.js_bundle);
   }
 
   async function RenderPage(
