@@ -17,7 +17,12 @@ function GetProps(props: any, path: NodeJS.Dict<string>[]) {
   );
 }
 
-function ReduceText(node: string, props: any) {
+type Params = {
+  name: string;
+  value: any;
+}[];
+
+function ReduceText(node: string, props: any, params: Params) {
   if (!node) {
     return node;
   }
@@ -26,23 +31,30 @@ function ReduceText(node: string, props: any) {
   for (const expression of GetExpressions(text)) {
     text = text.replace(
       `{${expression}}`,
-      Evaluate(expression, [{ name: "props", value: props }])
+      Evaluate(expression, [{ name: "props", value: props }, ...params])
     );
   }
 
   return text;
 }
 
-export function BuildTpe(tpe: AppliedXmlNode[], props: any): XmlNode[] {
+function Internal(
+  tpe: AppliedXmlNode[],
+  props: any,
+  params: Params
+): XmlNode[] {
   return tpe.flatMap((n) => {
     const inner_props = GetProps(props, n.props);
     if (IsText(n)) {
-      return [{ text: ReduceText(n.text, inner_props) } as XmlNode];
+      return [{ text: ReduceText(n.text, inner_props, params) } as XmlNode];
     }
 
     const attributes = TransformProperties(n.attributes, (p) =>
       p.startsWith(":")
-        ? Evaluate(p.replace(":", ""), [{ name: "props", value: inner_props }])
+        ? Evaluate(p.replace(":", ""), [
+            { name: "props", value: inner_props },
+            ...params,
+          ])
         : p
     );
 
@@ -56,14 +68,14 @@ export function BuildTpe(tpe: AppliedXmlNode[], props: any): XmlNode[] {
       }
 
       return subject.flatMap((s) =>
-        BuildTpe(n.children, { ...props, [key]: s })
+        Internal(n.children, props, [...params, { name: key, value: s }])
       );
     }
 
     if (n.tag === "if") {
       const check = attributes.check;
       if (check) {
-        return BuildTpe(n.children, props);
+        return Internal(n.children, props, params);
       } else {
         return [];
       }
@@ -73,8 +85,12 @@ export function BuildTpe(tpe: AppliedXmlNode[], props: any): XmlNode[] {
       {
         ...n,
         attributes,
-        children: BuildTpe(n.children, props),
+        children: Internal(n.children, props, params),
       } as XmlNode,
     ];
   });
+}
+
+export function BuildTpe(tpe: AppliedXmlNode[], props: any): XmlNode[] {
+  return Internal(tpe, props, []);
 }

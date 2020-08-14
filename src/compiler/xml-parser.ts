@@ -112,8 +112,9 @@ function* SplitTag(tag: string) {
 }
 
 function ParseAttribute(attribute: string) {
-  const [name, value] = attribute.split("=");
-  return { name, value: value.substr(1, value.length - 2) };
+  const [name, ...value] = attribute.split("=");
+  const joined = value.join("=");
+  return { name, value: joined.substr(1, joined.length - 2) };
 }
 
 function UntilClosingTag(

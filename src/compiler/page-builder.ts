@@ -101,12 +101,11 @@ export function CompileApp(
           throw new Error("Cannot find component");
         }
 
-        if (
-          full.filter((f) =>
-            f.model.xml_template.components.find((c) => c === include)
-          ).length >
-          full.length * 0.8
-        ) {
+        const total = full.filter((f) =>
+          f.model.xml_template.components.find((c) => c === include)
+        ).length;
+        if (total > full.length * 0.8) {
+          included = [...included, include];
           if (component.css?.trim() && component.css.trim() !== "undefined") {
             css_bundle += "\n" + component.css;
           }

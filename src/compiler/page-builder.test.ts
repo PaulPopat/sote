@@ -313,6 +313,20 @@ it("Bundles component css", () => {
 <title>A test page</title>
 <description>A test description</description>`,
         },
+        {
+          path: "/test2",
+          text: `
+<template>
+  <test::component>
+    <div />
+  </test::component>
+</template>
+<style>
+  .test { display: block; }
+</style>
+<title>A test page</title>
+<description>A test description</description>`,
+        },
       ],
       [
         {
@@ -367,6 +381,38 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
           ],
         },
         url: "/test",
+      },
+      {
+        model: {
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {
+                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+              },
+              children: [
+                {
+                  attributes: {
+                    "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                  },
+                  children: [],
+                  props: [],
+                  tag: "div",
+                },
+              ],
+              props: [{}],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test2",
       },
     ],
   });

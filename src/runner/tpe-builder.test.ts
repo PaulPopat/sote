@@ -52,7 +52,7 @@ it("Applies for loops", () => {
                 tag: "div",
                 attributes: {},
                 props: [],
-                children: [{ text: "{props.key}", props: [] }],
+                children: [{ text: "{key}", props: [] }],
               } as AppliedXmlElement,
             ],
           } as AppliedXmlElement,
@@ -61,6 +61,65 @@ it("Applies for loops", () => {
       )
     )
   ).toBe(`<div>hello</div><div>world</div>`);
+});
+
+it("Applies for loops with in model arrays", () => {
+  expect(
+    ToXml(
+      BuildTpe(
+        [
+          {
+            tag: "for",
+            attributes: { subject: ":['hello', 'world']", key: "key" },
+            props: [],
+            children: [
+              {
+                tag: "div",
+                attributes: {},
+                props: [],
+                children: [{ text: "{key}", props: [] }],
+              } as AppliedXmlElement,
+            ],
+          } as AppliedXmlElement,
+        ],
+        {}
+      )
+    )
+  ).toBe(`<div>hello</div><div>world</div>`);
+});
+
+it("Applies for loops with in model complex arrays", () => {
+  expect(
+    ToXml(
+      BuildTpe(
+        [
+          {
+            tag: "for",
+            attributes: {
+              subject:
+                ":[{ url: '/', title: 'Welcome' }, { url: '/setup', title: 'Setup' }]",
+              key: "page",
+            },
+            props: [],
+            children: [
+              {
+                tag: "a",
+                attributes: {
+                  href: ":page.url",
+                  class: ":props.at === page.url ? 'active' : ''",
+                },
+                props: [{ at: "/" }],
+                children: [
+                  { text: "{page.title}", props: [{ at: "/" }] },
+                ],
+              } as AppliedXmlElement,
+            ],
+          } as AppliedXmlElement,
+        ],
+        {}
+      )
+    )
+  ).toBe(`<a href="/" class="active">Welcome</a><a href="/setup" class="">Setup</a>`);
 });
 
 it("Will not apply if statements", () => {

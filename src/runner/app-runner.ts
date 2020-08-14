@@ -114,8 +114,10 @@ export async function StartApp(resources: PagesModel, options: Options) {
       );
     }
 
-    console.log(`Serving ${page.url}`);
-    app.use(ParseUrl(page.url), (req, res) => RenderPage(page, req, res));
+    console.log(`Serving ${page.url || "/"}`);
+    app.all(ParseUrl(page.url) || "/", (req, res) =>
+      RenderPage(page, req, res)
+    );
   }
 
   const server = app.listen(options.port ?? 3000, () => {

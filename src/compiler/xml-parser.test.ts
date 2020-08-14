@@ -143,7 +143,9 @@ describe("ParseXml", () => {
   });
 
   test("Parses multiple child elements with children and the same tag", () => {
-    expect(ParseXml("<div><script>test1</script><div>test2</div></div>")).toEqual([
+    expect(
+      ParseXml("<div><script>test1</script><div>test2</div></div>")
+    ).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -180,13 +182,25 @@ describe("ParseXml", () => {
     ]);
   });
 
-  test("Ignores HTML in an expression", () => {
+  test("Parses complex expressions in attributes", () => {
     expect(
-      ParseXml("<div>{<div></div>}</div>")
+      ParseXml(
+        "<div class=\":props.at === page.url ? 'active' : ''\">test1</div>"
+      )
     ).toEqual([
       {
         tag: "div",
-        attributes: { },
+        attributes: { class: ":props.at === page.url ? 'active' : ''" },
+        children: [{ text: "test1" }],
+      },
+    ]);
+  });
+
+  test("Ignores HTML in an expression", () => {
+    expect(ParseXml("<div>{<div></div>}</div>")).toEqual([
+      {
+        tag: "div",
+        attributes: {},
         children: [{ text: "{<div></div>}" }],
       },
     ]);
