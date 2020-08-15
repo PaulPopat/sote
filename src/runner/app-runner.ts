@@ -7,6 +7,7 @@ import { Options } from "../file-system";
 import { PagesModel } from "../compiler/page-builder";
 import { EvaluateAsync } from "../utils/evaluate";
 import { BuildPage } from "./page-builder";
+import path from "path";
 
 function ServeAsStatic(content: string, content_type: string) {
   return (req: Request, res: Response) => {
@@ -26,6 +27,10 @@ export async function StartApp(resources: PagesModel, options: Options) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 
+  const context_data = options.resources
+    ? { axios, ...require(path.resolve(options.resources)) }
+    : { axios };
+
   async function RenderPage(
     page: PagesModel["pages"][number],
     req: Request,
@@ -43,7 +48,7 @@ export async function StartApp(resources: PagesModel, options: Options) {
       const props = await EvaluateAsync(handler, [
         { name: "query", value: query },
         { name: "body", value: body },
-        { name: "context", value: { axios, ...resources } },
+        { name: "context", value: context_data },
         { name: "req", value: req },
         { name: "res", value: res },
       ]);

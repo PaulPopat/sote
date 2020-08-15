@@ -76,6 +76,7 @@ const IsOptions = IsObject({
   behavior_in_tag: Optional(IsBoolean),
   lang: Optional(IsString),
   port: Optional(IsNumber),
+  resources: Optional(IsString),
 });
 
 export type Options = IsType<typeof IsOptions>;
@@ -101,5 +102,6 @@ export async function GetOptions(): Promise<Options> {
     behavior_in_tag: undefined,
     lang: undefined,
     port: undefined,
+    resources: undefined,
   };
 }
