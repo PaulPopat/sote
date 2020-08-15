@@ -75,10 +75,7 @@ const IsOptions = IsObject({
   favicon: Optional(IsArray(IsObject({ path: IsString, size: IsString }))),
   behavior_in_tag: Optional(IsBoolean),
   lang: Optional(IsString),
-  resources: Optional(IsString),
   port: Optional(IsNumber),
-  external_scripts: Optional(IsArray(IsString)),
-  external_css: Optional(IsArray(IsString)),
 });
 
 export type Options = IsType<typeof IsOptions>;
@@ -92,24 +89,6 @@ export async function GetOptions(): Promise<Options> {
       "Your tpe config is invalid. Please check the documentation."
     );
 
-    if (json.external_css) {
-      console.log(
-        "Adding " + json.external_css.join(", ") + " to the bundled CSS."
-      );
-      json.external_css = await Promise.all(
-        json.external_css.map((p) => fs.readFile(p, "utf-8"))
-      );
-    }
-
-    if (json.external_scripts) {
-      console.log(
-        "Adding " + json.external_scripts.join(", ") + " to the bundled JS."
-      );
-      json.external_scripts = await Promise.all(
-        json.external_scripts.map((p) => fs.readFile(p, "utf-8"))
-      );
-    }
-
     return json;
   }
 
@@ -121,17 +100,6 @@ export async function GetOptions(): Promise<Options> {
     favicon: undefined,
     behavior_in_tag: undefined,
     lang: undefined,
-    resources: undefined,
     port: undefined,
-    external_css: undefined,
-    external_scripts: undefined,
   };
-}
-
-export function GetResources(options: Options) {
-  if (!options.resources) {
-    return {};
-  }
-
-  return require(path.resolve(options.resources));
 }

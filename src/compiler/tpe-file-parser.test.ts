@@ -48,15 +48,32 @@ describe("ParseTpeFile", () => {
     });
   });
 
-  it("Throws if there is more than one client javascript file", () => {
-    expect(() =>
+  it("Parses external client javascript", () => {
+    expect(
+      ParseTpeFile(
+        '<template><div/></template><script area="client" src="./resources/example.js"></script>'
+      )
+    ).toEqual({
+      xml_template: [{ tag: "div", attributes: {}, children: [] }],
+      server_js: {},
+      client_js: 'console.log("Example JavaScript");',
+    });
+  });
+
+  it("Applies more than one client javascript file", () => {
+    expect(
       ParseTpeFile(
         `
         <template><div/></template>
         <script area=\"client\">console.log('hello world')</script>
         <script area=\"client\">console.log('hello world')</script>`
       )
-    ).toThrowError("More than one client script element");
+    ).toEqual({
+      xml_template: [{ tag: "div", attributes: {}, children: [] }],
+      server_js: {},
+      client_js: `console.log('hello world')
+console.log('hello world')`,
+    });
   });
 
   it("Parses file css", () => {
@@ -77,15 +94,62 @@ describe("ParseTpeFile", () => {
     });
   });
 
-  it("Throws if there is more than one css element", () => {
-    expect(() =>
+  it("Does not apply hash to css if specified", () => {
+    expect(
+      ParseTpeFile(
+        "<template><div/></template><style no-hash>div{display:block}</style>"
+      )
+    ).toEqual({
+      xml_template: [
+        {
+          tag: "div",
+          attributes: { "data-specifier": "284ef8855b48442b71b68617ccf81647" },
+          children: [],
+        },
+      ],
+      server_js: {},
+      css: `div{display:block}`,
+    });
+  });
+
+  it("Parses external client css", () => {
+    expect(
+      ParseTpeFile(
+        '<template><div/></template><style src="./resources/example.css"></style>'
+      )
+    ).toEqual({
+      xml_template: [
+        {
+          tag: "div",
+          attributes: { "data-specifier": "431f815af07b7fb63b3c915a8f50ef79" },
+          children: [],
+        },
+      ],
+      server_js: {},
+      css:
+        '.example[data-specifier="431f815af07b7fb63b3c915a8f50ef79"]{display:block;}',
+    });
+  });
+
+  it("Applies more than one css element", () => {
+    expect(
       ParseTpeFile(
         `
         <template><div/></template>
         <style>div{display:block;}</style>
         <style>div{display:block;}</style>`
       )
-    ).toThrowError("More than one style element");
+    ).toEqual({
+      xml_template: [
+        {
+          tag: "div",
+          attributes: { "data-specifier": "18daf102c210d25106de6f3d82286888" },
+          children: [],
+        },
+      ],
+      server_js: {},
+      css: `div[data-specifier="18daf102c210d25106de6f3d82286888"]{display:block;}div[data-specifier="18daf102c210d25106de6f3d82286888"]{display:block;}`,
+    });
   });
 
   it("Parses page title", () => {
@@ -118,7 +182,7 @@ describe("ParseTpeFile", () => {
         <template><div/></template>
         <title><div>hello world</div></title>`
       )
-    ).toThrowError("title is not a valid script");
+    ).toThrowError("title 0 is not a valid script");
   });
 
   it("Parses page description", () => {
@@ -151,6 +215,6 @@ describe("ParseTpeFile", () => {
         <template><div/></template>
         <description><div>hello world</div></description>`
       )
-    ).toThrowError("description is not a valid script");
+    ).toThrowError("description 0 is not a valid script");
   });
 });

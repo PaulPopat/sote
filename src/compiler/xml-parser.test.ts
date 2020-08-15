@@ -32,8 +32,10 @@ describe("ParseXml", () => {
   });
 
   test("Converts all whitespace into spaces", () => {
-    expect(ParseXml(`<div>test
-text</div>`)).toEqual([
+    expect(
+      ParseXml(`<div>test
+text</div>`)
+    ).toEqual([
       {
         tag: "div",
         attributes: {},
@@ -53,13 +55,19 @@ text</div>`)).toEqual([
   });
 
   test("Preserves whitespace in expressions", () => {
-    expect(ParseXml(`<div>{test
- text}</div>`)).toEqual([
+    expect(
+      ParseXml(`<div>{test
+ text}</div>`)
+    ).toEqual([
       {
         tag: "div",
         attributes: {},
-        children: [{ text: `{test
- text}` }],
+        children: [
+          {
+            text: `{test
+ text}`,
+          },
+        ],
       },
     ]);
   });
@@ -112,6 +120,16 @@ text</div>`)).toEqual([
         children: [
           { tag: "span", attributes: { test: "other" }, children: [] },
         ],
+      },
+    ]);
+  });
+  
+  test("Parses attributes with no value as empty string", () => {
+    expect(ParseXml("<div><span test /></div>")).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [{ tag: "span", attributes: { test: "" }, children: [] }],
       },
     ]);
   });
@@ -294,5 +312,29 @@ describe("ToXml", () => {
         },
       ])
     ).toBe("<div><div/></div>");
+  });
+
+  it("Applies is MSO tag", () => {
+    expect(
+      ToXml([
+        {
+          tag: "EMAIL_IS_MSO",
+          attributes: {},
+          children: [{ tag: "div", attributes: {}, children: [] }],
+        },
+      ])
+    ).toBe("<!--[if mso]><div/><![endif]-->");
+  });
+
+  it("Applies not MSO tag", () => {
+    expect(
+      ToXml([
+        {
+          tag: "EMAIL_NOT_MSO",
+          attributes: {},
+          children: [{ tag: "div", attributes: {}, children: [] }],
+        },
+      ])
+    ).toBe("<!--[if !mso]><!--><div/><!--<![endif]-->");
   });
 });

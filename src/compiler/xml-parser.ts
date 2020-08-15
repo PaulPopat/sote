@@ -211,12 +211,22 @@ export function ParseXml(xml: string): XmlNode[] {
   return Internal(iterator);
 }
 
+const open_swap = {
+  EMAIL_IS_MSO: "<!--[if mso]",
+  EMAIL_NOT_MSO: "<!--[if !mso]><!--",
+} as NodeJS.Dict<string>;
+
+const close_swap = {
+  EMAIL_IS_MSO: "<![endif]-->",
+  EMAIL_NOT_MSO: "<!--<![endif]-->",
+} as NodeJS.Dict<string>;
+
 function WriteNode(node: XmlNode): string {
   if (IsText(node)) {
     return xmlescape(node.text);
   }
 
-  let result = "<" + node.tag;
+  let result = open_swap[node.tag] || "<" + node.tag;
   if (Object.keys(node.attributes).length > 0) {
     result = Object.keys(node.attributes).reduce(
       (c, n) => c + ` ${n}="${xmlescape(node.attributes[n] ?? "")}"`,
@@ -229,7 +239,10 @@ function WriteNode(node: XmlNode): string {
   }
 
   return (
-    result + ">" + node.children.map(WriteNode).join("") + "</" + node.tag + ">"
+    result +
+    ">" +
+    node.children.map(WriteNode).join("") +
+    (close_swap[node.tag] || "</" + node.tag + ">")
   );
 }
 

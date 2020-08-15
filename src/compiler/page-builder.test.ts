@@ -700,3 +700,101 @@ it("Does not bundle component JavaScript in one page", () => {
     ],
   });
 });
+
+it("Applies is mso", () => {
+  expect(
+    CompileApp(
+      [
+        {
+          path: "/test",
+          text: `
+<template>
+  <std::email::is-mso>
+    <div />
+  </std::email::is-mso>
+</template>
+<title>A test page</title>
+<description>A test description</description>`,
+        },
+      ],
+      [],
+      false
+    )
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [
+                { tag: "div", attributes: {}, children: [], props: [] },
+              ],
+              props: [{}],
+              tag: "EMAIL_IS_MSO",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
+});
+
+it("Applies not mso", () => {
+  expect(
+    CompileApp(
+      [
+        {
+          path: "/test",
+          text: `
+<template>
+  <std::email::not-mso>
+    <div />
+  </std::email::not-mso>
+</template>
+<title>A test page</title>
+<description>A test description</description>`,
+        },
+      ],
+      [],
+      false
+    )
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css: "",
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [
+                { tag: "div", attributes: {}, children: [], props: [] },
+              ],
+              props: [{}],
+              tag: "EMAIL_NOT_MSO",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
+});

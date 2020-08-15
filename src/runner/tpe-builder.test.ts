@@ -1,5 +1,5 @@
 import { BuildTpe } from "./tpe-builder";
-import { ParseXml, ToXml } from "../compiler/xml-parser";
+import { ToXml } from "../compiler/xml-parser";
 import { AppliedXmlElement } from "../compiler/tpe-component-applier";
 
 it("Applies an attribute prop", () => {

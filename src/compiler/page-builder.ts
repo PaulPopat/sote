@@ -3,6 +3,7 @@ import { ApplyComponents, AppliedXmlNode } from "./tpe-component-applier";
 import UglifyJS from "uglify-js";
 import UglifyCss from "uglifycss";
 import { NotUndefined } from "../utils/object";
+import { StdComponents } from "../std-components";
 
 type PageModel = {
   server_js: NodeJS.Dict<string>;
@@ -44,7 +45,7 @@ export function CompileApp(
   components_files: TpeFileModel[],
   production: boolean
 ): PagesModel {
-  const components = components_files
+  const user_components = components_files
     .map((f) => {
       try {
         return { data: ParseTpeFile(f.text), url: f.path };
@@ -63,10 +64,12 @@ export function CompileApp(
       }),
       {} as NodeJS.Dict<TpeFile>
     );
-  for (const component in components) {
+
+  for (const component in user_components) {
     console.log("Adding component " + component + " to the component list.");
   }
 
+  const components = { ...StdComponents, ...user_components };
   let css_bundle = "";
   let js_bundle = "";
   let included = [] as string[];

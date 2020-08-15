@@ -9,6 +9,7 @@ import {
 import { CompileCss } from "./css-manipulator";
 import crypto from "crypto";
 import { ApplySpecifier } from "./tpe-manipulator";
+import fs from "fs-extra";
 
 export type TpeFile = {
   server_js?: NodeJS.Dict<string>;
@@ -40,7 +41,11 @@ export function ParseTpeFile(tpe: string) {
         : false
     ) as XmlElement[];
 
-  const get_text_script = (tag: string, attributes: NodeJS.Dict<string>) => {
+  const get_text_script = (
+    tag: string,
+    attributes: NodeJS.Dict<string>,
+    allow_multiple: boolean
+  ) => {
     const elements = find(tag, attributes);
     if (elements.length === 0) {
       return undefined;
@@ -50,16 +55,28 @@ export function ParseTpeFile(tpe: string) {
       ...Object.keys(attributes).map((k) => attributes[k]),
       tag,
     ].join(" ");
-    if (elements.length !== 1) {
+
+    if (elements.length > 1 && !allow_multiple) {
       throw new Error(`More than one ${id_text} element`);
     }
 
-    const element = elements[0];
-    if (!ValidText(element)) {
-      throw new Error(`${id_text} is not a valid script`);
-    }
+    return elements
+      .map((e, i) => {
+        const build_string = (text: string) =>
+          typeof e.attributes["no-hash"] === "string"
+            ? "/* DATA: NO_HASH */" + text + "/* DATA: END_NO_HASH */"
+            : text;
+        if (e.attributes.src) {
+          return build_string(fs.readFileSync(e.attributes.src, "utf-8"));
+        }
 
-    return element.children[0].text;
+        if (!ValidText(e)) {
+          throw new Error(`${id_text} ${i} is not a valid script`);
+        }
+
+        return build_string(e.children[0].text);
+      })
+      .join("\n");
   };
 
   const xml_template = find("template", {});
@@ -68,7 +85,7 @@ export function ParseTpeFile(tpe: string) {
   }
 
   const server_js_e = find("script", { area: "server" }).filter(ValidText);
-  const css = get_text_script("style", {});
+  const css = get_text_script("style", {}, true);
   const css_hash = css
     ? crypto.createHash("md5").update(css).digest("hex")
     : "";
@@ -83,9 +100,9 @@ export function ParseTpeFile(tpe: string) {
       }),
       {} as NodeJS.Dict<string>
     ),
-    client_js: get_text_script("script", { area: "client" }),
+    client_js: get_text_script("script", { area: "client" }, true),
     css: css ? CompileCss(css, css_hash) : undefined,
-    title: get_text_script("title", {}),
-    description: get_text_script("description", {}),
+    title: get_text_script("title", {}, false),
+    description: get_text_script("description", {}, false),
   };
 }
