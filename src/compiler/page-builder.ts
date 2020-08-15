@@ -26,18 +26,30 @@ type TpeFileModel = {
 };
 
 function MinifyJs(js: string, url: string) {
-  const result = UglifyJS.minify(js);
-  if (result.error) {
+  try {
+    const result = UglifyJS.minify(js);
+    if (result.error) {
+      console.log(`Failed to minify JS for ${url}. See error below.`);
+      console.error(result.error);
+      return js;
+    }
+
+    return result.code;
+  } catch (err) {
     console.log(`Failed to minify JS for ${url}. See error below.`);
-    console.error(result.error);
+    console.error(err);
     return js;
   }
-
-  return result.code;
 }
 
-function MinifyCss(css: string) {
-  return UglifyCss.processString(css, { maxLineLen: 500 });
+function MinifyCss(css: string, url: string) {
+  try {
+    return UglifyCss.processString(css, { maxLineLen: 500 });
+  } catch (err) {
+    console.log(`Failed to minify CSS for ${url}. See error below.`);
+    console.error(err);
+    return css;
+  }
 }
 
 export function CompileApp(
@@ -110,11 +122,17 @@ export function CompileApp(
         if (total > full.length * 0.8) {
           included = [...included, include];
           if (component.css?.trim() && component.css.trim() !== "undefined") {
-            css_bundle += "\n" + component.css;
+            css_bundle +=
+              "\n" +
+              (production ? MinifyCss(component.css, include) : component.css);
           }
 
           if (component.client_js?.trim()) {
-            js_bundle += "\n" + component.client_js;
+            js_bundle +=
+              "\n" +
+              (production
+                ? MinifyJs(component.client_js, include)
+                : component.client_js);
           }
         } else {
           add = [...add, component];
@@ -128,9 +146,16 @@ export function CompileApp(
           xml_template: model.xml_template.tpe,
           client_js: add.reduce(
             (c, n) => (c ?? "") + (n.client_js ?? ""),
-            model.client_js ?? ""
+            model.client_js && production
+              ? MinifyJs(model.client_js, url)
+              : model.client_js ?? ""
           ),
-          css: add.reduce((c, n) => (c ?? "") + (n.css ?? ""), model.css ?? ""),
+          css: add.reduce(
+            (c, n) => (c ?? "") + (n.css ?? ""),
+            model.css && production
+              ? MinifyCss(model.css, url)
+              : model.css ?? ""
+          ),
         },
       };
     })
@@ -151,18 +176,8 @@ export function CompileApp(
             ...page.model.server_js,
             get: page.model.server_js.get || "return query",
           },
-          client_js:
-            production && page.model.client_js?.trim()
-              ? MinifyJs(page.model.client_js, page.url)
-              : page.model.client_js?.trim()
-              ? page.model.client_js
-              : "",
-          css:
-            production && page.model.css?.trim()
-              ? MinifyCss(page.model.css)
-              : page.model.css?.trim()
-              ? page.model.css
-              : "",
+          client_js: page.model.client_js,
+          css: page.model.css,
           title: page.model.title ?? "",
           description: page.model.description ?? "",
         },
@@ -171,17 +186,7 @@ export function CompileApp(
 
   return {
     pages: pages,
-    css_bundle:
-      production && css_bundle.trim() !== "undefined"
-        ? MinifyCss(css_bundle)
-        : css_bundle.trim() === "undefined"
-        ? ""
-        : css_bundle,
-    js_bundle:
-      production && js_bundle.trim() !== "undefined"
-        ? MinifyJs(js_bundle, "Bundle")
-        : js_bundle.trim() === "undefined"
-        ? ""
-        : js_bundle,
+    css_bundle: css_bundle,
+    js_bundle: js_bundle,
   };
 }
