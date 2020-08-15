@@ -31,6 +31,7 @@ function MinifyJs(js: string, url: string) {
     if (result.error) {
       console.log(`Failed to minify JS for ${url}. See error below.`);
       console.error(result.error);
+      console.log("Continueing with unminified version");
       return js;
     }
 
@@ -38,6 +39,7 @@ function MinifyJs(js: string, url: string) {
   } catch (err) {
     console.log(`Failed to minify JS for ${url}. See error below.`);
     console.error(err);
+    console.log("Continueing with unminified version");
     return js;
   }
 }
@@ -48,6 +50,7 @@ function MinifyCss(css: string, url: string) {
   } catch (err) {
     console.log(`Failed to minify CSS for ${url}. See error below.`);
     console.error(err);
+    console.log("Continueing with unminified version");
     return css;
   }
 }
