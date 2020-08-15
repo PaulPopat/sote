@@ -44,6 +44,8 @@ export async function StartApp(resources: PagesModel, options: Options) {
         { name: "query", value: query },
         { name: "body", value: body },
         { name: "context", value: { axios, ...resources } },
+        { name: "req", value: req },
+        { name: "res", value: res },
       ]);
 
       const html = BuildPage(
