@@ -1,8 +1,8 @@
 import { CompileApp } from "./page-builder";
 
-it("Compiles a basic page", () => {
+it("Compiles a basic page", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -45,9 +45,9 @@ it("Compiles a basic page", () => {
   });
 });
 
-it("Compiles client javascript", () => {
+it("Compiles client javascript", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -93,9 +93,9 @@ it("Compiles client javascript", () => {
   });
 });
 
-it("Minifies client js for production", () => {
+it("Minifies client js for production", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -143,9 +143,9 @@ it("Minifies client js for production", () => {
   });
 });
 
-it("Compiles server get js", () => {
+it("Compiles server get js", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -193,9 +193,9 @@ it("Compiles server get js", () => {
   });
 });
 
-it("Compiles method js for server", () => {
+it("Compiles method js for server", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -244,9 +244,9 @@ it("Compiles method js for server", () => {
   });
 });
 
-it("Compiles page css", () => {
+it("Compiles page css", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -295,9 +295,71 @@ it("Compiles page css", () => {
   });
 });
 
-it("Bundles component css", () => {
+it("Prefixes page css", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
+      [
+        {
+          path: "/test",
+          text: `
+<template>
+  <div />
+</template>
+<style>
+  ::placeholder {
+    color: gray;
+  }
+
+  .image {
+    background-image: url(image@1x.png);
+  }
+  @media (min-resolution: 2dppx) {
+    .image {
+      background-image: url(image@2x.png);
+    }
+  }
+</style>
+<title>A test page</title>
+<description>A test description</description>`,
+        },
+      ],
+      [],
+      false
+    )
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css:
+            '::-moz-placeholder[data-specifier="ace1752455873d4453d4df844ff0dcf7"]{color:gray;}:-ms-input-placeholder[data-specifier="ace1752455873d4453d4df844ff0dcf7"]{color:gray;}::-ms-input-placeholder[data-specifier="ace1752455873d4453d4df844ff0dcf7"]{color:gray;}::placeholder[data-specifier="ace1752455873d4453d4df844ff0dcf7"]{color:gray;}.image[data-specifier="ace1752455873d4453d4df844ff0dcf7"]{background-image:url(image@1x.png);}@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx){.image[data-specifier="ace1752455873d4453d4df844ff0dcf7"]{background-image:url(image@2x.png);}}',
+          description: "A test description",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {
+                "data-specifier": "ace1752455873d4453d4df844ff0dcf7",
+              },
+              children: [],
+              props: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+  });
+});
+
+it("Bundles component css", async () => {
+  expect(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -418,9 +480,9 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
   });
 });
 
-it("Bundles component javascript", () => {
+it("Bundles component javascript", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -493,9 +555,9 @@ console.log("Hello world");`,
   });
 });
 
-it("Does not bundle css if the component is not always used", () => {
+it("Does not bundle css if the component is not always used", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -604,9 +666,9 @@ it("Does not bundle css if the component is not always used", () => {
   });
 });
 
-it("Does not bundle component JavaScript in one page", () => {
+it("Does not bundle component JavaScript in one page", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -701,9 +763,9 @@ it("Does not bundle component JavaScript in one page", () => {
   });
 });
 
-it("Applies is mso", () => {
+it("Applies is mso", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",
@@ -750,9 +812,9 @@ it("Applies is mso", () => {
   });
 });
 
-it("Applies not mso", () => {
+it("Applies not mso", async () => {
   expect(
-    CompileApp(
+    await CompileApp(
       [
         {
           path: "/test",

@@ -7,7 +7,6 @@ import {
   XmlText,
 } from "./xml-parser";
 import { CompileCss } from "./css-manipulator";
-import crypto from "crypto";
 import { ApplySpecifier } from "./tpe-manipulator";
 import fs from "fs-extra";
 
@@ -85,13 +84,11 @@ export function ParseTpeFile(tpe: string) {
   }
 
   const server_js_e = find("script", { area: "server" }).filter(ValidText);
-  const css = get_text_script("style", {}, true);
-  const css_hash = css
-    ? crypto.createHash("md5").update(css).digest("hex")
-    : "";
+  const css_text = get_text_script("style", {}, true);
+  const { css, hash } = CompileCss(css_text);
   return {
-    xml_template: css
-      ? ApplySpecifier(xml_template[0].children, css_hash)
+    xml_template: hash
+      ? ApplySpecifier(xml_template[0].children, hash)
       : xml_template[0].children,
     server_js: server_js_e.reduce(
       (c, n) => ({
@@ -101,7 +98,7 @@ export function ParseTpeFile(tpe: string) {
       {} as NodeJS.Dict<string>
     ),
     client_js: get_text_script("script", { area: "client" }, true),
-    css: css ? CompileCss(css, css_hash) : undefined,
+    css: css,
     title: get_text_script("title", {}, false),
     description: get_text_script("description", {}, false),
   };

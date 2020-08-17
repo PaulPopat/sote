@@ -8,6 +8,7 @@ import css, {
   Media,
   Supports,
 } from "css";
+import crypto from "crypto";
 
 type RuleType = Document | StyleRules | Host | Media | Supports;
 
@@ -71,20 +72,41 @@ function SeparateNoHash(css_string: string) {
     }
   }
 
-  return { to_hash, no_hash };
+  return {
+    to_hash: to_hash
+      .replace(/\/\* DATA: NO_HASH \*\//gm, "")
+      .replace(/\/\* DATA: END_NO_HASH \*\//gm, ""),
+    no_hash: no_hash
+      .replace(/\/\* DATA: NO_HASH \*\//gm, "")
+      .replace(/\/\* DATA: END_NO_HASH \*\//gm, ""),
+  };
 }
 
-export function CompileCss(css_string: string, specifier?: string) {
+export function CompileCss(css_string: string | undefined) {
+  if (!css_string) {
+    return { css: undefined, hash: undefined };
+  }
+
   const { to_hash, no_hash } = SeparateNoHash(css_string);
+  if (!to_hash) {
+    return {
+      css: no_hash || undefined,
+      hash: undefined,
+    };
+  }
+
+  const css_hash = crypto.createHash("md5").update(to_hash).digest("hex");
   const data = css.parse(to_hash);
-  if (specifier && data.stylesheet) {
+  if (css_hash && data.stylesheet) {
     data.stylesheet.rules = data.stylesheet.rules.map((r) =>
-      MapRule(r, specifier)
+      MapRule(r, css_hash)
     );
   }
 
-  return (
-    css.stringify(data, { compress: true }) +
-    no_hash.replace(/\/\* DATA: END_NO_HASH \*\//gm, "")
-  );
+  return {
+    css:
+      css.stringify(data, { compress: true }) +
+      no_hash.replace(/\/\* DATA: END_NO_HASH \*\//gm, ""),
+    hash: css_hash,
+  };
 }

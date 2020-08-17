@@ -103,12 +103,32 @@ console.log('hello world')`,
       xml_template: [
         {
           tag: "div",
-          attributes: { "data-specifier": "284ef8855b48442b71b68617ccf81647" },
+          attributes: {},
           children: [],
         },
       ],
       server_js: {},
       css: `div{display:block}`,
+    });
+  });
+
+  it("It hashes some css with specified", () => {
+    expect(
+      ParseTpeFile(
+        "<template><div/></template><style no-hash>div{display:block}</style><style>div{display:block}</style>"
+      )
+    ).toEqual({
+      xml_template: [
+        {
+          tag: "div",
+          attributes: {
+            "data-specifier": "3d6fc0fe9d4b1a168a6ae116baaf8143",
+          },
+          children: [],
+        },
+      ],
+      server_js: {},
+      css: `div[data-specifier=\"3d6fc0fe9d4b1a168a6ae116baaf8143\"]{display:block;}div{display:block}`,
     });
   });
 
