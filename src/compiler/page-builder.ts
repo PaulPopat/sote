@@ -104,115 +104,113 @@ export async function CompileApp(
   let css_bundle = "";
   let js_bundle = "";
   let included = [] as string[];
-  const pages = await Promise.all(
-    pages_files
-      .map((f) => {
-        try {
-          return { model: ParseTpeFile(f.text), url: f.path };
-        } catch (err) {
-          console.log("Failed to parse page " + f.path + " error below:");
-          console.error(err);
+  const pages = pages_files
+    .map((f) => {
+      try {
+        return { model: ParseTpeFile(f.text), url: f.path };
+      } catch (err) {
+        console.log("Failed to parse page " + f.path + " error below:");
+        console.error(err);
 
-          return undefined;
+        return undefined;
+      }
+    })
+    .filter(NotUndefined)
+    .map(({ model, url }) => ({
+      url,
+      model: {
+        ...model,
+        xml_template: ApplyComponents(model.xml_template, components),
+      },
+    }))
+    .map(({ url, model }, _, full) => {
+      let add = [] as TpeFile[];
+      for (const include of model.xml_template.components) {
+        if (included.find((i) => i === include)) {
+          continue;
         }
-      })
-      .filter(NotUndefined)
-      .map(({ model, url }) => ({
+
+        const component = components[include];
+        if (!component) {
+          throw new Error("Cannot find component");
+        }
+
+        const total = full.filter((f) =>
+          f.model.xml_template.components.find((c) => c === include)
+        ).length;
+        if (total > full.length * 0.8) {
+          included = [...included, include];
+          if (component.css?.trim() && component.css.trim() !== "undefined") {
+            css_bundle +=
+              "\n" +
+              (production ? MinifyCss(component.css, include) : component.css);
+          }
+
+          if (component.client_js?.trim()) {
+            js_bundle +=
+              "\n" +
+              (production
+                ? MinifyJs(component.client_js, include)
+                : component.client_js);
+          }
+        } else {
+          add = [...add, component];
+        }
+      }
+
+      return {
         url,
         model: {
           ...model,
-          xml_template: ApplyComponents(model.xml_template, components),
+          xml_template: model.xml_template.tpe,
+          client_js: add.reduce(
+            (c, n) => (c ?? "") + (n.client_js ?? ""),
+            model.client_js && production
+              ? MinifyJs(model.client_js, url)
+              : model.client_js ?? ""
+          ),
+          css: add.reduce(
+            (c, n) => (c ?? "") + (n.css ?? ""),
+            model.css && production
+              ? MinifyCss(model.css, url)
+              : model.css ?? ""
+          ),
         },
-      }))
-      .map(async ({ url, model }, _, full) => {
-        let add = [] as TpeFile[];
-        for (const include of model.xml_template.components) {
-          if (included.find((i) => i === include)) {
-            continue;
-          }
+      };
+    })
+    .map((page) => {
+      if (!page.model.title) {
+        throw new Error(`Page ${page.url} does not have a title`);
+      }
 
-          const component = components[include];
-          if (!component) {
-            throw new Error("Cannot find component");
-          }
+      if (!page.model.description) {
+        throw new Error(`Page ${page.url} does not have a description`);
+      }
 
-          const total = full.filter((f) =>
-            f.model.xml_template.components.find((c) => c === include)
-          ).length;
-          if (total > full.length * 0.8) {
-            included = [...included, include];
-            if (component.css?.trim() && component.css.trim() !== "undefined") {
-              css_bundle +=
-                "\n" +
-                (await PrefixCss(
-                  production ? MinifyCss(component.css, include) : component.css
-                ));
-            }
-
-            if (component.client_js?.trim()) {
-              js_bundle +=
-                "\n" +
-                (production
-                  ? MinifyJs(component.client_js, include)
-                  : component.client_js);
-            }
-          } else {
-            add = [...add, component];
-          }
-        }
-
-        return {
-          url,
-          model: {
-            ...model,
-            xml_template: model.xml_template.tpe,
-            client_js: add.reduce(
-              (c, n) => (c ?? "") + (n.client_js ?? ""),
-              model.client_js && production
-                ? MinifyJs(model.client_js, url)
-                : model.client_js ?? ""
-            ),
-            css: await PrefixCss(
-              add.reduce(
-                (c, n) => (c ?? "") + (n.css ?? ""),
-                model.css && production
-                  ? MinifyCss(model.css, url)
-                  : model.css ?? ""
-              )
-            ),
+      return {
+        ...page,
+        model: {
+          ...page.model,
+          server_js: {
+            ...page.model.server_js,
+            get: page.model.server_js.get || "return query",
           },
-        };
-      })
-      .map(async (p) => {
-        const page = await p;
-        if (!page.model.title) {
-          throw new Error(`Page ${page.url} does not have a title`);
-        }
-
-        if (!page.model.description) {
-          throw new Error(`Page ${page.url} does not have a description`);
-        }
-
-        return {
-          ...page,
-          model: {
-            ...page.model,
-            server_js: {
-              ...page.model.server_js,
-              get: page.model.server_js.get || "return query",
-            },
-            client_js: page.model.client_js,
-            css: page.model.css,
-            title: page.model.title ?? "",
-            description: page.model.description ?? "",
-          },
-        };
-      })
-  );
+          client_js: page.model.client_js,
+          css: page.model.css,
+          title: page.model.title ?? "",
+          description: page.model.description ?? "",
+        },
+      };
+    });
 
   return {
-    pages: pages,
-    css_bundle: css_bundle,
+    pages: await Promise.all(
+      pages.map(async (p) => ({
+        ...p,
+        model: { ...p.model, css: await PrefixCss(p.model.css) },
+      }))
+    ),
+    css_bundle: await PrefixCss(css_bundle),
     js_bundle: js_bundle,
   };
 }

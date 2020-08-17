@@ -480,6 +480,164 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
   });
 });
 
+it("Bundles component css from multiple components", async () => {
+  expect(
+    await CompileApp(
+      [
+        {
+          path: "/test",
+          text: `
+<template>
+  <test::component>
+    <test::other>
+      <div />
+    </test::other>
+  </test::component>
+</template>
+<style>
+  .test { display: block; }
+</style>
+<title>A test page</title>
+<description>A test description</description>`,
+        },
+        {
+          path: "/test2",
+          text: `
+<template>
+  <test::component>
+    <test::other>
+      <div />
+    </test::other>
+  </test::component>
+</template>
+<style>
+  .test { display: block; }
+</style>
+<title>A test page</title>
+<description>A test description</description>`,
+        },
+      ],
+      [
+        {
+          path: "/test/component",
+          text: `
+<template>
+  <div>
+    <children />
+  </div>
+</template>
+<style>
+  div { display: block; }
+</style>
+        `,
+        },
+        {
+          path: "/test/other",
+          text: `
+<template>
+  <div>
+    <children />
+  </div>
+</template>
+<style>
+  div { display: block; }
+</style>
+        `,
+        },
+      ],
+      false
+    )
+  ).toEqual({
+    pages: [
+      {
+        url: "/test",
+        model: {
+          xml_template: [
+            {
+              tag: "div",
+              attributes: {
+                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+              },
+              children: [
+                {
+                  tag: "div",
+                  attributes: {
+                    "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+                  },
+                  children: [
+                    {
+                      tag: "div",
+                      attributes: {
+                        "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                      },
+                      children: [],
+                      props: [],
+                    },
+                  ],
+                  props: [{}],
+                },
+              ],
+              props: [{}],
+            },
+          ],
+          server_js: {
+            get: "return query",
+          },
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
+          title: "A test page",
+          description: "A test description",
+        },
+      },
+      {
+        url: "/test2",
+        model: {
+          xml_template: [
+            {
+              tag: "div",
+              attributes: {
+                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+              },
+              children: [
+                {
+                  tag: "div",
+                  attributes: {
+                    "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+                  },
+                  children: [
+                    {
+                      tag: "div",
+                      attributes: {
+                        "data-specifier": "edf762dd4e455c036183858efa983eaf",
+                      },
+                      children: [],
+                      props: [],
+                    },
+                  ],
+                  props: [{}],
+                },
+              ],
+              props: [{}],
+            },
+          ],
+          server_js: {
+            get: "return query",
+          },
+          client_js: "",
+          css:
+            '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
+          title: "A test page",
+          description: "A test description",
+        },
+      },
+    ],
+    css_bundle:
+      '\ndiv[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}\ndiv[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}',
+    js_bundle: "",
+  });
+});
+
 it("Bundles component javascript", async () => {
   expect(
     await CompileApp(
