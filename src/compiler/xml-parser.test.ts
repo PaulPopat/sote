@@ -123,7 +123,7 @@ text</div>`)
       },
     ]);
   });
-  
+
   test("Parses attributes with no value as empty string", () => {
     expect(ParseXml("<div><span test /></div>")).toEqual([
       {
@@ -253,6 +253,33 @@ text</div>`)
         tag: "div",
         attributes: {},
         children: [{ text: "{<div></div>}" }],
+      },
+    ]);
+  });
+
+  test("Ignores comments", () => {
+    expect(
+      ParseXml("<div>test test <!-- test text --> test test</div>")
+    ).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [{ text: "test test test test" }],
+      },
+    ]);
+  });
+
+  test("Ignores multiline comments", () => {
+    expect(
+      ParseXml(`<div>test test <!-- test
+      
+      
+      text --> test test</div>`)
+    ).toEqual([
+      {
+        tag: "div",
+        attributes: {},
+        children: [{ text: "test test test test" }],
       },
     ]);
   });

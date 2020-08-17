@@ -33,7 +33,7 @@ function* SplitXml(xml: string) {
   const is_script_end = (expression: string) =>
     expression.match(/<\/\s*script/) || expression.match(/<\/\s*style/);
 
-  for (const char of xml) {
+  for (const char of xml.replace(/<!--(.|\n)*-->/gm, "")) {
     if (char === "{") {
       expression_depth += 1;
       whitespace_count = 0;
