@@ -2,16 +2,21 @@ import fs from "fs-extra";
 
 export async function InitialiseApp() {
   console.log("Preparing a starting app for you");
-  await fs.outputJson("./tpe-config.json", {
-    static: "./_",
-    pages: "./src/pages",
-    components: [{ path: "./src/components", prefix: "c" }],
-    lang: "en",
-    port: 3000,
-    behavior_in_tag: false,
-    external_scripts: [],
-    external_css: []
-  });
+  await fs.outputJson(
+    "./tpe-config.json",
+    {
+      static: "./_",
+      pages: "./src/pages",
+      components: [{ path: "./src/components", prefix: "c" }],
+      lang: "en",
+      port: 3000,
+      behavior_in_tag: false,
+      email: false,
+      author: "",
+      favicon: [],
+    },
+    { spaces: 2 }
+  );
 
   await fs.outputFile(
     "./src/components/header.tpe",
