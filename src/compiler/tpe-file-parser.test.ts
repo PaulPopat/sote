@@ -48,6 +48,22 @@ describe("ParseTpeFile", () => {
     });
   });
 
+  it("Parses client javascript with babel", () => {
+    expect(
+      ParseTpeFile(
+        `<template><div/></template><script area="client" babel>const test = () => "test";</script>`
+      )
+    ).toEqual({
+      xml_template: [{ tag: "div", attributes: {}, children: [] }],
+      server_js: {},
+      client_js: `"use strict";
+
+var test = function test() {
+  return "test";
+};`,
+    });
+  });
+
   it("Parses external client javascript", () => {
     expect(
       ParseTpeFile(

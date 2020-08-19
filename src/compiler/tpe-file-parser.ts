@@ -8,6 +8,7 @@ import {
 } from "./xml-parser";
 import { CompileCss } from "./css-manipulator";
 import { ApplySpecifier } from "./tpe-manipulator";
+import * as Babel from "@babel/core";
 import fs from "fs-extra";
 
 export type TpeFile = {
@@ -26,6 +27,22 @@ type XmlScript = {
 
 function ValidText(e: XmlElement): e is XmlScript {
   return e.children.length === 1 && IsText(e.children[0]);
+}
+
+function TransformJs(js: string) {
+  const result = Babel.transformSync(js, {
+    presets: ["@babel/preset-env"],
+    plugins: [
+      "@babel/plugin-proposal-class-properties",
+      ["@babel/plugin-transform-runtime", { regenerator: true }],
+    ],
+  });
+
+  if (!result) {
+    return "";
+  }
+
+  return result.code ?? "";
 }
 
 export function ParseTpeFile(tpe: string) {
@@ -64,6 +81,8 @@ export function ParseTpeFile(tpe: string) {
         const build_string = (text: string) =>
           typeof e.attributes["no-hash"] === "string"
             ? "/* DATA: NO_HASH */" + text + "/* DATA: END_NO_HASH */"
+            : typeof e.attributes["babel"] === "string"
+            ? TransformJs(text)
             : text;
         if (e.attributes.src) {
           return build_string(fs.readFileSync(e.attributes.src, "utf-8"));
