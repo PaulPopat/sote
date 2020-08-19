@@ -60,7 +60,7 @@ function MinifyCss(css: string, url: string) {
 function PrefixCss(css: string) {
   return new Promise<string>((res, rej) => {
     postcss([autoprefixer])
-      .process(css)
+      .process(css, { from: undefined })
       .then((result) => {
         result.warnings().forEach((warn) => {
           console.warn(warn.toString());
