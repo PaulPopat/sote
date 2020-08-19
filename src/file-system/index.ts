@@ -77,6 +77,7 @@ const IsOptions = IsObject({
   lang: Optional(IsString),
   port: Optional(IsNumber),
   resources: Optional(IsString),
+  email: Optional(IsBoolean)
 });
 
 export type Options = IsType<typeof IsOptions>;
@@ -103,5 +104,6 @@ export async function GetOptions(): Promise<Options> {
     lang: undefined,
     port: undefined,
     resources: undefined,
+    email: undefined
   };
 }

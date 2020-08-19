@@ -14,18 +14,34 @@ export function BuildPage(
 ) {
   return [
     `<!DOCTYPE html>`,
-    `<html${options.lang ? ` lang="${xmlescape(options.lang)}"` : ""}>`,
+    `<html${options.lang ? ` lang="${xmlescape(options.lang)}"` : ""}${
+      options.email
+        ? ` xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"`
+        : ``
+    }>`,
     `<head>`,
     `<meta charset="utf-8" />`,
     `<title>${xmlescape(page.model.title)}</title>`,
     `<meta name="description" content="${xmlescape(page.model.description)}"/>`,
     options.author ? `<meta name="author" content="${options.author}"/>` : "",
-    `<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>`,
+    ...(options.email
+      ? [
+          `<!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->`,
+          '<meta http-equiv="X-UA-Compatible" content="IE=edge"/>',
+          '<meta name="viewport" content="width=device-width,initial-scale=1"/>',
+          '<meta name="x-apple-disable-message-reformatting"/>',
+          '<meta name="color-scheme" content="light dark"/>',
+          '<meta name="supported-color-schemes" content="light dark"/>',
+        ]
+      : [
+          `<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>`,
+        ]),
     ...(options.favicon
       ? options.favicon.map(
           (f) => `<link rel="icon" href="${f.path}" sizes="${f.size}"/>`
         )
       : []),
+
     ...(options.behavior_in_tag
       ? [
           page.model.css
