@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { PassThrough } from "stream";
 import { ParseUrl, RemoveUrlParameters } from "../utils/url";
-import { Options } from "../file-system";
+import { Options } from "../file-system/index";
 import { PagesModel } from "../compiler/page-builder";
 import { EvaluateAsync } from "../utils/evaluate";
 import { BuildPage } from "./page-builder";
