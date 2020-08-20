@@ -41,6 +41,25 @@ it("Applies text props", async () => {
   ).toBe(`<div>hello world</div>`);
 });
 
+it("Applies strings with bracers in text expressions", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
+        [
+          {
+            tag: "div",
+            attributes: {},
+            children: [{ text: "{`{props.test}`}" }],
+          } as AppliedXmlElement,
+        ],
+        [],
+        {},
+        {}
+      )
+    )
+  ).toBe(`<div>{props.test}</div>`);
+});
+
 it("Supplies context to text expressions", async () => {
   expect(
     ToXml(
