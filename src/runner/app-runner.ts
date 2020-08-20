@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { PassThrough } from "stream";
-import axios from "axios";
 import { ParseUrl, RemoveUrlParameters } from "../utils/url";
 import { Options } from "../file-system";
 import { PagesModel } from "../compiler/page-builder";
@@ -28,8 +27,8 @@ export async function StartApp(resources: PagesModel, options: Options) {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   const context_data = options.resources
-    ? { axios, ...require(path.resolve(options.resources)) }
-    : { axios };
+    ? { ...require(path.resolve(options.resources)) }
+    : { };
 
   async function RenderPage(
     page: PagesModel["pages"][number],
