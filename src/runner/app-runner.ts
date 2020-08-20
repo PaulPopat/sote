@@ -28,7 +28,7 @@ export async function StartApp(resources: PagesModel, options: Options) {
 
   const context_data = options.resources
     ? { ...require(path.resolve(options.resources)) }
-    : { };
+    : {};
 
   async function RenderPage(
     page: PagesModel["pages"][number],
@@ -57,6 +57,7 @@ export async function StartApp(resources: PagesModel, options: Options) {
         resources.js_bundle,
         resources.css_bundle,
         props,
+        context_data,
         options
       );
 

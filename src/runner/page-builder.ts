@@ -5,11 +5,12 @@ import { ToXml } from "../compiler/xml-parser";
 import { Options } from "../file-system";
 import { RemoveUrlParameters } from "../utils/url";
 
-export function BuildPage(
+export async function BuildPage(
   page: PagesModel["pages"][number],
   bundle_js: string,
   bundle_css: string,
   props: any,
+  context: any,
   options: Options
 ) {
   return [
@@ -62,7 +63,9 @@ export function BuildPage(
     `</head>`,
 
     `<body style="margin:0;padding:0;">`,
-    ToXml(BuildTpe(page.model.xml_template, props)),
+    ToXml(
+      await BuildTpe(page.model.xml_template, page.model.tree, props, context)
+    ),
     `</body>`,
     ...(options.behavior_in_tag
       ? [
