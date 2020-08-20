@@ -19,7 +19,7 @@ it("Applies an attribute prop", async () => {
         {}
       )
     )
-  ).toBe(`<div class="hello world"/>`);
+  ).toBe(`<div class="hello world"></div>`);
 });
 
 it("Applies text props", async () => {
@@ -242,5 +242,5 @@ it("Applies an multiple layered attribute prop", async () => {
         {}
       )
     )
-  ).toBe(`<div class="hello, world"/>`);
+  ).toBe(`<div class="hello, world"></div>`);
 });

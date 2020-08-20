@@ -1,5 +1,24 @@
 import xmlescape from "xml-escape";
-import { TransformKeys, TransformProperties } from "../utils/object";
+
+const self_closing_tags = [
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+  "command",
+  "keygen",
+  "menuitem",
+];
 
 export type XmlElement = {
   tag: string;
@@ -235,7 +254,11 @@ function WriteNode(node: XmlNode): string {
   }
 
   if (!node.children.length) {
-    return result + "/>";
+    if (self_closing_tags.find(t => t === node.tag)) {
+      return result + "/>";
+    }
+
+    return `${result}></${node.tag}>`;
   }
 
   return (

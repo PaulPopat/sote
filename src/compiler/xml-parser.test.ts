@@ -288,8 +288,12 @@ text</div>`)
 describe("ToXml", () => {
   it("Writes an xml tag", () => {
     expect(ToXml([{ tag: "div", attributes: {}, children: [] }])).toBe(
-      "<div/>"
+      "<div></div>"
     );
+  });
+
+  it("Writes a self closing xml tag", () => {
+    expect(ToXml([{ tag: "br", attributes: {}, children: [] }])).toBe("<br/>");
   });
 
   it("Writes multiple root xml tags", () => {
@@ -298,7 +302,7 @@ describe("ToXml", () => {
         { tag: "div", attributes: {}, children: [] },
         { tag: "span", attributes: {}, children: [] },
       ])
-    ).toBe("<div/><span/>");
+    ).toBe("<div></div><span></span>");
   });
 
   it("Write xml text", () => {
@@ -308,13 +312,13 @@ describe("ToXml", () => {
   it("Writes xml attributes", () => {
     expect(
       ToXml([{ tag: "div", attributes: { class: "test" }, children: [] }])
-    ).toBe('<div class="test"/>');
+    ).toBe('<div class="test"></div>');
   });
 
   it("Escapes xml attributes", () => {
     expect(
       ToXml([{ tag: "div", attributes: { class: 'te"<>/st' }, children: [] }])
-    ).toBe('<div class="te&quot;&lt;&gt;/st"/>');
+    ).toBe('<div class="te&quot;&lt;&gt;/st"></div>');
   });
 
   it("Writes xml child text", () => {
@@ -338,7 +342,7 @@ describe("ToXml", () => {
           children: [{ tag: "div", attributes: {}, children: [] }],
         },
       ])
-    ).toBe("<div><div/></div>");
+    ).toBe("<div><div></div></div>");
   });
 
   it("Applies is MSO tag", () => {
@@ -350,7 +354,7 @@ describe("ToXml", () => {
           children: [{ tag: "div", attributes: {}, children: [] }],
         },
       ])
-    ).toBe("<!--[if mso]><div/><![endif]-->");
+    ).toBe("<!--[if mso]><div></div><![endif]-->");
   });
 
   it("Applies not MSO tag", () => {
@@ -362,6 +366,6 @@ describe("ToXml", () => {
           children: [{ tag: "div", attributes: {}, children: [] }],
         },
       ])
-    ).toBe("<!--[if !mso]><!--><div/><!--<![endif]-->");
+    ).toBe("<!--[if !mso]><!--><div></div><!--<![endif]-->");
   });
 });
