@@ -41,6 +41,25 @@ it("Applies text props", async () => {
   ).toBe(`<div>hello world</div>`);
 });
 
+it("Supplies context to text expressions", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
+        [
+          {
+            tag: "div",
+            attributes: {},
+            children: [{ text: "{context.test}" }],
+          } as AppliedXmlElement,
+        ],
+        [],
+        {},
+        { test: "hello world" }
+      )
+    )
+  ).toBe(`<div>hello world</div>`);
+});
+
 it("Applies for loops", async () => {
   expect(
     ToXml(
@@ -121,7 +140,14 @@ it("Applies for loops with in model complex arrays", async () => {
             ],
           } as AppliedXmlElement,
         ],
-        [{ id: "1", children: [], props: { at: "/" } }],
+        [
+          {
+            id: "1",
+            children: [],
+            props: { at: "/" },
+            post_process: undefined,
+          },
+        ],
         {},
         {}
       )
@@ -206,8 +232,10 @@ it("Applies an multiple layered attribute prop", async () => {
                 id: "2",
                 props: { super_test: ":props.tester.join(', ')" },
                 children: [],
+                post_process: undefined,
               },
             ],
+            post_process: undefined,
           },
         ],
         { test: "hello world" },

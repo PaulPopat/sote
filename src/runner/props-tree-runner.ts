@@ -1,6 +1,6 @@
 import { TreeJson } from "../compiler/props-tree";
 import { TransformPropertiesAsync } from "../utils/object";
-import { EvaluateAsyncExpression } from "../utils/evaluate";
+import { EvaluateAsyncExpression, EvaluateAsync } from "../utils/evaluate";
 
 type ResolvedTree = {
   props: NodeJS.Dict<any>;
@@ -22,7 +22,12 @@ async function BuildMemoryTree(
       : e
   );
   return {
-    props: p,
+    props: tree.post_process
+      ? await EvaluateAsync(tree.post_process, [
+          { name: "props", value: p },
+          { name: "context", value: context },
+        ])
+      : p,
     id: tree.id,
     children: await Promise.all(
       tree.children.map((c) => BuildMemoryTree(c, p, context))

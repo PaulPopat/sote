@@ -52,7 +52,7 @@ export async function StartApp(resources: PagesModel, options: Options) {
         { name: "res", value: res },
       ]);
 
-      const html = BuildPage(
+      const html = await BuildPage(
         page,
         resources.js_bundle,
         resources.css_bundle,

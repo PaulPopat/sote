@@ -1,6 +1,6 @@
 import { XmlNode, IsText, XmlText, XmlElement } from "./xml-parser";
 import { TpeFile } from "./tpe-file-parser";
-import { PropsTree, TreeJson } from "./props-tree";
+import { PropsTree } from "./props-tree";
 
 type ApplierContext = {
   children: AppliedXmlNode[];
@@ -49,7 +49,7 @@ function internal(
         ...context,
         children: internal(n.children, components, context),
         props: [...context.props, n.attributes],
-        tree: context.tree.add(n.attributes),
+        tree: context.tree.add(n.attributes, component.server_js?.get),
       });
     }
 

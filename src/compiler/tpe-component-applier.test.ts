@@ -313,4 +313,48 @@ describe("ApplyComponents", () => {
       props: [{ children: [], id: "10", props: { tester: ":props.test" } }],
     });
   });
+
+  it("Applies post processing server statement for component", () => {
+    expect(
+      ApplyComponents(
+        [
+          {
+            tag: "test-component",
+            attributes: {},
+            children: [{ tag: "span", attributes: {}, children: [] }],
+          },
+        ],
+        {
+          "test-component": {
+            xml_template: [
+              {
+                tag: "div",
+                attributes: {},
+                children: [{ tag: "children", attributes: {}, children: [] }],
+              },
+            ],
+            server_js: { get: "console.log('test')" },
+          },
+        }
+      )
+    ).toEqual({
+      tpe: [
+        {
+          tag: "div",
+          attributes: {},
+          children: [{ tag: "span", attributes: {}, children: [] }],
+          props: "11",
+        },
+      ],
+      components: ["test-component"],
+      props: [
+        {
+          children: [],
+          id: "11",
+          props: {},
+          post_process: "console.log('test')",
+        },
+      ],
+    });
+  });
 });
