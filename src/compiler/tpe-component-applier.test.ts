@@ -1,5 +1,12 @@
 import { ApplyComponents } from "./tpe-component-applier";
 
+jest.mock("uuid", () => {
+  let index = 0;
+  return {
+    v4: () => (++index).toString(),
+  };
+});
+
 describe("ApplyComponents", () => {
   it("Applies a simple component", () => {
     expect(
@@ -12,8 +19,9 @@ describe("ApplyComponents", () => {
         }
       )
     ).toEqual({
-      tpe: [{ tag: "div", attributes: {}, children: [], props: [{}] }],
+      tpe: [{ tag: "div", attributes: {}, children: [], props: "1" }],
       components: ["test-component"],
+      props: [{ children: [], id: "1", props: {} }],
     });
   });
 
@@ -38,11 +46,11 @@ describe("ApplyComponents", () => {
         {
           tag: "span",
           attributes: {},
-          children: [{ tag: "div", attributes: {}, children: [], props: [{}] }],
-          props: [],
+          children: [{ tag: "div", attributes: {}, children: [], props: "2" }],
         },
       ],
       components: ["test-component"],
+      props: [{ children: [], id: "2", props: {} }],
     });
   });
 
@@ -73,11 +81,12 @@ describe("ApplyComponents", () => {
         {
           tag: "div",
           attributes: {},
-          children: [{ tag: "span", attributes: {}, children: [], props: [] }],
-          props: [{}],
+          children: [{ tag: "span", attributes: {}, children: [] }],
+          props: "3",
         },
       ],
       components: ["test-component"],
+      props: [{ children: [], id: "3", props: {} }],
     });
   });
 
@@ -108,11 +117,15 @@ describe("ApplyComponents", () => {
         {
           tag: "div",
           attributes: {},
-          children: [{ tag: "div", attributes: {}, children: [], props: [{}] }],
-          props: [{}],
+          children: [{ tag: "div", attributes: {}, children: [], props: "4" }],
+          props: "5",
         },
       ],
       components: ["test-component"],
+      props: [
+        { children: [], id: "4", props: {} },
+        { children: [], id: "5", props: {} },
+      ],
     });
   });
 
@@ -144,10 +157,11 @@ describe("ApplyComponents", () => {
           tag: "div",
           attributes: { class: ":props.tester" },
           children: [],
-          props: [{ tester: ":props.test" }],
+          props: "6",
         },
       ],
       components: ["test-component"],
+      props: [{ children: [], id: "6", props: { tester: ":props.test" } }],
     });
   });
 
@@ -200,16 +214,26 @@ describe("ApplyComponents", () => {
               tag: "div",
               attributes: { class: ":props.second_tester" },
               children: [],
-              props: [
-                { tester: ":props.test" },
-                { second_tester: ":props.tester" },
-              ],
+              props: "8",
             },
           ],
-          props: [{ tester: ":props.test" }],
+          props: "7",
         },
       ],
       components: ["test-component", "second-test-component"],
+      props: [
+        {
+          children: [
+            {
+              children: [],
+              id: "8",
+              props: { second_tester: ":props.tester" },
+            },
+          ],
+          id: "7",
+          props: { tester: ":props.test" },
+        },
+      ],
     });
   });
 
@@ -241,10 +265,11 @@ describe("ApplyComponents", () => {
           tag: "div",
           attributes: { class: ":props['tester']" },
           children: [],
-          props: [{ tester: ":props.test" }],
+          props: "9",
         },
       ],
       components: ["test-component"],
+      props: [{ children: [], id: "9", props: { tester: ":props.test" } }],
     });
   });
 
@@ -278,13 +303,14 @@ describe("ApplyComponents", () => {
           children: [
             {
               text: "Hello {props.tester} world",
-              props: [{ tester: ":props.test" }],
+              props: "10",
             },
           ],
-          props: [{ tester: ":props.test" }],
+          props: "10",
         },
       ],
       components: ["test-component"],
+      props: [{ children: [], id: "10", props: { tester: ":props.test" } }],
     });
   });
 });

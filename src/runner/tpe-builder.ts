@@ -1,28 +1,18 @@
 import { XmlNode, IsText } from "../compiler/xml-parser";
 import { GetExpressions } from "../utils/html";
-import { Evaluate } from "../utils/evaluate";
-import { TransformProperties } from "../utils/object";
+import { EvaluateAsyncExpression } from "../utils/evaluate";
+import { TransformPropertiesAsync } from "../utils/object";
 import { IsString } from "@paulpopat/safe-type";
 import { AppliedXmlNode } from "../compiler/tpe-component-applier";
-
-function GetProps(props: any, path: NodeJS.Dict<string>[]) {
-  return path.reduce(
-    (c, n) =>
-      TransformProperties(n, (e) =>
-        e.startsWith(":")
-          ? Evaluate(e.replace(":", ""), [{ name: "props", value: c }])
-          : e
-      ),
-    props
-  );
-}
+import { TreeJson } from "../compiler/props-tree";
+import { BuildTree } from "./props-tree-runner";
 
 type Params = {
   name: string;
   value: any;
 }[];
 
-function ReduceText(node: string, props: any, params: Params) {
+async function ReduceText(node: string, props: any, params: Params) {
   if (!node) {
     return node;
   }
@@ -31,27 +21,33 @@ function ReduceText(node: string, props: any, params: Params) {
   for (const expression of GetExpressions(text)) {
     text = text.replace(
       `{${expression}}`,
-      Evaluate(expression, [{ name: "props", value: props }, ...params])
+      await EvaluateAsyncExpression(expression, [
+        { name: "props", value: props },
+        ...params,
+      ])
     );
   }
 
   return text;
 }
 
-function Internal(
+async function Internal(
   tpe: AppliedXmlNode[],
+  tree: { get(id: string): NodeJS.Dict<any> },
   props: any,
   params: Params
-): XmlNode[] {
-  return tpe.flatMap((n) => {
-    const inner_props = GetProps(props, n.props);
+): Promise<XmlNode[]> {
+  const result: XmlNode[] = [];
+  for (const n of tpe) {
+    const inner_props = n.props ? tree.get(n.props) : props;
     if (IsText(n)) {
-      return [{ text: ReduceText(n.text, inner_props, params) } as XmlNode];
+      result.push({ text: await ReduceText(n.text, inner_props, params) } as XmlNode);
+      continue;
     }
 
-    const attributes = TransformProperties(n.attributes, (p) =>
+    const attributes = await TransformPropertiesAsync(n.attributes, async (p) =>
       p.startsWith(":")
-        ? Evaluate(p.replace(":", ""), [
+        ? await EvaluateAsyncExpression(p.replace(":", ""), [
             { name: "props", value: inner_props },
             ...params,
           ])
@@ -67,30 +63,43 @@ function Internal(
         );
       }
 
-      return subject.flatMap((s) =>
-        Internal(n.children, props, [...params, { name: key, value: s }])
-      );
+      for (const s of subject) {
+        result.push(
+          ...(await Internal(n.children, tree, props, [
+            ...params,
+            { name: key, value: s },
+          ]))
+        );
+      }
+
+      continue;
     }
 
     if (n.tag === "if") {
       const check = attributes.check;
       if (check) {
-        return Internal(n.children, props, params);
-      } else {
-        return [];
+        result.push(...(await Internal(n.children, tree, props, params)));
       }
+
+      continue;
     }
 
-    return [
-      {
-        ...n,
-        attributes,
-        children: Internal(n.children, props, params),
-      } as XmlNode,
-    ];
-  });
+    result.push({
+      ...n,
+      attributes,
+      children: await Internal(n.children, tree, props, params),
+    } as XmlNode);
+  }
+
+  return result;
 }
 
-export function BuildTpe(tpe: AppliedXmlNode[], props: any): XmlNode[] {
-  return Internal(tpe, props, []);
+export async function BuildTpe(
+  tpe: AppliedXmlNode[],
+  tree: TreeJson[],
+  props: any,
+  context: any
+): Promise<XmlNode[]> {
+  const built = await BuildTree(tree, props, context);
+  return Internal(tpe, built, props, [{ name: "context", value: context }]);
 }

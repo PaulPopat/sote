@@ -1,15 +1,20 @@
 import { XmlNode, IsText, XmlText, XmlElement } from "./xml-parser";
 import { TpeFile } from "./tpe-file-parser";
+import { PropsTree, TreeJson } from "./props-tree";
 
 type ApplierContext = {
   children: AppliedXmlNode[];
   props: NodeJS.Dict<string>[];
+  used: string[];
+  tree:
+    | ReturnType<typeof PropsTree>
+    | ReturnType<ReturnType<typeof PropsTree>["add"]>;
 };
 
-export type AppliedXmlText = XmlText & { props: NodeJS.Dict<string>[] };
+export type AppliedXmlText = XmlText & { props: string | undefined };
 
 export type AppliedXmlElement = XmlElement & {
-  props: NodeJS.Dict<string>[];
+  props: string | undefined;
   children: AppliedXmlNode[];
 };
 
@@ -26,12 +31,11 @@ export function IsAppliedElement(e: AppliedXmlNode): e is AppliedXmlElement {
 function internal(
   tpe: XmlNode[],
   components: NodeJS.Dict<TpeFile>,
-  used: string[],
   context: ApplierContext
 ): AppliedXmlNode[] {
   return tpe.flatMap((n) => {
     if (IsText(n)) {
-      return { ...n, text: n.text, props: context.props };
+      return { ...n, text: n.text, props: (context.tree as any).id };
     }
 
     if (n.tag === "children") {
@@ -40,18 +44,20 @@ function internal(
 
     const component = components[n.tag];
     if (component) {
-      used.push(n.tag);
-      return internal(component.xml_template, components, used, {
-        children: internal(n.children, components, used, context),
+      context.used.push(n.tag);
+      return internal(component.xml_template, components, {
+        ...context,
+        children: internal(n.children, components, context),
         props: [...context.props, n.attributes],
+        tree: context.tree.add(n.attributes),
       });
     }
 
     return {
       ...n,
       attributes: n.attributes,
-      children: internal(n.children, components, used, context),
-      props: context.props,
+      children: internal(n.children, components, context),
+      props: (context.tree as any).id,
     };
   });
 }
@@ -59,12 +65,19 @@ function internal(
 export function ApplyComponents(
   tpe: XmlNode[],
   components: NodeJS.Dict<TpeFile>
-): { tpe: AppliedXmlNode[]; components: string[] } {
-  const used = [] as string[];
-  const result = internal(tpe, components, used, { children: [], props: [] });
+) {
+  const tree = PropsTree();
+  const context: ApplierContext = {
+    children: [],
+    props: [],
+    used: [],
+    tree: tree,
+  };
+  const result = internal(tpe, components, context);
 
   return {
     tpe: result,
-    components: used.filter((item, i, ar) => ar.indexOf(item) === i),
+    components: context.used.filter((item, i, ar) => ar.indexOf(item) === i),
+    props: tree.json(),
   };
 }

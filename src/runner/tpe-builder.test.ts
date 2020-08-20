@@ -2,96 +2,103 @@ import { BuildTpe } from "./tpe-builder";
 import { ToXml } from "../compiler/xml-parser";
 import { AppliedXmlElement } from "../compiler/tpe-component-applier";
 
-it("Applies an attribute prop", () => {
+it("Applies an attribute prop", async () => {
   expect(
     ToXml(
-      BuildTpe(
+      await BuildTpe(
         [
           {
             tag: "div",
             attributes: { class: ":props.test" },
             children: [],
-            props: [],
+            props: undefined,
           },
         ],
-        { test: "hello world" }
+        [],
+        { test: "hello world" },
+        {}
       )
     )
   ).toBe(`<div class="hello world"/>`);
 });
 
-it("Applies text props", () => {
+it("Applies text props", async () => {
   expect(
     ToXml(
-      BuildTpe(
+      await BuildTpe(
         [
           {
             tag: "div",
             attributes: {},
-            children: [{ text: "{props.test}", props: [] }],
-            props: [],
+            children: [{ text: "{props.test}" }],
           } as AppliedXmlElement,
         ],
-        { test: "hello world" }
+        [],
+        { test: "hello world" },
+        {}
       )
     )
   ).toBe(`<div>hello world</div>`);
 });
 
-it("Applies for loops", () => {
+it("Applies for loops", async () => {
   expect(
     ToXml(
-      BuildTpe(
+      await BuildTpe(
         [
           {
             tag: "for",
             attributes: { subject: ":props.test", key: "key" },
-            props: [],
+            props: undefined,
             children: [
               {
                 tag: "div",
                 attributes: {},
-                props: [],
-                children: [{ text: "{key}", props: [] }],
+                props: undefined,
+                children: [{ text: "{key}", props: undefined }],
               } as AppliedXmlElement,
             ],
           } as AppliedXmlElement,
         ],
-        { test: ["hello", "world"] }
-      )
-    )
-  ).toBe(`<div>hello</div><div>world</div>`);
-});
-
-it("Applies for loops with in model arrays", () => {
-  expect(
-    ToXml(
-      BuildTpe(
-        [
-          {
-            tag: "for",
-            attributes: { subject: ":['hello', 'world']", key: "key" },
-            props: [],
-            children: [
-              {
-                tag: "div",
-                attributes: {},
-                props: [],
-                children: [{ text: "{key}", props: [] }],
-              } as AppliedXmlElement,
-            ],
-          } as AppliedXmlElement,
-        ],
+        [],
+        { test: ["hello", "world"] },
         {}
       )
     )
   ).toBe(`<div>hello</div><div>world</div>`);
 });
 
-it("Applies for loops with in model complex arrays", () => {
+it("Applies for loops with in model arrays", async () => {
   expect(
     ToXml(
-      BuildTpe(
+      await BuildTpe(
+        [
+          {
+            tag: "for",
+            attributes: { subject: ":['hello', 'world']", key: "key" },
+            props: undefined,
+            children: [
+              {
+                tag: "div",
+                attributes: {},
+                props: undefined,
+                children: [{ text: "{key}", props: undefined }],
+              } as AppliedXmlElement,
+            ],
+          } as AppliedXmlElement,
+        ],
+        [],
+        {},
+        {}
+      )
+    )
+  ).toBe(`<div>hello</div><div>world</div>`);
+});
+
+it("Applies for loops with in model complex arrays", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
         [
           {
             tag: "for",
@@ -100,7 +107,7 @@ it("Applies for loops with in model complex arrays", () => {
                 ":[{ url: '/', title: 'Welcome' }, { url: '/setup', title: 'Setup' }]",
               key: "page",
             },
-            props: [],
+            props: undefined,
             children: [
               {
                 tag: "a",
@@ -108,86 +115,103 @@ it("Applies for loops with in model complex arrays", () => {
                   href: ":page.url",
                   class: ":props.at === page.url ? 'active' : ''",
                 },
-                props: [{ at: "/" }],
-                children: [
-                  { text: "{page.title}", props: [{ at: "/" }] },
-                ],
+                props: "1",
+                children: [{ text: "{page.title}", props: "1" }],
               } as AppliedXmlElement,
             ],
           } as AppliedXmlElement,
         ],
+        [{ id: "1", children: [], props: { at: "/" } }],
+        {},
         {}
       )
     )
-  ).toBe(`<a href="/" class="active">Welcome</a><a href="/setup" class="">Setup</a>`);
+  ).toBe(
+    `<a href="/" class="active">Welcome</a><a href="/setup" class="">Setup</a>`
+  );
 });
 
-it("Will not apply if statements", () => {
+it("Will not apply if statements", async () => {
   expect(
     ToXml(
-      BuildTpe(
+      await BuildTpe(
         [
           {
             tag: "if",
             attributes: { check: ":props.test" },
-            props: [],
+            props: undefined,
             children: [
               {
                 tag: "div",
                 attributes: {},
-                props: [],
-                children: [{ text: "Hello world", props: [] }],
+                props: undefined,
+                children: [{ text: "Hello world", props: undefined }],
               } as AppliedXmlElement,
             ],
           },
         ],
-        { test: false }
+        [],
+        { test: false },
+        {}
       )
     )
   ).toBe(``);
 });
 
-it("Will apply if statements", () => {
+it("Will apply if statements", async () => {
   expect(
     ToXml(
-      BuildTpe(
+      await BuildTpe(
         [
           {
             tag: "if",
             attributes: { check: ":props.test" },
-            props: [],
+            props: undefined,
             children: [
               {
                 tag: "div",
                 attributes: {},
-                props: [],
-                children: [{ text: "Hello world", props: [] }],
+                props: undefined,
+                children: [{ text: "Hello world", props: undefined }],
               } as AppliedXmlElement,
             ],
           },
         ],
-        { test: true }
+        [],
+        { test: true },
+        {}
       )
     )
   ).toBe(`<div>Hello world</div>`);
 });
 
-it("Applies an multiple layered attribute prop", () => {
+it("Applies an multiple layered attribute prop", async () => {
   expect(
     ToXml(
-      BuildTpe(
+      await BuildTpe(
         [
           {
             tag: "div",
             attributes: { class: ":props.super_test" },
             children: [],
-            props: [
-              { tester: ":props.test.split(' ')" },
-              { super_test: ":props.tester.join(', ')" },
+            props: "2",
+          },
+        ],
+        [
+          {
+            id: "1",
+            props: { tester: ":props.test.split(' ')" },
+            children: [
+              {
+                id: "2",
+                props: { super_test: ":props.tester.join(', ')" },
+                children: [],
+              },
             ],
           },
         ],
-        { test: "hello world" }
+        { test: "hello world" },
+        {}
       )
     )
   ).toBe(`<div class="hello, world"/>`);

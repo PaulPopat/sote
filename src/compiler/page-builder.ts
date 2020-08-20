@@ -6,6 +6,7 @@ import { ParseTpeFile, TpeFile } from "./tpe-file-parser";
 import { ApplyComponents, AppliedXmlNode } from "./tpe-component-applier";
 import { NotUndefined } from "../utils/object";
 import { StdComponents } from "../std-components";
+import { TreeJson } from "./props-tree";
 
 type PageModel = {
   server_js: NodeJS.Dict<string>;
@@ -14,6 +15,7 @@ type PageModel = {
   css: string;
   title: string;
   description: string;
+  tree: TreeJson[];
 };
 
 export type PagesModel = {
@@ -163,6 +165,7 @@ export async function CompileApp(
         model: {
           ...model,
           xml_template: model.xml_template.tpe,
+          tree: model.xml_template.props,
           client_js: add.reduce(
             (c, n) => (c ?? "") + (n.client_js ?? ""),
             model.client_js && production
