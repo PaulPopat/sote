@@ -318,7 +318,7 @@ describe("ToXml", () => {
   it("Escapes xml attributes", () => {
     expect(
       ToXml([{ tag: "div", attributes: { class: 'te"<>/st' }, children: [] }])
-    ).toBe('<div class="te&quot;&lt;&gt;/st"></div>');
+    ).toBe('<div class="te&quot;<>/st"></div>');
   });
 
   it("Writes xml child text", () => {
@@ -331,6 +331,12 @@ describe("ToXml", () => {
     expect(
       ToXml([{ tag: "div", attributes: {}, children: [{ text: 'te"<>/st' }] }])
     ).toBe("<div>te&quot;&lt;&gt;/st</div>");
+  });
+
+  it("Allows the & symbol", () => {
+    expect(
+      ToXml([{ tag: "div", attributes: {}, children: [{ text: 'te&nbsp;st' }] }])
+    ).toBe("<div>te&nbsp;st</div>");
   });
 
   it("Writes xml child elements", () => {

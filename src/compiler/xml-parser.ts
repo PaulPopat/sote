@@ -242,13 +242,13 @@ const close_swap = {
 
 function WriteNode(node: XmlNode): string {
   if (IsText(node)) {
-    return xmlescape(node.text);
+    return xmlescape(node.text, "&");
   }
 
   let result = open_swap[node.tag] || "<" + node.tag;
   if (Object.keys(node.attributes).length > 0) {
     result = Object.keys(node.attributes).reduce(
-      (c, n) => c + ` ${n}="${xmlescape(node.attributes[n] ?? "")}"`,
+      (c, n) => c + ` ${n}="${node.attributes[n]?.replace(/"/gm, "&quot;")}"`,
       result
     );
   }
