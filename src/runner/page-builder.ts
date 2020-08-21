@@ -22,6 +22,12 @@ export async function BuildPage(
     }>`,
     `<head>`,
     `<meta charset="utf-8" />`,
+    ...(options.google_tracking_id
+      ? [
+          `<script async src="https://www.googletagmanager.com/gtag/js?id=${options.google_tracking_id}"></script>`,
+          `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${options.google_tracking_id}');</script>`,
+        ]
+      : []),
     `<title>${xmlescape(page.model.title)}</title>`,
     `<meta name="description" content="${xmlescape(page.model.description)}"/>`,
     options.author ? `<meta name="author" content="${options.author}"/>` : "",
