@@ -87,7 +87,8 @@ export async function StartApp(resources: PagesModel, options: Options) {
           resources.css_bundle,
           props,
           context_data,
-          options
+          options,
+          req.cookies["track-ga"]
         );
 
         res.set("Content-Type", "text/html");

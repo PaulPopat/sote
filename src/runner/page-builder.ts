@@ -11,7 +11,8 @@ export async function BuildPage(
   bundle_css: string,
   props: any,
   context: any,
-  options: Options
+  options: Options,
+  can_include_ga: boolean
 ) {
   return [
     `<!DOCTYPE html>`,
@@ -25,7 +26,9 @@ export async function BuildPage(
     ...(options.google_tracking_id
       ? [
           `<script async src="https://www.googletagmanager.com/gtag/js?id=${options.google_tracking_id}"></script>`,
-          `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${options.google_tracking_id}');</script>`,
+          !can_include_ga
+            ? `<script>window.GAEnabled=false;function gtag(){dataLayer.push(arguments);}function EnableGA(){window.dataLayer=window.dataLayer||[];gtag('js',new Date());gtag('config','${options.google_tracking_id}');document.cookie="track-ga=true";window.GAEnabled=true;}</script>`
+            : `<script>window.dataLayer=window.dataLayer||[];gtag('js',new Date());gtag('config','${options.google_tracking_id}');window.GAEnabled=true;</script>`,
         ]
       : []),
     `<title>${xmlescape(page.model.title)}</title>`,
