@@ -190,6 +190,12 @@ export async function CompileApp(
         throw new Error(`Page ${page.url} does not have a description`);
       }
 
+      if (Object.keys(page.model.server_js).find((s) => s !== "get")) {
+        console.log(
+          `There are redirected handlers for ${page.url}. These handlers use cookies to perform the GET redirect (stopping resubmission on page refresh). Make sure you have a valid cookie notice on your site for these handlers.`
+        );
+      }
+
       return {
         ...page,
         model: {

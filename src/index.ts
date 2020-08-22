@@ -65,6 +65,12 @@ const command = (process.argv.find(
 });
 
 async function BuildApp(options: Options, production: boolean) {
+  if (options.google_tracking_id) {
+    console.log(
+      `You are using Google Analytics. Please make sure you have a valid cookie notice on your site.`
+    );
+  }
+
   const components = await GetComponents(options);
   const pages = await GetAllTpe(options.pages ?? "./src/pages");
   const compiled = await CompileApp(pages, components, production);
@@ -77,16 +83,6 @@ async function GetComponents(options: Options) {
     return [];
   }
 
-  const components = await Promise.all(
-    options.components?.map(async (components_dir) =>
-      IsString(components_dir)
-        ? await GetAllTpe(components_dir)
-        : (await GetAllTpe(components_dir.path)).map((c) => ({
-            ...c,
-            path: "/" + components_dir.prefix + c.path,
-          }))
-    )
-  );
   return (
     await Promise.all(
       options.components?.map(async (components_dir) =>
