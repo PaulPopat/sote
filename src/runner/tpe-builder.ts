@@ -12,7 +12,7 @@ type Params = {
   value: any;
 }[];
 
-async function ReduceText(node: string, props: any, params: Params) {
+export async function ReduceText(node: string, props: any, params: Params) {
   if (!node) {
     return node;
   }

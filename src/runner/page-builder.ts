@@ -1,6 +1,6 @@
 import { PagesModel } from "../compiler/page-builder";
 import xmlescape from "xml-escape";
-import { BuildTpe } from "./tpe-builder";
+import { BuildTpe, ReduceText } from "./tpe-builder";
 import { ToXml } from "../compiler/xml-parser";
 import { Options } from "../file-system";
 import { RemoveUrlParameters } from "../utils/url";
@@ -31,8 +31,16 @@ export async function BuildPage(
             : `<script>window.dataLayer=window.dataLayer||[];gtag('js',new Date());gtag('config','${options.google_tracking_id}');window.GAEnabled=true;</script>`,
         ]
       : []),
-    `<title>${xmlescape(page.model.title)}</title>`,
-    `<meta name="description" content="${xmlescape(page.model.description)}"/>`,
+    `<title>${xmlescape(
+      await ReduceText(page.model.title, props, [
+        { name: "context", value: context },
+      ])
+    )}</title>`,
+    `<meta name="description" content="${xmlescape(
+      await ReduceText(page.model.description, props, [
+        { name: "context", value: context },
+      ])
+    )}"/>`,
     options.author ? `<meta name="author" content="${options.author}"/>` : "",
     ...(options.email
       ? [
