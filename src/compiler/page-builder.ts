@@ -3,25 +3,25 @@ import UglifyCss from "uglifycss";
 import postcss from "postcss";
 import autoprefixer from "autoprefixer";
 import { ParseTpeFile, TpeFile } from "./tpe-file-parser";
-import { ApplyComponents, AppliedXmlNode } from "./tpe-component-applier";
-import { NotUndefined } from "../utils/object";
+import { GetUsed } from "./tpe-component-applier";
+import { NotUndefined, TransformProperties } from "../utils/object";
 import { StdComponents } from "../std-components";
-import { TreeJson } from "./props-tree";
+import { XmlNode } from "./xml-parser";
 
 type PageModel = {
   server_js: NodeJS.Dict<string>;
   client_js: string;
-  xml_template: AppliedXmlNode[];
+  xml_template: XmlNode[];
   css: string;
   title: string;
   description: string;
-  tree: TreeJson[];
 };
 
 export type PagesModel = {
   pages: { url: string; model: PageModel }[];
   css_bundle: string;
   js_bundle: string;
+  components: NodeJS.Dict<TpeFile>;
 };
 
 type TpeFileModel = {
@@ -122,12 +122,12 @@ export async function CompileApp(
       url,
       model: {
         ...model,
-        xml_template: ApplyComponents(model.xml_template, components),
+        used: GetUsed(model.xml_template, components),
       },
     }))
     .map(({ url, model }, _, full) => {
       let add = [] as TpeFile[];
-      for (const include of model.xml_template.components) {
+      for (const include of model.used) {
         if (included.find((i) => i === include)) {
           continue;
         }
@@ -138,7 +138,7 @@ export async function CompileApp(
         }
 
         const total = full.filter((f) =>
-          f.model.xml_template.components.find((c) => c === include)
+          f.model.used.find((c) => c === include)
         ).length;
         if (total > full.length * 0.8) {
           included = [...included, include];
@@ -164,8 +164,7 @@ export async function CompileApp(
         url,
         model: {
           ...model,
-          xml_template: model.xml_template.tpe,
-          tree: model.xml_template.props,
+          xml_template: model.xml_template,
           client_js: add.reduce(
             (c, n) => (c ?? "") + (n.client_js ?? ""),
             model.client_js && production
@@ -178,6 +177,7 @@ export async function CompileApp(
               ? MinifyCss(model.css, url)
               : model.css ?? ""
           ),
+          used: undefined,
         },
       };
     })
@@ -221,5 +221,6 @@ export async function CompileApp(
     ),
     css_bundle: await PrefixCss(css_bundle),
     js_bundle: js_bundle,
+    components: components,
   };
 }

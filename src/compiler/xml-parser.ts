@@ -45,6 +45,8 @@ function* SplitXml(xml: string) {
   let expression_depth = 0;
   let whitespace_count = 0;
   let in_script = false;
+  let in_tag = false;
+  let string_char = "";
 
   const is_script_start = (expression: string) =>
     expression.match(/<\s*script/) || expression.match(/<\s*style/);
@@ -52,7 +54,7 @@ function* SplitXml(xml: string) {
   const is_script_end = (expression: string) =>
     expression.match(/<\/\s*script/) || expression.match(/<\/\s*style/);
 
-  for (const char of xml.replace(/<!--(.|\n)*-->/gm, "")) {
+  for (const char of xml.replace(/<!--(.|\n|\r)*-->/gm, "")) {
     if (char === "{") {
       expression_depth += 1;
       whitespace_count = 0;
@@ -61,6 +63,7 @@ function* SplitXml(xml: string) {
     }
 
     if (char === "<" && !expression_depth) {
+      in_tag = true;
       if (current) {
         yield current;
       }
@@ -69,7 +72,16 @@ function* SplitXml(xml: string) {
       continue;
     }
 
-    if (char === ">" && !expression_depth) {
+    if ((char === "'" || char === '"')  && in_tag) {
+      if (string_char && char === string_char) {
+        string_char = "";
+      } else if (!string_char) {
+        string_char = char;
+      }
+    }
+
+    if (char === ">" && !string_char && !expression_depth) {
+      in_tag = false;
       current += char;
       if (current) {
         if (in_script && is_script_end(current)) {

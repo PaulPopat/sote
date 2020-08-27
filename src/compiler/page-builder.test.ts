@@ -44,11 +44,42 @@ it("Compiles a basic page", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
   });
 });
 
@@ -92,11 +123,42 @@ it("Compiles client javascript", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
   });
 });
 
@@ -142,11 +204,42 @@ it("Minifies client js for production", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
   });
 });
 
@@ -192,11 +285,42 @@ it("Compiles server get js", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
   });
 });
 
@@ -243,11 +367,42 @@ it("Compiles method js for server", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
   });
 });
 
@@ -294,11 +449,42 @@ it("Compiles page css", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
   });
 });
 
@@ -356,11 +542,42 @@ it("Prefixes page css", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
   });
 });
 
@@ -431,9 +648,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
           title: "A test page",
           xml_template: [
             {
-              attributes: {
-                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
-              },
+              attributes: {},
               children: [
                 {
                   attributes: {
@@ -443,15 +658,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
                   tag: "div",
                 },
               ],
-              props: "1",
-              tag: "div",
-            },
-          ],
-          tree: [
-            {
-              children: [],
-              id: "1",
-              props: {},
+              tag: "test::component",
             },
           ],
         },
@@ -469,9 +676,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
           title: "A test page",
           xml_template: [
             {
-              attributes: {
-                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
-              },
+              attributes: {},
               children: [
                 {
                   attributes: {
@@ -481,21 +686,65 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
                   tag: "div",
                 },
               ],
-              props: "2",
-              tag: "div",
-            },
-          ],
-          tree: [
-            {
-              children: [],
-              id: "2",
-              props: {},
+              tag: "test::component",
             },
           ],
         },
         url: "/test2",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+      "test::component": {
+        xml_template: [
+          {
+            attributes: {
+              "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+            },
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "div",
+          },
+        ],
+        css:
+          'div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}',
+        server_js: {},
+      },
+    },
   });
 });
 
@@ -573,16 +822,12 @@ it("Bundles component css from multiple components", async () => {
         model: {
           xml_template: [
             {
-              tag: "div",
-              attributes: {
-                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
-              },
+              tag: "test::component",
+              attributes: {},
               children: [
                 {
-                  tag: "div",
-                  attributes: {
-                    "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
-                  },
+                  tag: "test::other",
+                  attributes: {},
                   children: [
                     {
                       tag: "div",
@@ -592,10 +837,8 @@ it("Bundles component css from multiple components", async () => {
                       children: [],
                     },
                   ],
-                  props: "3",
                 },
               ],
-              props: "4",
             },
           ],
           server_js: {
@@ -606,18 +849,6 @@ it("Bundles component css from multiple components", async () => {
             '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
           title: "A test page",
           description: "A test description",
-          tree: [
-            {
-              children: [],
-              id: "3",
-              props: {},
-            },
-            {
-              children: [],
-              id: "4",
-              props: {},
-            },
-          ],
         },
       },
       {
@@ -625,16 +856,12 @@ it("Bundles component css from multiple components", async () => {
         model: {
           xml_template: [
             {
-              tag: "div",
-              attributes: {
-                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
-              },
+              tag: "test::component",
+              attributes: {},
               children: [
                 {
-                  tag: "div",
-                  attributes: {
-                    "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
-                  },
+                  tag: "test::other",
+                  attributes: {},
                   children: [
                     {
                       tag: "div",
@@ -644,10 +871,8 @@ it("Bundles component css from multiple components", async () => {
                       children: [],
                     },
                   ],
-                  props: "5",
                 },
               ],
-              props: "6",
             },
           ],
           server_js: {
@@ -658,21 +883,81 @@ it("Bundles component css from multiple components", async () => {
             '.test[data-specifier="edf762dd4e455c036183858efa983eaf"]{display:block;}',
           title: "A test page",
           description: "A test description",
-          tree: [
-            {
-              children: [],
-              id: "5",
-              props: {},
-            },
-            {
-              children: [],
-              id: "6",
-              props: {},
-            },
-          ],
         },
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+      "test::component": {
+        xml_template: [
+          {
+            attributes: {
+              "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+            },
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "div",
+          },
+        ],
+        css:
+          'div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}',
+        server_js: {},
+      },
+      "test::other": {
+        xml_template: [
+          {
+            attributes: {
+              "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+            },
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "div",
+          },
+        ],
+        css:
+          'div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}',
+        server_js: {},
+      },
+    },
     css_bundle:
       '\ndiv[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}\ndiv[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}',
     js_bundle: "",
@@ -742,21 +1027,62 @@ console.log("Hello world");`,
                   tag: "div",
                 },
               ],
-              props: "7",
-              tag: "div",
-            },
-          ],
-          tree: [
-            {
-              children: [],
-              id: "7",
-              props: {},
+              tag: "test::component",
             },
           ],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+      "test::component": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "div",
+          },
+        ],
+        client_js: 'console.log("Hello world");',
+        server_js: {},
+      },
+    },
   });
 });
 
@@ -824,9 +1150,7 @@ it("Does not bundle css if the component is not always used", async () => {
           title: "A test page",
           xml_template: [
             {
-              attributes: {
-                "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
-              },
+              attributes: {},
               children: [
                 {
                   attributes: {
@@ -836,15 +1160,7 @@ it("Does not bundle css if the component is not always used", async () => {
                   tag: "div",
                 },
               ],
-              props: "8",
-              tag: "div",
-            },
-          ],
-          tree: [
-            {
-              children: [],
-              id: "8",
-              props: {},
+              tag: "test::component",
             },
           ],
         },
@@ -869,11 +1185,62 @@ it("Does not bundle css if the component is not always used", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test",
       },
     ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+      "test::component": {
+        xml_template: [
+          {
+            attributes: {
+              "data-specifier": "3a003c8ed08e0f1e53bff9cac752c55e",
+            },
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "div",
+          },
+        ],
+        css:
+          'div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}',
+        server_js: {},
+      },
+    },
   });
 });
 
@@ -942,15 +1309,7 @@ it("Does not bundle component JavaScript in one page", async () => {
                   tag: "div",
                 },
               ],
-              props: "9",
-              tag: "div",
-            },
-          ],
-          tree: [
-            {
-              children: [],
-              id: "9",
-              props: {},
+              tag: "test::component",
             },
           ],
         },
@@ -972,118 +1331,58 @@ it("Does not bundle component JavaScript in one page", async () => {
               tag: "div",
             },
           ],
-          tree: [],
         },
         url: "/test2",
       },
     ],
-  });
-});
-
-it("Applies is mso", async () => {
-  expect(
-    await CompileApp(
-      [
-        {
-          path: "/test",
-          text: `
-<template>
-  <std::email::is-mso>
-    <div />
-  </std::email::is-mso>
-</template>
-<title>A test page</title>
-<description>A test description</description>`,
-        },
-      ],
-      [],
-      false
-    )
-  ).toEqual({
-    css_bundle: "",
-    js_bundle: "",
-    pages: [
-      {
-        model: {
-          client_js: "",
-          css: "",
-          description: "A test description",
-          server_js: {
-            get: "return query",
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
           },
-          title: "A test page",
-          xml_template: [
-            {
-              attributes: {},
-              children: [{ tag: "div", attributes: {}, children: [] }],
-              props: "10",
-              tag: "EMAIL_IS_MSO",
-            },
-          ],
-          tree: [
-            {
-              children: [],
-              id: "10",
-              props: {},
-            },
-          ],
-        },
-        url: "/test",
+        ],
       },
-    ],
-  });
-});
-
-it("Applies not mso", async () => {
-  expect(
-    await CompileApp(
-      [
-        {
-          path: "/test",
-          text: `
-<template>
-  <std::email::not-mso>
-    <div />
-  </std::email::not-mso>
-</template>
-<title>A test page</title>
-<description>A test description</description>`,
-        },
-      ],
-      [],
-      false
-    )
-  ).toEqual({
-    css_bundle: "",
-    js_bundle: "",
-    pages: [
-      {
-        model: {
-          client_js: "",
-          css: "",
-          description: "A test description",
-          server_js: {
-            get: "return query",
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
           },
-          title: "A test page",
-          xml_template: [
-            {
-              attributes: {},
-              children: [{ tag: "div", attributes: {}, children: [] }],
-              props: "11",
-              tag: "EMAIL_NOT_MSO",
-            },
-          ],
-          tree: [
-            {
-              children: [],
-              id: "11",
-              props: {},
-            },
-          ],
-        },
-        url: "/test",
+        ],
       },
-    ],
+      "test::component": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "div",
+          },
+        ],
+        client_js: 'console.log("Hello world");',
+        server_js: {},
+      },
+    },
   });
 });

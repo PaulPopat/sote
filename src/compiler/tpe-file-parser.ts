@@ -47,6 +47,9 @@ function TransformJs(js: string) {
 
 export function ParseTpeFile(tpe: string) {
   const xml_model = ParseXml(tpe);
+  if (tpe.includes("publications_items")) {
+    debugger;
+  }
   const find = (tag: string, attributes: NodeJS.Dict<string>) =>
     xml_model.filter((n) =>
       IsElement(n)

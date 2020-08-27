@@ -1,6 +1,6 @@
 import { BuildTpe } from "./tpe-builder";
-import { ToXml } from "../compiler/xml-parser";
-import { AppliedXmlElement } from "../compiler/tpe-component-applier";
+import { ToXml, ParseXml } from "../compiler/xml-parser";
+import { ParseTpeFile } from "../compiler/tpe-file-parser";
 
 it("Applies an attribute prop", async () => {
   expect(
@@ -11,10 +11,9 @@ it("Applies an attribute prop", async () => {
             tag: "div",
             attributes: { class: ":props.test" },
             children: [],
-            props: undefined,
           },
         ],
-        [],
+        {},
         { test: "hello world" },
         {}
       )
@@ -31,9 +30,9 @@ it("Applies text props", async () => {
             tag: "div",
             attributes: {},
             children: [{ text: "{props.test}" }],
-          } as AppliedXmlElement,
+          },
         ],
-        [],
+        {},
         { test: "hello world" },
         {}
       )
@@ -50,9 +49,9 @@ it("Applies strings with bracers in text expressions", async () => {
             tag: "div",
             attributes: {},
             children: [{ text: "{`{props.test}`}" }],
-          } as AppliedXmlElement,
+          },
         ],
-        [],
+        {},
         {},
         {}
       )
@@ -69,9 +68,9 @@ it("Supplies context to text expressions", async () => {
             tag: "div",
             attributes: {},
             children: [{ text: "{context.test}" }],
-          } as AppliedXmlElement,
+          },
         ],
-        [],
+        {},
         {},
         { test: "hello world" }
       )
@@ -87,18 +86,16 @@ it("Applies for loops", async () => {
           {
             tag: "for",
             attributes: { subject: ":props.test", key: "key" },
-            props: undefined,
             children: [
               {
                 tag: "div",
                 attributes: {},
-                props: undefined,
-                children: [{ text: "{key}", props: undefined }],
-              } as AppliedXmlElement,
+                children: [{ text: "{key}" }],
+              },
             ],
-          } as AppliedXmlElement,
+          },
         ],
-        [],
+        {},
         { test: ["hello", "world"] },
         {}
       )
@@ -114,18 +111,16 @@ it("Applies for loops with in model arrays", async () => {
           {
             tag: "for",
             attributes: { subject: ":['hello', 'world']", key: "key" },
-            props: undefined,
             children: [
               {
                 tag: "div",
                 attributes: {},
-                props: undefined,
-                children: [{ text: "{key}", props: undefined }],
-              } as AppliedXmlElement,
+                children: [{ text: "{key}" }],
+              },
             ],
-          } as AppliedXmlElement,
+          },
         ],
-        [],
+        {},
         {},
         {}
       )
@@ -145,7 +140,6 @@ it("Applies for loops with in model complex arrays", async () => {
                 ":[{ url: '/', title: 'Welcome' }, { url: '/setup', title: 'Setup' }]",
               key: "page",
             },
-            props: undefined,
             children: [
               {
                 tag: "a",
@@ -153,21 +147,13 @@ it("Applies for loops with in model complex arrays", async () => {
                   href: ":page.url",
                   class: ":props.at === page.url ? 'active' : ''",
                 },
-                props: "1",
-                children: [{ text: "{page.title}", props: "1" }],
-              } as AppliedXmlElement,
+                children: [{ text: "{page.title}" }],
+              },
             ],
-          } as AppliedXmlElement,
-        ],
-        [
-          {
-            id: "1",
-            children: [],
-            props: { at: "/" },
-            post_process: undefined,
           },
         ],
         {},
+        { at: "/" },
         {}
       )
     )
@@ -184,18 +170,16 @@ it("Will not apply if statements", async () => {
           {
             tag: "if",
             attributes: { check: ":props.test" },
-            props: undefined,
             children: [
               {
                 tag: "div",
                 attributes: {},
-                props: undefined,
-                children: [{ text: "Hello world", props: undefined }],
-              } as AppliedXmlElement,
+                children: [{ text: "Hello world" }],
+              },
             ],
           },
         ],
-        [],
+        {},
         { test: false },
         {}
       )
@@ -211,18 +195,16 @@ it("Will apply if statements", async () => {
           {
             tag: "if",
             attributes: { check: ":props.test" },
-            props: undefined,
             children: [
               {
                 tag: "div",
                 attributes: {},
-                props: undefined,
-                children: [{ text: "Hello world", props: undefined }],
-              } as AppliedXmlElement,
+                children: [{ text: "Hello world" }],
+              },
             ],
           },
         ],
-        [],
+        {},
         { test: true },
         {}
       )
@@ -230,36 +212,90 @@ it("Will apply if statements", async () => {
   ).toBe(`<div>Hello world</div>`);
 });
 
-it("Applies an multiple layered attribute prop", async () => {
+it("Applies a component", async () => {
   expect(
     ToXml(
       await BuildTpe(
-        [
-          {
-            tag: "div",
-            attributes: { class: ":props.super_test" },
-            children: [],
-            props: "2",
-          },
-        ],
-        [
-          {
-            id: "1",
-            props: { tester: ":props.test.split(' ')" },
-            children: [
-              {
-                id: "2",
-                props: { super_test: ":props.tester.join(', ')" },
-                children: [],
-                post_process: undefined,
-              },
-            ],
-            post_process: undefined,
-          },
-        ],
-        { test: "hello world" },
+        ParseXml(`<test::component />`),
+        {
+          "test::component": ParseTpeFile(
+            `<template><div>Hello world</div></template>`
+          ),
+        },
+        { test: true },
         {}
       )
     )
-  ).toBe(`<div class="hello, world"></div>`);
+  ).toBe(`<div>Hello world</div>`);
+});
+
+it("Adds props to component", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
+        ParseXml(`<test::component text="Hello world" />`),
+        {
+          "test::component": ParseTpeFile(
+            `<template><div>{props.text}</div></template>`
+          ),
+        },
+        { test: true },
+        {}
+      )
+    )
+  ).toBe(`<div>Hello world</div>`);
+});
+
+it("Applies component children", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
+        ParseXml(`<test::component>Hello world</test::component>`),
+        {
+          "test::component": ParseTpeFile(
+            `<template><div><children /></div></template>`
+          ),
+        },
+        { test: true },
+        {}
+      )
+    )
+  ).toBe(`<div>Hello world</div>`);
+});
+
+it("Applies component children more than once", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
+        ParseXml(`<test::component>Hello world</test::component>`),
+        {
+          "test::component": ParseTpeFile(
+            `<template><div><children /></div><div><children /></div></template>`
+          ),
+        },
+        { test: true },
+        {}
+      )
+    )
+  ).toBe(`<div>Hello world</div><div>Hello world</div>`);
+});
+
+it("Executes server js", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
+        ParseXml(`<test::component text="Hello world" />`),
+        {
+          "test::component": ParseTpeFile(
+            `
+            <template><for subject=":props" key="text"><span>{text}</span></for></template>
+            <script area="server">return props.text.split(" ")</script>
+            `
+          ),
+        },
+        { test: true },
+        {}
+      )
+    )
+  ).toBe(`<span>Hello</span><span>world</span>`);
 });

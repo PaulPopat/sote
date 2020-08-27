@@ -7,6 +7,7 @@ import { RemoveUrlParameters } from "../utils/url";
 
 export async function BuildPage(
   page: PagesModel["pages"][number],
+  components: PagesModel["components"],
   bundle_js: string,
   bundle_css: string,
   props: any,
@@ -81,7 +82,7 @@ export async function BuildPage(
 
     `<body style="margin:0;padding:0;">`,
     ToXml(
-      await BuildTpe(page.model.xml_template, page.model.tree, props, context)
+      await BuildTpe(page.model.xml_template, components, props, context)
     ),
     `</body>`,
     ...(options.behavior_in_tag
