@@ -2,6 +2,5 @@
 lib/
 node_modules/
 test-data/
-tsconfig.json
 .sote/
 coverage/

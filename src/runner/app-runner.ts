@@ -68,6 +68,10 @@ export async function StartApp(resources: PagesModel, options: Options) {
           ]);
         })();
 
+        if (props === "no-render") {
+          return;
+        }
+
         if (req.method.toLowerCase() !== "get") {
           const redirectId = uuid();
           cached_responses[redirectId] = {
