@@ -72,7 +72,7 @@ function* SplitXml(xml: string) {
       continue;
     }
 
-    if ((char === "'" || char === '"')  && in_tag) {
+    if ((char === "'" || char === '"') && in_tag) {
       if (string_char && char === string_char) {
         string_char = "";
       } else if (!string_char) {
@@ -254,7 +254,18 @@ const close_swap = {
 
 function WriteNode(node: XmlNode): string {
   if (IsText(node)) {
-    return xmlescape(node.text, "&");
+    return node.text
+      .split("___HTML_START_RAW___")
+      .map((s) => {
+        if (s.includes("___HTML_END_RAW___")) {
+          const result = s.split("___HTML_END_RAW___");
+          return result[0] + xmlescape(result[1] ?? "", "&");
+        }
+
+        return xmlescape(s, "&");
+      })
+      .join("")
+      .trim();
   }
 
   let result = open_swap[node.tag] || "<" + node.tag;
@@ -266,7 +277,7 @@ function WriteNode(node: XmlNode): string {
   }
 
   if (!node.children.length) {
-    if (self_closing_tags.find(t => t === node.tag)) {
+    if (self_closing_tags.find((t) => t === node.tag)) {
       return result + "/>";
     }
 

@@ -449,6 +449,20 @@ describe("ToXml", () => {
     ).toBe("<div>te&quot;&lt;&gt;/st</div>");
   });
 
+  it("Does not escape raw HTML", () => {
+    expect(
+      ToXml([{ tag: "div", attributes: {}, children: [{ text: '___HTML_START_RAW___te"<>/st___HTML_END_RAW___' }] }])
+    ).toBe("<div>te\"<>/st</div>");
+  });
+
+  
+
+  it("Does not escape raw HTML but escapes none raw in the same text string", () => {
+    expect(
+      ToXml([{ tag: "div", attributes: {}, children: [{ text: 'te"<>/st___HTML_START_RAW___te"<>/st___HTML_END_RAW___te"<>/st' }] }])
+    ).toBe("<div>te&quot;&lt;&gt;/stte\"<>/stte&quot;&lt;&gt;/st</div>");
+  });
+
   it("Allows the & symbol", () => {
     expect(
       ToXml([
