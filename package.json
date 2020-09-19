@@ -1,10 +1,11 @@
 {
   "name": "@paulpopat/sote",
-  "version": "0.6.10",
+  "version": "0.6.11",
   "description": "SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks",
   "main": "./bin/index.js",
   "scripts": {
-    "build": "jest && babel src --out-dir lib --extensions \".ts\" --source-maps inline",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build": "jest && npm run build:types && babel src --out-dir lib --extensions \".ts\" --source-maps inline",
     "test": "jest --coverage",
     "prepublish": "npm run build"
   },

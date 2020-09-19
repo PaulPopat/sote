@@ -57,12 +57,12 @@ export async function GetAllTpe(pages_route: string) {
   );
 }
 
-export async function GetCompiledApp(): Promise<PagesModel> {
-  return await fs.readJson("./.sote/app.json");
+export async function GetCompiledApp(path: string): Promise<PagesModel> {
+  return await fs.readJson(path);
 }
 
-export async function WriteCompiledApp(app: PagesModel) {
-  await fs.outputJson("./.sote/app.json", app);
+export async function WriteCompiledApp(path: string, app: PagesModel) {
+  await fs.outputJson(path, app);
 }
 
 const IsOptions = IsObject({
@@ -83,9 +83,9 @@ const IsOptions = IsObject({
 
 export type Options = IsType<typeof IsOptions>;
 
-export async function GetOptions(): Promise<Options> {
-  if (await fs.pathExists("./tpe-config.json")) {
-    const json = await fs.readJson("./tpe-config.json");
+export async function GetOptions(path: string): Promise<Options> {
+  if (await fs.pathExists(path)) {
+    const json = await fs.readJson(path);
     Assert(
       IsOptions,
       json,

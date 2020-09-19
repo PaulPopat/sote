@@ -29,7 +29,7 @@ const command = (process.argv.find(
         running = true;
         app?.stop();
         console.log("Compiling app and running.");
-        const options = await GetOptions();
+        const options = await GetOptions("./tpe-config.json");
         console.log("Got options and starting the build.");
         const compiled = await BuildApp(options, false);
         console.log("Finished building the app. Starting it up.");
@@ -50,14 +50,14 @@ const command = (process.argv.find(
       .on("all", run);
   } else if (command === "build") {
     console.log("Building a production version of the app.");
-    const options = await GetOptions();
+    const options = await GetOptions("./tpe-config.json");
     await BuildApp(options, true);
   } else if (command === "init") {
     await InitialiseApp();
   } else if (command === "start") {
     console.log("Running the production version of the app.");
-    const options = await GetOptions();
-    await StartApp(await GetCompiledApp(), options);
+    const options = await GetOptions("./tpe-config.json");
+    await StartApp(await GetCompiledApp("./.sote/app.json"), options);
   }
 })().catch((err) => {
   console.error(err);
@@ -74,7 +74,7 @@ async function BuildApp(options: Options, production: boolean) {
   const components = await GetComponents(options);
   const pages = await GetAllTpe(options.pages ?? "./src/pages");
   const compiled = await CompileApp(pages, components, production);
-  await WriteCompiledApp(compiled);
+  await WriteCompiledApp("./.sote/app.json", compiled);
   return compiled;
 }
 
