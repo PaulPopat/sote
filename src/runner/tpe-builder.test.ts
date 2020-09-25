@@ -230,6 +230,24 @@ it("Applies a component", async () => {
   ).toBe(`<div>Hello world</div>`);
 });
 
+it("Applies expression whitespace around a component", async () => {
+  expect(
+    ToXml(
+      await BuildTpe(
+        ParseXml(`<div>{' '}<test::component />{' '}</div>`),
+        {
+          "test::component": ParseTpeFile(
+            `<template><div>Hello world</div></template>`,
+            ""
+          ),
+        },
+        { test: true },
+        {}
+      )
+    )
+  ).toBe(`<div> <div>Hello world</div> </div>`);
+});
+
 it("Adds props to component", async () => {
   expect(
     ToXml(

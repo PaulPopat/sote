@@ -225,9 +225,8 @@ function Internal(iterator: Generator<string, void, unknown>) {
         });
       }
     } else {
-      const text = segment.trim();
-      if (text) {
-        result.push({ text });
+      if (segment.trim()) {
+        result.push({ text: segment.trim() });
       }
     }
 
@@ -264,8 +263,7 @@ function WriteNode(node: XmlNode): string {
 
         return xmlescape(s, "&");
       })
-      .join("")
-      .trim();
+      .join("");
   }
 
   let result = open_swap[node.tag] || "<" + node.tag;
