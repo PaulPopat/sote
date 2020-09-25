@@ -1,6 +1,6 @@
 {
   "name": "@paulpopat/sote",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "SOTE (Static Only Templating Engine) Is a tool to help you build simple HTML sites with some of the bonuses of modern JavaScript frameworks",
   "main": "./bin/index.js",
   "scripts": {
@@ -19,6 +19,9 @@
   "homepage": "https://github.com/PaulPopat/sote#readme",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
     "@types/autoprefixer": "^9.7.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/css": "0.0.31",
@@ -36,9 +39,6 @@
   },
   "dependencies": {
     "@babel/core": "^7.11.1",
-    "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "@babel/plugin-transform-runtime": "^7.11.0",
-    "@babel/preset-env": "^7.11.0",
     "@babel/preset-typescript": "^7.10.4",
     "@babel/runtime": "^7.11.2",
     "@paulpopat/safe-type": "^2.0.5",
