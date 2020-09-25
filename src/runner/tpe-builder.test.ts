@@ -219,7 +219,8 @@ it("Applies a component", async () => {
         ParseXml(`<test::component />`),
         {
           "test::component": ParseTpeFile(
-            `<template><div>Hello world</div></template>`
+            `<template><div>Hello world</div></template>`,
+            ""
           ),
         },
         { test: true },
@@ -236,7 +237,8 @@ it("Adds props to component", async () => {
         ParseXml(`<test::component text="Hello world" />`),
         {
           "test::component": ParseTpeFile(
-            `<template><div>{props.text}</div></template>`
+            `<template><div>{props.text}</div></template>`,
+            ""
           ),
         },
         { test: true },
@@ -253,7 +255,8 @@ it("Applies component children", async () => {
         ParseXml(`<test::component>Hello world</test::component>`),
         {
           "test::component": ParseTpeFile(
-            `<template><div><children /></div></template>`
+            `<template><div><children /></div></template>`,
+            ""
           ),
         },
         { test: true },
@@ -270,7 +273,8 @@ it("Applies component children more than once", async () => {
         ParseXml(`<test::component>Hello world</test::component>`),
         {
           "test::component": ParseTpeFile(
-            `<template><div><children /></div><div><children /></div></template>`
+            `<template><div><children /></div><div><children /></div></template>`,
+            ""
           ),
         },
         { test: true },
@@ -290,7 +294,8 @@ it("Executes server js", async () => {
             `
             <template><for subject=":props" key="text"><span>{text}</span></for></template>
             <script area="server">return props.text.split(" ")</script>
-            `
+            `,
+            ""
           ),
         },
         { test: true },
