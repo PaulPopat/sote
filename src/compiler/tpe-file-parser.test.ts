@@ -2,14 +2,14 @@ import { ParseTpeFile } from "./tpe-file-parser";
 
 describe("ParseTpeFile", () => {
   it("Parses a basic tpe file", () => {
-    expect(ParseTpeFile("<template><div/></template>")).toEqual({
+    expect(ParseTpeFile("<template><div/></template>", "")).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
       server_js: {},
     });
   });
 
   it("Throws if there is no xml template", () => {
-    expect(() => ParseTpeFile("<div></div>")).toThrowError(
+    expect(() => ParseTpeFile("<div></div>", "")).toThrowError(
       "No xml template in TPE file"
     );
   });
@@ -17,7 +17,8 @@ describe("ParseTpeFile", () => {
   it("Parses server javascript", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><script area=\"server\">console.log('hello world')</script>"
+        "<template><div/></template><script area=\"server\">console.log('hello world')</script>",
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -28,7 +29,8 @@ describe("ParseTpeFile", () => {
   it("Parses server javascript method", () => {
     expect(
       ParseTpeFile(
-        '<template><div/></template><script area="server" method="post">console.log(\'hello world\')</script>'
+        '<template><div/></template><script area="server" method="post">console.log(\'hello world\')</script>',
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -39,7 +41,8 @@ describe("ParseTpeFile", () => {
   it("Parses client javascript", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><script area=\"client\">console.log('hello world')</script>"
+        "<template><div/></template><script area=\"client\">console.log('hello world')</script>",
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -51,7 +54,8 @@ describe("ParseTpeFile", () => {
   it("Parses client javascript with babel", () => {
     expect(
       ParseTpeFile(
-        `<template><div/></template><script area="client" babel>const test = () => "test";</script>`
+        `<template><div/></template><script area="client" babel>const test = () => "test";</script>`,
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -67,7 +71,8 @@ var test = function test() {
   it("Parses external client javascript", () => {
     expect(
       ParseTpeFile(
-        '<template><div/></template><script area="client" src="./resources/example.js"></script>'
+        '<template><div/></template><script area="client" src="./resources/example.js"></script>',
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -82,7 +87,8 @@ var test = function test() {
         `
         <template><div/></template>
         <script area=\"client\">console.log('hello world')</script>
-        <script area=\"client\">console.log('hello world')</script>`
+        <script area=\"client\">console.log('hello world')</script>`,
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -95,7 +101,8 @@ console.log('hello world')`,
   it("Parses file css", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><style>div{display:block}</style>"
+        "<template><div/></template><style>div{display:block}</style>",
+        ""
       )
     ).toEqual({
       xml_template: [
@@ -110,10 +117,30 @@ console.log('hello world')`,
     });
   });
 
+  it("Parses file scss", () => {
+    expect(
+      ParseTpeFile(
+        "<template><div/></template><style>div{color: $test-colour;}</style>",
+        "$test-colour: #333;"
+      )
+    ).toEqual({
+      xml_template: [
+        {
+          tag: "div",
+          attributes: { "data-specifier": "7200416bd6d2af89c872ff6c6c4cab4f" },
+          children: [],
+        },
+      ],
+      server_js: {},
+      css: `div[data-specifier="7200416bd6d2af89c872ff6c6c4cab4f"]{color:#333;}`,
+    });
+  });
+
   it("Does not apply hash to css if specified", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><style no-hash>div{display:block}</style>"
+        "<template><div/></template><style no-hash>div{display:block}</style>",
+        ""
       )
     ).toEqual({
       xml_template: [
@@ -131,7 +158,8 @@ console.log('hello world')`,
   it("It hashes some css with specified", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><style no-hash>div{display:block}</style><style>div{display:block}</style>"
+        "<template><div/></template><style no-hash>div{display:block}</style><style>div{display:block}</style>",
+        ""
       )
     ).toEqual({
       xml_template: [
@@ -151,7 +179,8 @@ console.log('hello world')`,
   it("Parses external client css", () => {
     expect(
       ParseTpeFile(
-        '<template><div/></template><style src="./resources/example.css"></style>'
+        '<template><div/></template><style src="./resources/example.css"></style>',
+        ""
       )
     ).toEqual({
       xml_template: [
@@ -173,7 +202,8 @@ console.log('hello world')`,
         `
         <template><div/></template>
         <style>div{display:block;}</style>
-        <style>div{display:block;}</style>`
+        <style>div{display:block;}</style>`,
+        ""
       )
     ).toEqual({
       xml_template: [
@@ -191,7 +221,8 @@ console.log('hello world')`,
   it("Parses page title", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><title>console.log('hello world')</title>"
+        "<template><div/></template><title>console.log('hello world')</title>",
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -206,7 +237,8 @@ console.log('hello world')`,
         `
         <template><div/></template>
         <title>console.log('hello world')</title>
-        <title>console.log('hello world')</title>`
+        <title>console.log('hello world')</title>`,
+        ""
       )
     ).toThrowError("More than one title element");
   });
@@ -216,7 +248,8 @@ console.log('hello world')`,
       ParseTpeFile(
         `
         <template><div/></template>
-        <title><div>hello world</div></title>`
+        <title><div>hello world</div></title>`,
+        ""
       )
     ).toThrowError("title 0 is not a valid script");
   });
@@ -224,7 +257,8 @@ console.log('hello world')`,
   it("Parses page description", () => {
     expect(
       ParseTpeFile(
-        "<template><div/></template><description>console.log('hello world')</description>"
+        "<template><div/></template><description>console.log('hello world')</description>",
+        ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
@@ -239,7 +273,8 @@ console.log('hello world')`,
         `
         <template><div/></template>
         <description>console.log('hello world')</description>
-        <description>console.log('hello world')</description>`
+        <description>console.log('hello world')</description>`,
+        ""
       )
     ).toThrowError("More than one description element");
   });
@@ -249,7 +284,8 @@ console.log('hello world')`,
       ParseTpeFile(
         `
         <template><div/></template>
-        <description><div>hello world</div></description>`
+        <description><div>hello world</div></description>`,
+        ""
       )
     ).toThrowError("description 0 is not a valid script");
   });

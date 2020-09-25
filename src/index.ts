@@ -5,6 +5,7 @@ import {
   WriteCompiledApp,
   Options,
   GetCompiledApp,
+  GetSassVariables,
 } from "./file-system";
 import { Debounce } from "./utils/debounce";
 import { CompileApp } from "./compiler/page-builder";
@@ -31,7 +32,7 @@ const command = (process.argv.find(
         console.log("Compiling app and running.");
         const options = await GetOptions("./tpe-config.json");
         console.log("Got options and starting the build.");
-        const compiled = await BuildApp(options, false);
+        const compiled = await BuildApp(options, false, true);
         console.log("Finished building the app. Starting it up.");
         app = await StartApp(compiled, options);
         running = false;
@@ -51,7 +52,7 @@ const command = (process.argv.find(
   } else if (command === "build") {
     console.log("Building a production version of the app.");
     const options = await GetOptions("./tpe-config.json");
-    await BuildApp(options, true);
+    await BuildApp(options, true, true);
   } else if (command === "init") {
     await InitialiseApp();
   } else if (command === "start") {
@@ -64,21 +65,7 @@ const command = (process.argv.find(
   process.exit(1);
 });
 
-async function BuildApp(options: Options, production: boolean) {
-  if (options.google_tracking_id) {
-    console.log(
-      `You are using Google Analytics. Please make sure you have a valid cookie notice on your site. Google analytics are disabled by default. Use window.GAEnabled to check if it is active in the client JS. Use window.EnableGA to enable it on client JS.`
-    );
-  }
-
-  const components = await GetComponents(options);
-  const pages = await GetAllTpe(options.pages ?? "./src/pages");
-  const compiled = await CompileApp(pages, components, production);
-  await WriteCompiledApp("./.sote/app.json", compiled);
-  return compiled;
-}
-
-async function GetComponents(options: Options) {
+export async function GetComponents(options: Options) {
   if (!options.components) {
     return [];
   }
@@ -95,4 +82,30 @@ async function GetComponents(options: Options) {
       )
     )
   ).flatMap((f) => f);
+}
+
+export async function BuildApp(
+  options: Options,
+  production: boolean,
+  write: boolean
+) {
+  if (options.google_tracking_id) {
+    console.log(
+      `You are using Google Analytics. Please make sure you have a valid cookie notice on your site. Google analytics are disabled by default. Use window.GAEnabled to check if it is active in the client JS. Use window.EnableGA to enable it on client JS.`
+    );
+  }
+
+  const components = await GetComponents(options);
+  const pages = await GetAllTpe(options.pages ?? "./src/pages");
+  const compiled = await CompileApp(
+    pages,
+    components,
+    await GetSassVariables(options),
+    production
+  );
+  if (write) {
+    await WriteCompiledApp("./.sote/app.json", compiled);
+  }
+
+  return compiled;
 }

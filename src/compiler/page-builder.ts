@@ -4,7 +4,7 @@ import postcss from "postcss";
 import autoprefixer from "autoprefixer";
 import { ParseTpeFile, TpeFile } from "./tpe-file-parser";
 import { GetUsed } from "./tpe-component-applier";
-import { NotUndefined, TransformProperties } from "../utils/object";
+import { NotUndefined } from "../utils/object";
 import { StdComponents } from "../std-components";
 import { XmlNode } from "./xml-parser";
 
@@ -76,12 +76,13 @@ function PrefixCss(css: string) {
 export async function CompileApp(
   pages_files: TpeFileModel[],
   components_files: TpeFileModel[],
+  resource_sass: string,
   production: boolean
 ): Promise<PagesModel> {
   const user_components = components_files
     .map((f) => {
       try {
-        return { data: ParseTpeFile(f.text), url: f.path };
+        return { data: ParseTpeFile(f.text, resource_sass), url: f.path };
       } catch (err) {
         console.log("Failed to parse component " + f.path + " error below:");
         console.error(err);
@@ -109,7 +110,7 @@ export async function CompileApp(
   const pages = pages_files
     .map((f) => {
       try {
-        return { model: ParseTpeFile(f.text), url: f.path };
+        return { model: ParseTpeFile(f.text, resource_sass), url: f.path };
       } catch (err) {
         console.log("Failed to parse page " + f.path + " error below:");
         console.error(err);

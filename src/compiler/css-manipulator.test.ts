@@ -7,7 +7,7 @@ it("It minifies css", () => {
   }`;
 
   // Act
-  const result = CompileCss(css);
+  const result = CompileCss(css, "");
 
   // Assert
   expect(result).toStrictEqual({
@@ -22,13 +22,28 @@ it("Adds specifier to css to a rule", () => {
   const css = `.random-selector { display: block; }`;
 
   // Act
-  const result = CompileCss(css);
+  const result = CompileCss(css, "");
 
   // Assert
   expect(result).toStrictEqual({
     css:
       '.random-selector[data-specifier="c41489a3d173e121d23959e834fed9bb"]{display:block;}',
     hash: "c41489a3d173e121d23959e834fed9bb",
+  });
+});
+
+it("Compiles sass", () => {
+  // Arrange
+  const css = `.random-selector { color: $test-colour; }`;
+
+  // Act
+  const result = CompileCss(css, "$test-colour: #333;");
+
+  // Assert
+  expect(result).toStrictEqual({
+    css:
+      '.random-selector[data-specifier="94a4ee5c06b8b5d8910991db82fd8183"]{color:#333;}',
+    hash: "94a4ee5c06b8b5d8910991db82fd8183",
   });
 });
 
@@ -41,7 +56,7 @@ it("Adds specifier to css to a rule within a media query", () => {
   `;
 
   // Act
-  const result = CompileCss(css);
+  const result = CompileCss(css, "");
 
   // Assert
   expect(result).toStrictEqual({
@@ -62,13 +77,15 @@ it("Separates and excludes no hash", () => {
   `;
 
   // Act
-  const result = CompileCss(css);
+  const result = CompileCss(css, "");
 
   // Assert
   expect(result).toStrictEqual({
-    css: `.random-selector[data-specifier="8a1bbcecffa251ed59fc98c5c0f3ba74"]{display:block;}.random-selector[data-specifier="8a1bbcecffa251ed59fc98c5c0f3ba74"]{display:block;}
-    .random-selector { display: block; }
-    `,
+    css: [
+      `.random-selector[data-specifier="8a1bbcecffa251ed59fc98c5c0f3ba74"]{display:block;}`,
+      `.random-selector[data-specifier="8a1bbcecffa251ed59fc98c5c0f3ba74"]{display:block;}`,
+      `.random-selector { display: block; }`,
+    ].join(""),
     hash: "8a1bbcecffa251ed59fc98c5c0f3ba74",
   });
 });

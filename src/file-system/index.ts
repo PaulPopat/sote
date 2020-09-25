@@ -79,6 +79,7 @@ const IsOptions = IsObject({
   resources: Optional(IsString),
   email: Optional(IsBoolean),
   google_tracking_id: Optional(IsString),
+  sass_variables: Optional(IsString),
 });
 
 export type Options = IsType<typeof IsOptions>;
@@ -107,5 +108,14 @@ export async function GetOptions(path: string): Promise<Options> {
     resources: undefined,
     email: undefined,
     google_tracking_id: undefined,
+    sass_variables: undefined,
   };
+}
+
+export async function GetSassVariables(options: Options) {
+  if (!options.sass_variables) {
+    return "";
+  }
+
+  return await fs.readFile(options.sass_variables, "utf-8");
 }

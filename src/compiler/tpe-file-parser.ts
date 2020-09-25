@@ -45,11 +45,8 @@ function TransformJs(js: string) {
   return result.code ?? "";
 }
 
-export function ParseTpeFile(tpe: string) {
+export function ParseTpeFile(tpe: string, resource_sass: string) {
   const xml_model = ParseXml(tpe);
-  if (tpe.includes("publications_items")) {
-    debugger;
-  }
   const find = (tag: string, attributes: NodeJS.Dict<string>) =>
     xml_model.filter((n) =>
       IsElement(n)
@@ -107,7 +104,7 @@ export function ParseTpeFile(tpe: string) {
 
   const server_js_e = find("script", { area: "server" }).filter(ValidText);
   const css_text = get_text_script("style", {}, true);
-  const { css, hash } = CompileCss(css_text);
+  const { css, hash } = CompileCss(css_text, resource_sass);
   return {
     xml_template: hash
       ? ApplySpecifier(xml_template[0].children, hash)

@@ -22,6 +22,7 @@ it("Compiles a basic page", async () => {
         },
       ],
       [],
+      "",
       false
     )
   ).toEqual({
@@ -101,6 +102,7 @@ it("Compiles client javascript", async () => {
         },
       ],
       [],
+      "",
       false
     )
   ).toEqual({
@@ -182,6 +184,7 @@ it("Minifies client js for production", async () => {
         },
       ],
       [],
+      "",
       true
     )
   ).toEqual({
@@ -262,6 +265,7 @@ it("Compiles server get js", async () => {
         },
       ],
       [],
+      "",
       false
     )
   ).toEqual({
@@ -343,6 +347,7 @@ it("Compiles method js for server", async () => {
         },
       ],
       [],
+      "",
       false
     )
   ).toEqual({
@@ -424,6 +429,7 @@ it("Compiles page css", async () => {
         },
       ],
       [],
+      "",
       false
     )
   ).toEqual({
@@ -517,6 +523,7 @@ it("Prefixes page css", async () => {
         },
       ],
       [],
+      "",
       false
     )
   ).toEqual({
@@ -629,6 +636,7 @@ it("Bundles component css", async () => {
         `,
         },
       ],
+      "",
       false
     )
   ).toEqual({
@@ -813,6 +821,7 @@ it("Bundles component css from multiple components", async () => {
         `,
         },
       ],
+      "",
       false
     )
   ).toEqual({
@@ -998,6 +1007,7 @@ it("Bundles component javascript", async () => {
         `,
         },
       ],
+      "",
       false
     )
   ).toEqual({
@@ -1132,6 +1142,7 @@ it("Does not bundle css if the component is not always used", async () => {
         `,
         },
       ],
+      "",
       false
     )
   ).toEqual({
@@ -1284,6 +1295,7 @@ it("Does not bundle component JavaScript in one page", async () => {
         `,
         },
       ],
+      "",
       false
     )
   ).toEqual({
