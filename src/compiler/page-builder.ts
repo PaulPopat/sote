@@ -15,6 +15,7 @@ type PageModel = {
   css: string;
   title: string;
   description: string;
+  language?: string;
 };
 
 export type PagesModel = {

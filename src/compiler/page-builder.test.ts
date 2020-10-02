@@ -84,6 +84,85 @@ it("Compiles a basic page", async () => {
   });
 });
 
+it("Compiles a basic page with language", async () => {
+  expect(
+    await CompileApp(
+      [
+        {
+          path: "/test",
+          text: `
+<template>
+  <div />
+</template>
+<title>A test page</title>
+<description>A test description</description>
+<lang>A test language</lang>`,
+        },
+      ],
+      [],
+      "",
+      false
+    )
+  ).toEqual({
+    css_bundle: "",
+    js_bundle: "",
+    pages: [
+      {
+        model: {
+          client_js: "",
+          css: "",
+          description: "A test description",
+          language: "A test language",
+          server_js: {
+            get: "return query",
+          },
+          title: "A test page",
+          xml_template: [
+            {
+              attributes: {},
+              children: [],
+              tag: "div",
+            },
+          ],
+        },
+        url: "/test",
+      },
+    ],
+    components: {
+      "std::email::is-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_IS_MSO",
+          },
+        ],
+      },
+      "std::email::not-mso": {
+        xml_template: [
+          {
+            attributes: {},
+            children: [
+              {
+                attributes: {},
+                children: [],
+                tag: "children",
+              },
+            ],
+            tag: "EMAIL_NOT_MSO",
+          },
+        ],
+      },
+    },
+  });
+});
+
 it("Compiles client javascript", async () => {
   expect(
     await CompileApp(

@@ -267,7 +267,7 @@ console.log('hello world')`,
     });
   });
 
-  it("Throws if there is more than one page title", () => {
+  it("Throws if there is more than one page description", () => {
     expect(() =>
       ParseTpeFile(
         `
@@ -288,5 +288,41 @@ console.log('hello world')`,
         ""
       )
     ).toThrowError("description 0 is not a valid script");
+  });
+
+  it("Parses page language", () => {
+    expect(
+      ParseTpeFile(
+        "<template><div/></template><lang>console.log('hello world')</lang>",
+        ""
+      )
+    ).toEqual({
+      xml_template: [{ tag: "div", attributes: {}, children: [] }],
+      server_js: {},
+      language: "console.log('hello world')",
+    });
+  });
+
+  it("Throws if there is more than one page language", () => {
+    expect(() =>
+      ParseTpeFile(
+        `
+        <template><div/></template>
+        <lang>console.log('hello world')</lang>
+        <lang>console.log('hello world')</lang>`,
+        ""
+      )
+    ).toThrowError("More than one lang element");
+  });
+
+  it("Throws the language is invalid", () => {
+    expect(() =>
+      ParseTpeFile(
+        `
+        <template><div/></template>
+        <lang><div>hello world</div></lang>`,
+        ""
+      )
+    ).toThrowError("lang 0 is not a valid script");
   });
 });

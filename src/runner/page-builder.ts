@@ -15,9 +15,19 @@ export async function BuildPage(
   options: Options,
   can_include_ga: boolean
 ) {
+  const reduce = (text: string) =>
+    ReduceText(text, props, [{ name: "context", value: context }]);
   return [
     `<!DOCTYPE html>`,
-    `<html${options.lang ? ` lang="${xmlescape(options.lang)}"` : ""}${
+    `<html${
+      options.lang
+        ? ` lang="${
+            page.model.language
+              ? xmlescape(await reduce(page.model.language))
+              : xmlescape(options.lang)
+          }"`
+        : ""
+    }${
       options.email
         ? ` xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"`
         : ``
@@ -28,19 +38,13 @@ export async function BuildPage(
       ? [
           `<script async src="https://www.googletagmanager.com/gtag/js?id=${options.google_tracking_id}"></script>`,
           !can_include_ga
-            ? `<script>window.GAEnabled=false;function gtag(){dataLayer.push(arguments);}function EnableGA(){window.dataLayer=window.dataLayer||[];gtag('js',new Date());gtag('config','${options.google_tracking_id}');var CookieDate = new Date;CookieDate.setFullYear(CookieDate.getFullYear() +10);document.cookie="track-ga=true;expires=" + CookieDate.toUTCString() + ";";window.GAEnabled=true;}</script>`
+            ? `<script>window.GAEnabled=false;function gtag(){dataLayer.push(arguments);}function EnableGA(){window.dataLayer=window.dataLayer||[];gtag('js',new Date());gtag('config','${options.google_tracking_id}');var CookieDate=new Date;CookieDate.setFullYear(CookieDate.getFullYear()+10);document.cookie="track-ga=true;expires="+CookieDate.toUTCString()+";";window.GAEnabled=true;}</script>`
             : `<script>window.dataLayer=window.dataLayer||[];gtag('js',new Date());gtag('config','${options.google_tracking_id}');window.GAEnabled=true;</script>`,
         ]
       : []),
-    `<title>${xmlescape(
-      await ReduceText(page.model.title, props, [
-        { name: "context", value: context },
-      ])
-    )}</title>`,
+    `<title>${xmlescape(await reduce(page.model.title))}</title>`,
     `<meta name="description" content="${xmlescape(
-      await ReduceText(page.model.description, props, [
-        { name: "context", value: context },
-      ])
+      await reduce(page.model.description)
     )}"/>`,
     options.author ? `<meta name="author" content="${options.author}"/>` : "",
     ...(options.email
@@ -81,9 +85,7 @@ export async function BuildPage(
     `</head>`,
 
     `<body style="margin:0;padding:0;">`,
-    ToXml(
-      await BuildTpe(page.model.xml_template, components, props, context)
-    ),
+    ToXml(await BuildTpe(page.model.xml_template, components, props, context)),
     `</body>`,
     ...(options.behavior_in_tag
       ? [

@@ -17,6 +17,7 @@ export type TpeFile = {
   xml_template: XmlNode[];
   css?: string;
   title?: string;
+  language?: string;
 };
 
 type XmlScript = {
@@ -120,5 +121,6 @@ export function ParseTpeFile(tpe: string, resource_sass: string) {
     css: css,
     title: get_text_script("title", {}, false),
     description: get_text_script("description", {}, false),
+    language: get_text_script("lang", {}, false),
   };
 }
