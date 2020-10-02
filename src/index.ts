@@ -91,7 +91,13 @@ export async function BuildApp(
 ) {
   if (options.google_tracking_id) {
     console.log(
-      `You are using Google Analytics. Please make sure you have a valid cookie notice on your site. Google analytics are disabled by default. Use window.GAEnabled to check if it is active in the client JS. Use window.EnableGA to enable it on client JS.`
+      [
+        "You are using Google Analytics.",
+        "Please make sure you have a valid cookie notice on your site.",
+        "Google analytics are disabled by default.",
+        "Use window.GAEnabled to check if it is active in the client JS.",
+        "Use window.EnableGA to enable it on client JS.",
+      ].join(" ")
     );
   }
 
