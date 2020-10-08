@@ -69,23 +69,23 @@ it("Adds specifier to css to a rule within a media query", () => {
 it("Separates and excludes no hash", () => {
   // Arrange
   const css = ` 
-    .random-selector { display: block; }
+    .random-selector { display: $display; }
     /* DATA: NO_HASH */
-    .random-selector { display: block; }
+    .random-selector { display: $display; }
     /* DATA: END_NO_HASH */
-    .random-selector { display: block; }
+    .random-selector { display: $display; }
   `;
 
   // Act
-  const result = CompileCss(css, "");
+  const result = CompileCss(css, "$display: block;");
 
   // Assert
   expect(result).toStrictEqual({
     css: [
-      `.random-selector[data-specifier="8a1bbcecffa251ed59fc98c5c0f3ba74"]{display:block;}`,
-      `.random-selector[data-specifier="8a1bbcecffa251ed59fc98c5c0f3ba74"]{display:block;}`,
-      `.random-selector { display: block; }`,
+      `.random-selector[data-specifier="91e0e3dfdbc37ad64e6ea06d09b3c511"]{display:block;}`,
+      `.random-selector[data-specifier="91e0e3dfdbc37ad64e6ea06d09b3c511"]{display:block;}`,
+      `.random-selector{display:block}`,
     ].join(""),
-    hash: "8a1bbcecffa251ed59fc98c5c0f3ba74",
+    hash: "91e0e3dfdbc37ad64e6ea06d09b3c511",
   });
 });

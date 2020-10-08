@@ -114,7 +114,9 @@ export function CompileCss(
   }
 
   return {
-    css: css.stringify(data, { compress: true }) + no_hash.trim(),
+    css:
+      css.stringify(data, { compress: true }) +
+      CompileSass(no_hash, resource_sass).trim(),
     hash: css_hash,
   };
 }
