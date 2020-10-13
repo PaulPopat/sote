@@ -1,22 +1,22 @@
 import { ParseTpeFile } from "./tpe-file-parser";
 
 describe("ParseTpeFile", () => {
-  it("Parses a basic tpe file", () => {
-    expect(ParseTpeFile("<template><div/></template>", "")).toEqual({
+  it("Parses a basic tpe file", async () => {
+    expect(await ParseTpeFile("<template><div/></template>", "")).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
       server_js: {},
     });
   });
 
-  it("Throws if there is no xml template", () => {
-    expect(() => ParseTpeFile("<div></div>", "")).toThrowError(
-      "No xml template in TPE file"
-    );
+  it("Throws if there is no xml template", async () => {
+    await expect(
+      async () => await ParseTpeFile("<div></div>", "")
+    ).rejects.toEqual(new Error("No xml template in TPE file"));
   });
 
-  it("Parses server javascript", () => {
+  it("Parses server javascript", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><script area=\"server\">console.log('hello world')</script>",
         ""
       )
@@ -26,9 +26,9 @@ describe("ParseTpeFile", () => {
     });
   });
 
-  it("Parses server javascript method", () => {
+  it("Parses server javascript method", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         '<template><div/></template><script area="server" method="post">console.log(\'hello world\')</script>',
         ""
       )
@@ -38,9 +38,9 @@ describe("ParseTpeFile", () => {
     });
   });
 
-  it("Parses client javascript", () => {
+  it("Parses client javascript", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><script area=\"client\">console.log('hello world')</script>",
         ""
       )
@@ -51,26 +51,29 @@ describe("ParseTpeFile", () => {
     });
   });
 
-  it("Parses client javascript with babel", () => {
+  it("Parses client javascript with babel", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         `<template><div/></template><script area="client" babel>const test = () => "test";</script>`,
         ""
       )
     ).toEqual({
       xml_template: [{ tag: "div", attributes: {}, children: [] }],
       server_js: {},
-      client_js: `"use strict";
+      client_js: `(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c=\"function\"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error(\"Cannot find module '\"+i+\"'\");throw a.code=\"MODULE_NOT_FOUND\",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u=\"function\"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+"use strict";
 
 var test = function test() {
   return "test";
-};`,
+};
+},{}]},{},[1]);
+`,
     });
   });
 
-  it("Parses external client javascript", () => {
+  it("Parses external client javascript", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         '<template><div/></template><script area="client" src="./resources/example.js"></script>',
         ""
       )
@@ -81,9 +84,9 @@ var test = function test() {
     });
   });
 
-  it("Applies more than one client javascript file", () => {
+  it("Applies more than one client javascript file", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         `
         <template><div/></template>
         <script area=\"client\">console.log('hello world')</script>
@@ -98,9 +101,9 @@ console.log('hello world')`,
     });
   });
 
-  it("Parses file css", () => {
+  it("Parses file css", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><style>div{display:block}</style>",
         ""
       )
@@ -117,9 +120,9 @@ console.log('hello world')`,
     });
   });
 
-  it("Parses file scss", () => {
+  it("Parses file scss", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><style>div{color: $test-colour;}</style>",
         "$test-colour: #333;"
       )
@@ -136,9 +139,9 @@ console.log('hello world')`,
     });
   });
 
-  it("Does not apply hash to css if specified", () => {
+  it("Does not apply hash to css if specified", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><style no-hash>div{display:block}</style>",
         ""
       )
@@ -155,9 +158,9 @@ console.log('hello world')`,
     });
   });
 
-  it("It hashes some css with specified", () => {
+  it("It hashes some css with specified", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><style no-hash>div{display:block}</style><style>div{display:block}</style>",
         ""
       )
@@ -176,9 +179,9 @@ console.log('hello world')`,
     });
   });
 
-  it("Parses external client css", () => {
+  it("Parses external client css", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         '<template><div/></template><style src="./resources/example.css"></style>',
         ""
       )
@@ -196,9 +199,9 @@ console.log('hello world')`,
     });
   });
 
-  it("Applies more than one css element", () => {
+  it("Applies more than one css element", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         `
         <template><div/></template>
         <style>div{display:block;}</style>
@@ -218,9 +221,9 @@ console.log('hello world')`,
     });
   });
 
-  it("Parses page title", () => {
+  it("Parses page title", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><title>console.log('hello world')</title>",
         ""
       )
@@ -231,32 +234,34 @@ console.log('hello world')`,
     });
   });
 
-  it("Throws if there is more than one page title", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
+  it("Throws if there is more than one page title", async () => {
+    await expect(
+      async () =>
+        await ParseTpeFile(
+          `
         <template><div/></template>
         <title>console.log('hello world')</title>
         <title>console.log('hello world')</title>`,
-        ""
-      )
-    ).toThrowError("More than one title element");
+          ""
+        )
+    ).rejects.toEqual(new Error("More than one title element"));
   });
 
-  it("Throws the title is invalid", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
+  it("Throws the title is invalid", async () => {
+    await expect(
+      async () =>
+        await ParseTpeFile(
+          `
         <template><div/></template>
         <title><div>hello world</div></title>`,
-        ""
-      )
-    ).toThrowError("title 0 is not a valid script");
+          ""
+        )
+    ).rejects.toEqual(new Error("title 0 is not a valid script"));
   });
 
-  it("Parses page description", () => {
+  it("Parses page description", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><description>console.log('hello world')</description>",
         ""
       )
@@ -267,32 +272,34 @@ console.log('hello world')`,
     });
   });
 
-  it("Throws if there is more than one page description", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
+  it("Throws if there is more than one page description", async () => {
+    await expect(
+      async () =>
+        await ParseTpeFile(
+          `
         <template><div/></template>
         <description>console.log('hello world')</description>
         <description>console.log('hello world')</description>`,
-        ""
-      )
-    ).toThrowError("More than one description element");
+          ""
+        )
+    ).rejects.toEqual(new Error("More than one description element"));
   });
 
-  it("Throws the description is invalid", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
+  it("Throws the description is invalid", async () => {
+    await expect(
+      async () =>
+        await ParseTpeFile(
+          `
         <template><div/></template>
         <description><div>hello world</div></description>`,
-        ""
-      )
-    ).toThrowError("description 0 is not a valid script");
+          ""
+        )
+    ).rejects.toEqual(new Error("description 0 is not a valid script"));
   });
 
-  it("Parses page language", () => {
+  it("Parses page language", async () => {
     expect(
-      ParseTpeFile(
+      await ParseTpeFile(
         "<template><div/></template><lang>console.log('hello world')</lang>",
         ""
       )
@@ -303,26 +310,28 @@ console.log('hello world')`,
     });
   });
 
-  it("Throws if there is more than one page language", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
+  it("Throws if there is more than one page language", async () => {
+    await expect(
+      async () =>
+        await ParseTpeFile(
+          `
         <template><div/></template>
         <lang>console.log('hello world')</lang>
         <lang>console.log('hello world')</lang>`,
-        ""
-      )
-    ).toThrowError("More than one lang element");
+          ""
+        )
+    ).rejects.toEqual(new Error("More than one lang element"));
   });
 
-  it("Throws the language is invalid", () => {
-    expect(() =>
-      ParseTpeFile(
-        `
+  it("Throws the language is invalid", async () => {
+    await expect(
+      async () =>
+        await ParseTpeFile(
+          `
         <template><div/></template>
         <lang><div>hello world</div></lang>`,
-        ""
-      )
-    ).toThrowError("lang 0 is not a valid script");
+          ""
+        )
+    ).rejects.toEqual(new Error("lang 0 is not a valid script"));
   });
 });

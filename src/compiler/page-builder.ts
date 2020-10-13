@@ -7,6 +7,7 @@ import { GetUsed } from "./tpe-component-applier";
 import { NotUndefined } from "../utils/object";
 import { StdComponents } from "../std-components";
 import { XmlNode } from "./xml-parser";
+import { AsyncLinq } from "../utils/array";
 
 type PageModel = {
   server_js: NodeJS.Dict<string>;
@@ -80,25 +81,30 @@ export async function CompileApp(
   resource_sass: string,
   production: boolean
 ): Promise<PagesModel> {
-  const user_components = components_files
-    .map((f) => {
-      try {
-        return { data: ParseTpeFile(f.text, resource_sass), url: f.path };
-      } catch (err) {
-        console.log("Failed to parse component " + f.path + " error below:");
-        console.error(err);
+  const user_components = (
+    await AsyncLinq(components_files)
+      .Select(async (f) => {
+        try {
+          return {
+            data: await ParseTpeFile(f.text, resource_sass),
+            url: f.path,
+          };
+        } catch (err) {
+          console.log("Failed to parse component " + f.path + " error below:");
+          console.error(err);
 
-        return undefined;
-      }
-    })
-    .filter(NotUndefined)
-    .reduce(
-      (c, n) => ({
-        ...c,
-        [n.url.replace("/", "").replace(/[\/\\]/gm, "::")]: n.data,
-      }),
-      {} as NodeJS.Dict<TpeFile>
-    );
+          return undefined;
+        }
+      })
+      .Where(NotUndefined)
+      .ToArray()
+  ).reduce(
+    (c, n) => ({
+      ...c,
+      [n.url.replace("/", "").replace(/[\/\\]/gm, "::")]: n.data,
+    }),
+    {} as NodeJS.Dict<TpeFile>
+  );
 
   for (const component in user_components) {
     console.log("Adding component " + component + " to the component list.");
@@ -108,10 +114,14 @@ export async function CompileApp(
   let css_bundle = "";
   let js_bundle = "";
   let included = [] as string[];
-  const pages = pages_files
-    .map((f) => {
+  const bundler: NodeJS.Dict<(() => void)[]> = {};
+  const full = await AsyncLinq(pages_files)
+    .Select(async (f) => {
       try {
-        return { model: ParseTpeFile(f.text, resource_sass), url: f.path };
+        return {
+          model: await ParseTpeFile(f.text, resource_sass),
+          url: f.path,
+        };
       } catch (err) {
         console.log("Failed to parse page " + f.path + " error below:");
         console.error(err);
@@ -119,15 +129,17 @@ export async function CompileApp(
         return undefined;
       }
     })
-    .filter(NotUndefined)
-    .map(({ model, url }) => ({
+    .Where(NotUndefined)
+    .Select(({ model, url }) => ({
       url,
       model: {
         ...model,
         used: GetUsed(model.xml_template, components),
       },
     }))
-    .map(({ url, model }, _, full) => {
+    .ToArray();
+  const pages = await AsyncLinq(full)
+    .Select(async ({ url, model }) => {
       let add = [] as TpeFile[];
       for (const include of model.used) {
         if (included.find((i) => i === include)) {
@@ -139,8 +151,8 @@ export async function CompileApp(
           throw new Error("Cannot find component");
         }
 
-        const total = full.filter((f) =>
-          f.model.used.find((c) => c === include)
+        const total = full.filter(
+          (f) => f.model.used.find((c) => c === include) != null
         ).length;
         if (total > full.length * 0.8) {
           included = [...included, include];
@@ -183,7 +195,7 @@ export async function CompileApp(
         },
       };
     })
-    .map((page) => {
+    .Select((page) => {
       if (!page.model.title) {
         throw new Error(`Page ${page.url} does not have a title`);
       }
@@ -212,7 +224,8 @@ export async function CompileApp(
           description: page.model.description ?? "",
         },
       };
-    });
+    })
+    .ToArray();
 
   return {
     pages: await Promise.all(

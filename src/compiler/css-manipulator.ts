@@ -14,9 +14,15 @@ import sass from "node-sass";
 type RuleType = Document | StyleRules | Host | Media | Supports;
 
 function CompileSass(content: string, resources: string) {
-  return sass
-    .renderSync({ data: resources + "\n" + content, outputStyle: "compressed" })
-    .css.toString("utf-8");
+  return new Promise<string>((res, rej) =>
+    sass.render(
+      { data: resources + "\n" + content, outputStyle: "compressed" },
+      (err, data) => {
+        if (err) rej(err);
+        else res(data.css.toString("utf-8"));
+      }
+    )
+  );
 }
 
 function IsRuleType(item: Rule | Comment | AtRule): item is RuleType {
@@ -89,7 +95,7 @@ function SeparateNoHash(css_string: string) {
   };
 }
 
-export function CompileCss(
+export async function CompileCss(
   sass_string: string | undefined,
   resource_sass: string
 ) {
@@ -100,13 +106,13 @@ export function CompileCss(
   const { to_hash, no_hash } = SeparateNoHash(sass_string);
   if (!to_hash) {
     return {
-      css: CompileSass(no_hash, resource_sass).trim() || undefined,
+      css: (await CompileSass(no_hash, resource_sass)).trim() || undefined,
       hash: undefined,
     };
   }
 
   const css_hash = crypto.createHash("md5").update(to_hash).digest("hex");
-  const data = css.parse(CompileSass(to_hash, resource_sass));
+  const data = css.parse(await CompileSass(to_hash, resource_sass));
   if (css_hash && data.stylesheet) {
     data.stylesheet.rules = data.stylesheet.rules.map((r) =>
       MapRule(r, css_hash)
@@ -116,7 +122,7 @@ export function CompileCss(
   return {
     css:
       css.stringify(data, { compress: true }) +
-      CompileSass(no_hash, resource_sass).trim(),
+      (await CompileSass(no_hash, resource_sass)).trim(),
     hash: css_hash,
   };
 }

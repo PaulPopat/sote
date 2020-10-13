@@ -1,13 +1,13 @@
 import { CompileCss } from "./css-manipulator";
 
-it("It minifies css", () => {
+it("It minifies css", async () => {
   // Arrange
   const css = `.random-selector { 
     display: block; 
   }`;
 
   // Act
-  const result = CompileCss(css, "");
+  const result = await CompileCss(css, "");
 
   // Assert
   expect(result).toStrictEqual({
@@ -17,12 +17,12 @@ it("It minifies css", () => {
   });
 });
 
-it("Adds specifier to css to a rule", () => {
+it("Adds specifier to css to a rule", async () => {
   // Arrange
   const css = `.random-selector { display: block; }`;
 
   // Act
-  const result = CompileCss(css, "");
+  const result = await CompileCss(css, "");
 
   // Assert
   expect(result).toStrictEqual({
@@ -32,12 +32,12 @@ it("Adds specifier to css to a rule", () => {
   });
 });
 
-it("Compiles sass", () => {
+it("Compiles sass", async () => {
   // Arrange
   const css = `.random-selector { color: $test-colour; }`;
 
   // Act
-  const result = CompileCss(css, "$test-colour: #333;");
+  const result = await CompileCss(css, "$test-colour: #333;");
 
   // Assert
   expect(result).toStrictEqual({
@@ -47,7 +47,7 @@ it("Compiles sass", () => {
   });
 });
 
-it("Adds specifier to css to a rule within a media query", () => {
+it("Adds specifier to css to a rule within a media query", async () => {
   // Arrange
   const css = ` 
     @media (min-width: 123px) { 
@@ -56,7 +56,7 @@ it("Adds specifier to css to a rule within a media query", () => {
   `;
 
   // Act
-  const result = CompileCss(css, "");
+  const result = await CompileCss(css, "");
 
   // Assert
   expect(result).toStrictEqual({
@@ -66,7 +66,7 @@ it("Adds specifier to css to a rule within a media query", () => {
   });
 });
 
-it("Separates and excludes no hash", () => {
+it("Separates and excludes no hash", async () => {
   // Arrange
   const css = ` 
     .random-selector { display: $display; }
@@ -77,7 +77,7 @@ it("Separates and excludes no hash", () => {
   `;
 
   // Act
-  const result = CompileCss(css, "$display: block;");
+  const result = await CompileCss(css, "$display: block;");
 
   // Assert
   expect(result).toStrictEqual({

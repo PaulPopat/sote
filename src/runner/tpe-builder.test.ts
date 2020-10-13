@@ -218,7 +218,7 @@ it("Applies a component", async () => {
       await BuildTpe(
         ParseXml(`<test::component />`),
         {
-          "test::component": ParseTpeFile(
+          "test::component": await ParseTpeFile(
             `<template><div>Hello world</div></template>`,
             ""
           ),
@@ -236,7 +236,7 @@ it("Applies expression whitespace around a component", async () => {
       await BuildTpe(
         ParseXml(`<div>{' '}<test::component />{' '}</div>`),
         {
-          "test::component": ParseTpeFile(
+          "test::component": await ParseTpeFile(
             `<template><div>Hello world</div></template>`,
             ""
           ),
@@ -254,7 +254,7 @@ it("Adds props to component", async () => {
       await BuildTpe(
         ParseXml(`<test::component text="Hello world" />`),
         {
-          "test::component": ParseTpeFile(
+          "test::component": await ParseTpeFile(
             `<template><div>{props.text}</div></template>`,
             ""
           ),
@@ -272,7 +272,7 @@ it("Applies component children", async () => {
       await BuildTpe(
         ParseXml(`<test::component>Hello world</test::component>`),
         {
-          "test::component": ParseTpeFile(
+          "test::component": await ParseTpeFile(
             `<template><div><children /></div></template>`,
             ""
           ),
@@ -290,7 +290,7 @@ it("Applies component children more than once", async () => {
       await BuildTpe(
         ParseXml(`<test::component>Hello world</test::component>`),
         {
-          "test::component": ParseTpeFile(
+          "test::component": await ParseTpeFile(
             `<template><div><children /></div><div><children /></div></template>`,
             ""
           ),
@@ -308,7 +308,7 @@ it("Executes server js", async () => {
       await BuildTpe(
         ParseXml(`<test::component text="Hello world" />`),
         {
-          "test::component": ParseTpeFile(
+          "test::component": await ParseTpeFile(
             `
             <template><for subject=":props" key="text"><span>{text}</span></for></template>
             <script area="server">return props.text.split(" ")</script>

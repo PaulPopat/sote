@@ -8,8 +8,9 @@ import {
 } from "./xml-parser";
 import { CompileCss } from "./css-manipulator";
 import { ApplySpecifier } from "./tpe-manipulator";
-import * as Babel from "@babel/core";
 import fs from "fs-extra";
+import { TransformJs } from "./javascript-compiler";
+import { AsyncLinq } from "../utils/array";
 
 export type TpeFile = {
   server_js?: NodeJS.Dict<string>;
@@ -30,23 +31,7 @@ function ValidText(e: XmlElement): e is XmlScript {
   return e.children.length === 1 && IsText(e.children[0]);
 }
 
-function TransformJs(js: string) {
-  const result = Babel.transformSync(js, {
-    presets: ["@babel/preset-env"],
-    plugins: [
-      "@babel/plugin-proposal-class-properties",
-      ["@babel/plugin-transform-runtime", { regenerator: true }],
-    ],
-  });
-
-  if (!result) {
-    return "";
-  }
-
-  return result.code ?? "";
-}
-
-export function ParseTpeFile(tpe: string, resource_sass: string) {
+export async function ParseTpeFile(tpe: string, resource_sass: string) {
   const xml_model = ParseXml(tpe);
   const find = (tag: string, attributes: NodeJS.Dict<string>) =>
     xml_model.filter((n) =>
@@ -58,7 +43,7 @@ export function ParseTpeFile(tpe: string, resource_sass: string) {
         : false
     ) as XmlElement[];
 
-  const get_text_script = (
+  const get_text_script = async (
     tag: string,
     attributes: NodeJS.Dict<string>,
     allow_multiple: boolean
@@ -77,25 +62,27 @@ export function ParseTpeFile(tpe: string, resource_sass: string) {
       throw new Error(`More than one ${id_text} element`);
     }
 
-    return elements
-      .map((e, i) => {
-        const build_string = (text: string) =>
-          typeof e.attributes["no-hash"] === "string"
-            ? "/* DATA: NO_HASH */" + text + "/* DATA: END_NO_HASH */"
-            : typeof e.attributes["babel"] === "string"
-            ? TransformJs(text)
-            : text;
-        if (e.attributes.src) {
-          return build_string(fs.readFileSync(e.attributes.src, "utf-8"));
-        }
+    return (
+      await AsyncLinq(elements)
+        .Select((e, i) => {
+          const build_string = (text: string) =>
+            typeof e.attributes["no-hash"] === "string"
+              ? "/* DATA: NO_HASH */" + text + "/* DATA: END_NO_HASH */"
+              : typeof e.attributes["babel"] === "string"
+              ? TransformJs(text)
+              : text;
+          if (e.attributes.src) {
+            return build_string(fs.readFileSync(e.attributes.src, "utf-8"));
+          }
 
-        if (!ValidText(e)) {
-          throw new Error(`${id_text} ${i} is not a valid script`);
-        }
+          if (!ValidText(e)) {
+            throw new Error(`${id_text} ${i} is not a valid script`);
+          }
 
-        return build_string(e.children[0].text);
-      })
-      .join("\n");
+          return build_string(e.children[0].text);
+        })
+        .ToArray()
+    ).join("\n");
   };
 
   const xml_template = find("template", {});
@@ -104,8 +91,8 @@ export function ParseTpeFile(tpe: string, resource_sass: string) {
   }
 
   const server_js_e = find("script", { area: "server" }).filter(ValidText);
-  const css_text = get_text_script("style", {}, true);
-  const { css, hash } = CompileCss(css_text, resource_sass);
+  const css_text = await get_text_script("style", {}, true);
+  const { css, hash } = await CompileCss(css_text, resource_sass);
   return {
     xml_template: hash
       ? ApplySpecifier(xml_template[0].children, hash)
@@ -117,10 +104,10 @@ export function ParseTpeFile(tpe: string, resource_sass: string) {
       }),
       {} as NodeJS.Dict<string>
     ),
-    client_js: get_text_script("script", { area: "client" }, true),
+    client_js: await get_text_script("script", { area: "client" }, true),
     css: css,
-    title: get_text_script("title", {}, false),
-    description: get_text_script("description", {}, false),
-    language: get_text_script("lang", {}, false),
+    title: await get_text_script("title", {}, false),
+    description: await get_text_script("description", {}, false),
+    language: await get_text_script("lang", {}, false),
   };
 }
