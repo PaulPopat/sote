@@ -28,11 +28,11 @@ const command = (process.argv.find(
         }
 
         running = true;
-        app?.stop();
+        await app?.stop();
         console.log("Compiling app and running.");
         const options = await GetOptions("./tpe-config.json");
         console.log("Got options and starting the build.");
-        const compiled = await BuildApp(options, false, true);
+        const compiled = await BuildApp(options, false, false);
         console.log("Finished building the app. Starting it up.");
         app = await StartApp(compiled, options);
         running = false;
@@ -45,7 +45,7 @@ const command = (process.argv.find(
     }, 200);
 
     chokidar
-      .watch(["./**/*.tpe", "./tpe-config.json"], {
+      .watch(["./**/*.tpe", "./tpe-config.json", "./**/*.js", "./**/*.scss"], {
         ignored: ["node_modules/**/*", ".git/**/*", ".sote/**/*"],
       })
       .on("all", run);

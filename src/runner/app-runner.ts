@@ -154,6 +154,9 @@ export async function StartApp(resources: PagesModel, options: Options) {
   });
 
   return {
-    stop: () => server.close(),
+    stop: () =>
+      new Promise((res, rej) =>
+        server.close((err) => (err ? rej(err) : res()))
+      ),
   };
 }
