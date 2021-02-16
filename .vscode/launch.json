@@ -5,12 +5,26 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "name": "Unit Test",
       "request": "launch",
-      "name": "Launch Program",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}\\lib\\index.js",
-      "outFiles": ["${workspaceFolder}/lib/**/*.js"]
+      "type": "pwa-node",
+      "program": "",
+      "cwd": "${workspaceFolder}/deno",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": ["test", "--unstable", "--inspect-brk", "-A"],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Unit Test Current File",
+      "request": "launch",
+      "type": "pwa-node",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}/deno",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": ["test", "--unstable", "--inspect-brk", "-A"],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal"
     }
   ]
 }

@@ -1,9 +1,11 @@
 {
   "files.exclude": {
-    ".sote": true,
     ".vscode": true,
-    "coverage": true,
-    "lib": true,
-    "node_modules": true
+  },
+  "git.ignoreLimitWarning": true,
+  "deno.enable": true,
+  "deno.unstable": true,
+  "deno.import_intellisense_origins": {
+    "https://deno.land": true
   }
 }
