@@ -28,7 +28,7 @@ const map: Dict<string> = {
   '"': "&quot;",
 };
 
-function XmlEscape(string: string) {
+export function XmlEscape(string: string) {
   if (string === null || string === undefined) return;
   return string.replace(new RegExp("([\"<>'])", "g"), (str, item) => map[str]);
 }
