@@ -1,7 +1,7 @@
 import { TpeFile } from "./types/app.ts";
 
 export const StdComponents: Record<string, TpeFile> = {
-  "std::email::is-mso": {
+  "std:email:is-mso": {
     xml_template: [
       {
         tag: "EMAIL_IS_MSO",
@@ -15,7 +15,7 @@ export const StdComponents: Record<string, TpeFile> = {
     title: undefined,
     language: undefined,
   },
-  "std::email::not-mso": {
+  "std:email:not-mso": {
     xml_template: [
       {
         tag: "EMAIL_NOT_MSO",

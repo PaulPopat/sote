@@ -51,7 +51,7 @@ Deno.test("Compiles a basic page", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -71,7 +71,7 @@ Deno.test("Compiles a basic page", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -141,7 +141,7 @@ Deno.test("Compiles a basic page with language", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -161,7 +161,7 @@ Deno.test("Compiles a basic page with language", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -233,7 +233,7 @@ Deno.test("Compiles client javascript", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -253,7 +253,7 @@ Deno.test("Compiles client javascript", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -327,7 +327,7 @@ Deno.test("Compiles server get js", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -347,7 +347,7 @@ Deno.test("Compiles server get js", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -422,7 +422,7 @@ Deno.test("Compiles method js for server", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -442,7 +442,7 @@ Deno.test("Compiles method js for server", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -517,7 +517,7 @@ Deno.test("Compiles page css", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -537,7 +537,7 @@ Deno.test("Compiles page css", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -570,9 +570,9 @@ Deno.test("Bundles component css", async () => {
           path: "/test",
           text: `
 <template>
-  <test::component>
+  <test:component>
     <div />
-  </test::component>
+  </test:component>
 </template>
 <style>
   .test { display: block; }
@@ -585,9 +585,9 @@ Deno.test("Bundles component css", async () => {
           path: "/test2",
           text: `
 <template>
-  <test::component>
+  <test:component>
     <div />
-  </test::component>
+  </test:component>
 </template>
 <style>
   .test { display: block; }
@@ -643,7 +643,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
                     tag: "div",
                   },
                 ],
-                tag: "test::component",
+                tag: "test:component",
               },
             ],
           },
@@ -673,7 +673,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
                     tag: "div",
                   },
                 ],
-                tag: "test::component",
+                tag: "test:component",
               },
             ],
           },
@@ -681,7 +681,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -701,7 +701,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -721,7 +721,7 @@ div[data-specifier="3a003c8ed08e0f1e53bff9cac752c55e"]{display:block;}`,
           server_js: undefined,
           title: undefined,
         },
-        "test::component": {
+        "test:component": {
           xml_template: [
             {
               attributes: {
@@ -758,11 +758,11 @@ Deno.test("Bundles component css from multiple components", async () => {
           path: "/test",
           text: `
 <template>
-  <test::component>
-    <test::other>
+  <test:component>
+    <test:other>
       <div />
-    </test::other>
-  </test::component>
+    </test:other>
+  </test:component>
 </template>
 <style>
   .test { display: block; }
@@ -775,11 +775,11 @@ Deno.test("Bundles component css from multiple components", async () => {
           path: "/test2",
           text: `
 <template>
-  <test::component>
-    <test::other>
+  <test:component>
+    <test:other>
       <div />
-    </test::other>
-  </test::component>
+    </test:other>
+  </test:component>
 </template>
 <style>
   .test { display: block; }
@@ -827,11 +827,11 @@ Deno.test("Bundles component css from multiple components", async () => {
           model: {
             xml_template: [
               {
-                tag: "test::component",
+                tag: "test:component",
                 attributes: {},
                 children: [
                   {
-                    tag: "test::other",
+                    tag: "test:other",
                     attributes: {},
                     children: [
                       {
@@ -863,11 +863,11 @@ Deno.test("Bundles component css from multiple components", async () => {
           model: {
             xml_template: [
               {
-                tag: "test::component",
+                tag: "test:component",
                 attributes: {},
                 children: [
                   {
-                    tag: "test::other",
+                    tag: "test:other",
                     attributes: {},
                     children: [
                       {
@@ -896,7 +896,7 @@ Deno.test("Bundles component css from multiple components", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -916,7 +916,7 @@ Deno.test("Bundles component css from multiple components", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -936,7 +936,7 @@ Deno.test("Bundles component css from multiple components", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "test::component": {
+        "test:component": {
           xml_template: [
             {
               attributes: {
@@ -960,7 +960,7 @@ Deno.test("Bundles component css from multiple components", async () => {
           language: undefined,
           title: undefined,
         },
-        "test::other": {
+        "test:other": {
           xml_template: [
             {
               attributes: {
@@ -1000,9 +1000,9 @@ Deno.test("Bundles component javascript", async () => {
           path: "/test",
           text: `
 <template>
-  <test::component>
+  <test:component>
     <div />
-  </test::component>
+  </test:component>
 </template>
 <style>
   .test { display: block; }
@@ -1058,7 +1058,7 @@ console.log("Hello world");`,
                     tag: "div",
                   },
                 ],
-                tag: "test::component",
+                tag: "test:component",
               },
             ],
           },
@@ -1066,7 +1066,7 @@ console.log("Hello world");`,
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -1086,7 +1086,7 @@ console.log("Hello world");`,
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -1106,7 +1106,7 @@ console.log("Hello world");`,
           server_js: undefined,
           title: undefined,
         },
-        "test::component": {
+        "test:component": {
           xml_template: [
             {
               attributes: {},
@@ -1142,9 +1142,9 @@ Deno.test(
             path: "/test",
             text: `
 <template>
-  <test::component>
+  <test:component>
     <div />
-  </test::component>
+  </test:component>
 </template>
 <style>
   .test { display: block; }
@@ -1212,7 +1212,7 @@ Deno.test(
                       tag: "div",
                     },
                   ],
-                  tag: "test::component",
+                  tag: "test:component",
                 },
               ],
             },
@@ -1244,7 +1244,7 @@ Deno.test(
           },
         ],
         components: {
-          "std::email::is-mso": {
+          "std:email:is-mso": {
             xml_template: [
               {
                 attributes: {},
@@ -1264,7 +1264,7 @@ Deno.test(
             server_js: undefined,
             title: undefined,
           },
-          "std::email::not-mso": {
+          "std:email:not-mso": {
             xml_template: [
               {
                 attributes: {},
@@ -1284,7 +1284,7 @@ Deno.test(
             server_js: undefined,
             title: undefined,
           },
-          "test::component": {
+          "test:component": {
             xml_template: [
               {
                 attributes: {
@@ -1322,9 +1322,9 @@ Deno.test("Does not bundle component JavaScript in one page", async () => {
           path: "/test",
           text: `
 <template>
-  <test::component>
+  <test:component>
     <div />
-  </test::component>
+  </test:component>
 </template>
 <title>A test page</title>
 <description>A test description</description>`,
@@ -1383,7 +1383,7 @@ Deno.test("Does not bundle component JavaScript in one page", async () => {
                     tag: "div",
                   },
                 ],
-                tag: "test::component",
+                tag: "test:component",
               },
             ],
           },
@@ -1412,7 +1412,7 @@ Deno.test("Does not bundle component JavaScript in one page", async () => {
         },
       ],
       components: {
-        "std::email::is-mso": {
+        "std:email:is-mso": {
           xml_template: [
             {
               attributes: {},
@@ -1432,7 +1432,7 @@ Deno.test("Does not bundle component JavaScript in one page", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "std::email::not-mso": {
+        "std:email:not-mso": {
           xml_template: [
             {
               attributes: {},
@@ -1452,7 +1452,7 @@ Deno.test("Does not bundle component JavaScript in one page", async () => {
           server_js: undefined,
           title: undefined,
         },
-        "test::component": {
+        "test:component": {
           xml_template: [
             {
               attributes: {},

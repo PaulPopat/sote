@@ -35,7 +35,7 @@ export async function CompileApp(
   ).reduce(
     (c, n) => ({
       ...c,
-      [n.url.replace("/", "").replace(/[\/\\]/gm, "::")]: n.data,
+      [n.url.replace("/", "").replace(/[\/\\]/gm, ":")]: n.data,
     }),
     {} as Record<string, TpeFile>
   );

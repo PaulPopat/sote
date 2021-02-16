@@ -283,7 +283,7 @@ Deno.test("Ignores comments", () => {
 Deno.test("Ignores comments containing xml", () => {
   assertEquals(
     ParseXml(
-      `"<title>{await context.UIText.get(\"homepage_title\")} - {await context.UIText.get(\"publications_title\")}</title>\r\n<description>\r\n  {await context.UIText.get(\"publications_description\")}\r\n</description>\r\n<template>\r\n  <app::layout location=\"/cv\">\r\n    <layout::container>\r\n      <img src=\"/_/img/texture-catscradel.jpeg\" alt=\"\" />\r\n      <for subject=\":await context.UIText.get('publications_items')\" key=\"reference\">\r\n        <!-- <p class=\"article\">\r\n          <if check=\":reference.type === 'book' && reference.edited\">\r\n            <if check=\":reference.authors\">\r\n              <app::authors authors=\":reference.authors\" />\r\n            </if>\r\n          </if>\r\n          <if check=\":reference.type === 'book' && !reference.edited\"></if>\r\n        </p> -->\r\n      </for>\r\n    </layout::container>\r\n  </app::layout>\r\n</template>\r\n<style>\r\n  h2 {\r\n    display: flex;\r\n    justify-content: space-between;\r\n  }\r\n\r\n  h2 small {\r\n    font-weight: 400;\r\n    font-size: 1rem;\r\n  }\r\n\r\n  img {\r\n    display: block;\r\n    margin: 0 auto;\r\n    width: 288px;\r\n  }\r\n</style>\r\n"`
+      `"<title>{await context.UIText.get(\"homepage_title\")} - {await context.UIText.get(\"publications_title\")}</title>\r\n<description>\r\n  {await context.UIText.get(\"publications_description\")}\r\n</description>\r\n<template>\r\n  <app:layout location=\"/cv\">\r\n    <layout:container>\r\n      <img src=\"/_/img/texture-catscradel.jpeg\" alt=\"\" />\r\n      <for subject=\":await context.UIText.get('publications_items')\" key=\"reference\">\r\n        <!-- <p class=\"article\">\r\n          <if check=\":reference.type === 'book' && reference.edited\">\r\n            <if check=\":reference.authors\">\r\n              <app:authors authors=\":reference.authors\" />\r\n            </if>\r\n          </if>\r\n          <if check=\":reference.type === 'book' && !reference.edited\"></if>\r\n        </p> -->\r\n      </for>\r\n    </layout:container>\r\n  </app:layout>\r\n</template>\r\n<style>\r\n  h2 {\r\n    display: flex;\r\n    justify-content: space-between;\r\n  }\r\n\r\n  h2 small {\r\n    font-weight: 400;\r\n    font-size: 1rem;\r\n  }\r\n\r\n  img {\r\n    display: block;\r\n    margin: 0 auto;\r\n    width: 288px;\r\n  }\r\n</style>\r\n"`
     ),
     [
       {
@@ -337,10 +337,10 @@ Deno.test("Ignores comments containing xml", () => {
                     tag: "for",
                   },
                 ],
-                tag: "layout::container",
+                tag: "layout:container",
               },
             ],
-            tag: "app::layout",
+            tag: "app:layout",
           },
         ],
         tag: "template",
