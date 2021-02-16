@@ -1,91 +1,114 @@
-function IsPromise<T>(item: T | Promise<T>): item is Promise<T> {
-  return typeof item === "object" && "then" in item;
-}
+type Iterator<T> =
+  | AsyncGenerator<T>
+  | Generator<T>
+  | (T | Promise<T>)[]
+  | (() => AsyncGenerator<T>)
+  | (() => Generator<T>);
 
-type AsyncLinqer<T> = {
-  Select<TResult>(
-    selector: (item: T, index: number) => TResult | Promise<TResult>
-  ): AsyncLinqer<TResult>;
-  Where<S extends T>(
-    predicate: (item: T, index: number) => item is S
-  ): AsyncLinqer<S>;
-  Where(
-    predicate: (item: T, index: number) => boolean | Promise<boolean>
-  ): AsyncLinqer<T>;
-  Count(
-    predicate: (item: T, index: number) => boolean | Promise<boolean>
-  ): Promise<number>;
-  ToArray: () => Promise<T[]>;
-  Total: number;
-};
+export function Iterate<T>(data: Iterator<T>) {
+  const d = typeof data === "function" ? data() : data;
 
-type AsyncLinqerArgs<T> =
-  | (T | void | never | undefined)
-  | Promise<T | void | never | undefined>;
-
-export function AsyncLinq<T>(content: AsyncLinqerArgs<T>[]): AsyncLinqer<T> {
   return {
-    Select(selector) {
-      return AsyncLinq(
-        content.map(async (i, index) => {
-          if (IsPromise(i)) {
-            const result = await i;
-            if (result) {
-              return await Promise.resolve(selector(result, index));
-            }
-          } else if (i) {
-            return await Promise.resolve(selector(i, index));
-          }
-        })
-      );
+    Select<TReturn>(
+      selector: (item: T, index: number) => Promise<TReturn> | TReturn
+    ) {
+      return Iterate(async function* () {
+        let index = 0;
+        for await (const item of d) {
+          yield await Promise.resolve(selector(item, index));
+          index++;
+        }
+      });
     },
-    Where(predicate: (item: T, index: number) => boolean | Promise<boolean>) {
-      return AsyncLinq(
-        content.map(
-          async (i, index): Promise<T | void> => {
-            if (IsPromise(i)) {
-              const result = await i;
-              if (result && (await Promise.resolve(predicate(result, index)))) {
-                return result;
-              }
-            } else if (i && (await Promise.resolve(predicate(i, index)))) {
-              return i;
-            }
+    FlatSelect<TReturn>(
+      selector: (
+        item: T,
+        index: number
+      ) =>
+        | Promise<AsyncGenerator<TReturn> | Generator<TReturn>>
+        | AsyncGenerator<TReturn>
+        | Generator<TReturn>
+    ) {
+      return Iterate(async function* () {
+        let index = 0;
+        for await (const item of d) {
+          const result = await Promise.resolve(selector(item, index));
+          for await (const part of result) {
+            yield part;
           }
-        )
-      );
+
+          index++;
+        }
+      });
     },
-    async Count(predicate) {
+    WhereIs<S extends T = T>(predicate: (item: T, index: number) => item is S) {
+      return Iterate(async function* () {
+        let index = 0;
+        for await (const item of d) {
+          if (await Promise.resolve(predicate(item, index))) {
+            yield item as S;
+          }
+
+          index++;
+        }
+      });
+    },
+    Where<S extends T = T>(predicate: (item: T, index: number) => boolean | Promise<boolean>) {
+      return Iterate(async function* () {
+        let index = 0;
+        for await (const item of d) {
+          if (await Promise.resolve(predicate(item, index))) {
+            yield item as S;
+          }
+
+          index++;
+        }
+      });
+    },
+    async Count(
+      predicate: (item: T, index: number) => boolean | Promise<boolean>
+    ) {
       let result = 0;
-      for (let index = 0; index < content.length; index++) {
-        const i = content[index];
-        if (IsPromise(i)) {
-          const r = await i;
-          if (r && (await Promise.resolve(predicate(r, index)))) {
-            result++;
-          }
-        } else if (i && (await Promise.resolve(predicate(i, index)))) {
+      let index = 0;
+      for await (const item of d) {
+        if (await Promise.resolve(predicate(item, index))) {
           result++;
         }
+
+        index++;
       }
 
       return result;
+    },
+    async *Generate() {
+      for await (const item of d) {
+        yield item;
+      }
     },
     async ToArray() {
       const result: T[] = [];
-      for (const i of content) {
-        if (IsPromise(i)) {
-          const r = await i;
-          if (r) {
-            result.push(r);
-          }
-        } else if (i) {
-          result.push(i);
-        }
+      for await (const item of d) {
+        result.push(item);
       }
 
       return result;
     },
-    Total: content.length,
+    async Reduce<TResult>(
+      initial: TResult,
+      selector: (
+        new_entry: T,
+        current: TResult,
+        index: number
+      ) => TResult | Promise<TResult>
+    ) {
+      let index = 0;
+      let current = initial;
+      for await (const item of d) {
+        current = await Promise.resolve(selector(item, current, index));
+        index++;
+      }
+
+      return current;
+    },
   };
 }

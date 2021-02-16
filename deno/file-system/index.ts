@@ -45,9 +45,11 @@ export async function* GetAllTpe(pages_route: string) {
     }
 
     url = url.replace(/\/index/gm, "");
+    const local_path = Path.resolve(file);
     yield {
       path: url,
-      text: await Deno.readTextFile(Path.resolve(file)),
+      text: await Deno.readTextFile(local_path),
+      local_path,
     };
   }
 }
@@ -86,14 +88,5 @@ export async function GetOptions(path: string): Promise<Options> {
     resources: undefined,
     email: undefined,
     google_tracking_id: undefined,
-    sass_variables: undefined,
   };
-}
-
-export async function GetSassVariables(options: Options) {
-  if (!options.sass_variables) {
-    return "";
-  }
-
-  return await Deno.readTextFile(options.sass_variables);
 }

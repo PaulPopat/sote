@@ -2,7 +2,7 @@ import { ParseXml } from "./xml-parser.ts";
 import { CompileCss } from "./css-manipulator.ts";
 import { ApplySpecifier } from "./tpe-manipulator.ts";
 import { TransformJs } from "./javascript-compiler.ts";
-import { AsyncLinq } from "../util/array.ts";
+import { Iterate } from "../util/array.ts";
 import { IsXmlElement, IsXmlText, XmlElement, XmlText } from "../types/app.ts";
 
 type XmlScript = {
@@ -51,7 +51,7 @@ export async function ParseTpeFile(tpe: string, working_dir: string) {
     }
 
     return (
-      await AsyncLinq(elements)
+      await Iterate(elements)
         .Select(async (e, i) => {
           const build_string = (text: string) =>
             typeof e.attributes["no-hash"] === "string"

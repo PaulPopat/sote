@@ -23,7 +23,6 @@ export const IsOptions = IsObject({
   resources: Optional(IsString),
   email: Optional(IsBoolean),
   google_tracking_id: Optional(IsString),
-  sass_variables: Optional(IsString),
 });
 
 export type Options = IsType<typeof IsOptions>;
