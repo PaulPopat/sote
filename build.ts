@@ -1,5 +1,5 @@
 import { IsString } from "https://deno.land/x/safe_type@2.2.3/mod.ts";
-import * as Fs from "./file-system/index.ts";
+import * as Fs from "./file-system.ts";
 import { Options } from "./types/config.ts";
 import { CompileApp } from "./compiler/page-builder.ts";
 

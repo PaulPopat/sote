@@ -1,4 +1,4 @@
-import { GetOptions, GetCompiledApp } from "./file-system/index.ts";
+import { GetOptions, GetCompiledApp } from "./file-system.ts";
 import { StartApp } from "./runner/app-runner.ts";
 
 console.log("Starting the app.");

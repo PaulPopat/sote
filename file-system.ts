@@ -1,7 +1,7 @@
 import { Assert } from "https://deno.land/x/safe_type@2.2.3/mod.ts";
 import * as Path from "https://deno.land/std/path/mod.ts";
-import { IsPagesModel, PagesModel } from "../types/app.ts";
-import { IsOptions, Options } from "../types/config.ts";
+import { IsPagesModel, PagesModel } from "./types/app.ts";
+import { IsOptions, Options } from "./types/config.ts";
 
 async function Exists(filename: string): Promise<boolean> {
   try {
@@ -18,7 +18,7 @@ async function Exists(filename: string): Promise<boolean> {
 
 export async function* ReadDirectory(route: string): AsyncIterable<string> {
   for await (const file of Deno.readDir(route)) {
-    const p = Path.join(route, file.name);
+    const p = route + "/" + file.name;
     if (file.isDirectory) {
       yield* ReadDirectory(p);
     } else {
