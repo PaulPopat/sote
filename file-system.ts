@@ -49,7 +49,7 @@ export async function* GetAllTpe(pages_route: string) {
     yield {
       path: url,
       text: await Deno.readTextFile(local_path),
-      local_path,
+      local_path: Path.dirname(local_path),
     };
   }
 }

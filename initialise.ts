@@ -18,6 +18,10 @@ await Deno.writeTextFile(
   )
 );
 
+await Deno.mkdir("./src");
+await Deno.mkdir("./src/pages");
+await Deno.mkdir("./src/components");
+
 await Deno.writeTextFile(
   "./src/components/header.tpe",
   `<template>
